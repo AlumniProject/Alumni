@@ -40,7 +40,7 @@ public class MemberController {
     public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDto request){
 
         String email = request.getEmail();
-        String emailCode = request.getToken();
+        String emailCode = request.getCertification();
         String fcmToken = request.getFcmToken();
 
         String message = memberService.login(email, emailCode, fcmToken);

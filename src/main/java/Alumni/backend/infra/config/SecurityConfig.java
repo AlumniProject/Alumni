@@ -1,5 +1,8 @@
 package Alumni.backend.infra.config;
 
+import Alumni.backend.infra.jwt.JwtAuthenticationFilter;
+import Alumni.backend.infra.jwt.JwtAuthorizationFilter;
+import Alumni.backend.module.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +22,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  //private final MemberRepository memberRepository;
+  private final MemberRepository memberRepository;
   private final CorsConfig corsConfig;
   private final ObjectMapper objectMapper;
 
@@ -48,10 +51,10 @@ public class SecurityConfig {
     @Override
     public void configure(HttpSecurity http) throws Exception {
       AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-      /*http
+      http
           .addFilter(corsConfig.corsFilter())
           .addFilter(new JwtAuthenticationFilter(authenticationManager, objectMapper))
-          .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository));*/
+          .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository));
     }
   }
 
