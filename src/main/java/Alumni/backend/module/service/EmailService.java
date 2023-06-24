@@ -17,23 +17,9 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
-    private String emailCode;
-
-    //인증 코드 생성
-    public void createToken(){
-        StringBuffer key = new StringBuffer();
-        Random random = new Random();
-
-        for(int i = 0; i<4; i++){
-            key.append((random.nextInt(10)));
-        }
-        emailCode = key.toString();
-    }
 
     //메일 내용
-    public MimeMessage createMailForm(String email) throws MessagingException, UnsupportedEncodingException {
-        createToken();//인증번호 생성
-
+    /*public MimeMessage createMailForm(String email) throws MessagingException, UnsupportedEncodingException {
         String setFrom = "soeun8636@naver.com";
         String toEmail = email;
         String title = "ALUMNI";
@@ -70,5 +56,5 @@ public class EmailService {
         Context context = new Context();
         context.setVariable("emailCode", emailCode);
         return templateEngine.process("mail", context);
-    }
+    }*/
 }

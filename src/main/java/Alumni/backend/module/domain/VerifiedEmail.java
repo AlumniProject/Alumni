@@ -1,5 +1,6 @@
 package Alumni.backend.module.domain;
 
+import java.util.Random;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,14 +24,21 @@ public class VerifiedEmail {
     private String emailCode;
 
     //생성 메서드
-    public static VerifiedEmail createVerifiedEmail(String email, String emailCode){
+    public static VerifiedEmail createVerifiedEmail(String email){
         VerifiedEmail verifiedEmail = new VerifiedEmail();
-
         verifiedEmail.email = email;
         verifiedEmail.isVerified = false;
-        verifiedEmail.emailCode = emailCode;
-
+        verifiedEmail.generateEmailToken();
         return verifiedEmail;
+    }
+
+    private void generateEmailToken() {
+        Random random = new Random();
+        StringBuilder num = null;
+        for (int i = 0; i<4; i++) {
+            num.append(Integer.toString(random.nextInt(10)));
+        }
+        this.emailCode = num.toString();
     }
 
     //인증된 이메일인 경우 isVerified -> true

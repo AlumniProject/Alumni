@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   public Authentication attemptAuthentication(HttpServletRequest request,
       HttpServletResponse response)
       throws AuthenticationException {
-    System.out.println("login 시도중");
+    System.out.println("attempt login");
 
     LoginRequestDto loginRequestDto = new LoginRequestDto();
     try {
