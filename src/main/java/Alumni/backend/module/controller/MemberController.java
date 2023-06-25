@@ -5,12 +5,14 @@ import Alumni.backend.module.dto.ListResponse;
 import Alumni.backend.module.dto.LoginRequestDto;
 import Alumni.backend.module.dto.SignUpRequestDto;
 import Alumni.backend.module.dto.TermsDto;
+import Alumni.backend.module.service.ImageService;
 import Alumni.backend.module.service.MemberService;
 import Alumni.backend.module.service.UniversityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 public class MemberController {
     private final UniversityService universityService;
     private final MemberService memberService;
+    private final ImageService imageService;
+
 
     @PostMapping("/member/email-validate")
     public ResponseEntity<Map<String, Object>> emailValidate(@RequestBody Map<String, String> request){
@@ -91,11 +95,30 @@ public class MemberController {
     @PutMapping("/member/interest-field")
     public ResponseEntity<Map<String, Object>> interest(@RequestBody List<String> data){
 
-//        memberService.updateInterest();//data, userId
+        /**
+         * jwt 토큰에서 memberId 가져오기
+         */
+//        memberService.updateInterest();//data, memberId
 
         Map<String, Object> result = new HashMap<>();
         result.put("code", HttpStatus.OK.value());
         result.put("message", "문의 완료");
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/member/profile-image")
+    public ResponseEntity<Map<String, Object>> profileImage(@RequestPart("file") MultipartFile multipartFile){
+
+        String storageImageName = imageService.saveProfileImage(multipartFile);//s3에 저장
+         /**
+         * jwt 토큰에서 memberId 가져오기
+         */
+//        memberService.uploadProfileImage(memberId, storageImageName);//회원 프로필 update(member table 에 저장)
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", HttpStatus.OK.value());
+        result.put("message", "이미지 저장 완료");
 
         return ResponseEntity.ok(result);
     }
