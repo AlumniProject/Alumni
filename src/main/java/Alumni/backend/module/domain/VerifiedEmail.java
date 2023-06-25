@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class VerifiedEmail {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class VerifiedEmail {
         return verifiedEmail;
     }
 
-    private void generateEmailToken() {
+    public void generateEmailToken() {
         Random random = new Random();
         StringBuilder num = null;
         for (int i = 0; i<4; i++) {
@@ -44,5 +44,9 @@ public class VerifiedEmail {
     //인증된 이메일인 경우 isVerified -> true
     public void verifiedTrue(){
         this.isVerified = true;
+    }
+
+    public void verifiedFalse() {
+        this.isVerified = false;
     }
 }

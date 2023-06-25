@@ -65,8 +65,15 @@ public class UniversityService {
     }
 
     // 유요한 학교이메일 형식이면 인증번호 생성하여 메일 전송
-    VerifiedEmail verifiedEmail = VerifiedEmail.createVerifiedEmail(email);
-    verifiedEmailRepository.save(verifiedEmail); //이메일, 인증번호 verifiedEmail 테이블에 저장
+    VerifiedEmail verifiedEmail;
+    if(verifiedEmailRepository.existsByEmail(email)) {
+      verifiedEmail = verifiedEmailRepository.findByEmail(email).get();
+      verifiedEmail.verifiedFalse();
+      verifiedEmail.generateEmailToken();
+    } else {
+      verifiedEmail = VerifiedEmail.createVerifiedEmail(email);
+      verifiedEmailRepository.save(verifiedEmail); //이메일, 인증번호 verifiedEmail 테이블에 저장
+    }
 
     /*ToDo 메일 전송*/
 

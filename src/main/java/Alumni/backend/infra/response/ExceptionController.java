@@ -16,14 +16,13 @@ public class ExceptionController {
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<? extends BasicResponse> IllegalArgumentHandler(
       IllegalArgumentException e) {
-    log.warn("------------IllegalArgumentException-------------");
     e.printStackTrace();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
   }
 
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<? extends BasicResponse> RunTimeHandler(RuntimeException e) {
-    log.warn("------------RunTimeException-------------");
+
     e.printStackTrace();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
   }
@@ -31,7 +30,6 @@ public class ExceptionController {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<? extends BasicResponse> methodValidException(
       MethodArgumentNotValidException e) {
-    log.warn("------------MethodArgumentNotValidException-------------");
     e.printStackTrace();
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(new ErrorResponse(
@@ -43,5 +41,12 @@ public class ExceptionController {
       UsernameNotFoundException e) {
     e.printStackTrace();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<? extends BasicResponse> exception(Exception e) {
+    e.printStackTrace();
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new ErrorResponse(500, e.getMessage()));
   }
 }
