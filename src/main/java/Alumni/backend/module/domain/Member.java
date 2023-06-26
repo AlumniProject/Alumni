@@ -34,6 +34,8 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 15)
     private String major;//학과
 
+    private String refreshToken;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id", nullable = false)
     private University university;
@@ -52,5 +54,9 @@ public class Member extends BaseTimeEntity {
         member.university = university;
 
         return member;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

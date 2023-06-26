@@ -2,14 +2,11 @@ package Alumni.backend.infra.jwt;
 
 import Alumni.backend.infra.principal.PrincipalDetails;
 import Alumni.backend.infra.response.SingleResponse;
+import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.dto.LoginRequestDto;
-import Alumni.backend.module.service.VerifiedEmailService;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.Date;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final VerifiedEmailService verifiedEmailService;
+    private final JwtService jwtService;
     private final ObjectMapper objectMapper;
 
     // Authentication 객체를 만들어서 리턴
@@ -46,7 +43,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // 토큰값 유효한지 + 신규회원이지 확인
         // 신규회원이면 jwt 토큰 생성하지 않음
-        String verify = verifiedEmailService.verify(loginRequestDto);
+        String verify = jwtService.verify(loginRequestDto);
         if (verify.equals("new")) {
             return null;
         }
@@ -68,22 +65,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        Member member = principalDetails.getMember();
+        String accessToken = jwtService.createAccessToken(member.getId(), member.getNickname(), member.getEmail());
+        String refreshToken = jwtService.createRefreshToken(member.getEmail());
 
-        String jwtToken = JWT.create()
-                .withSubject(principalDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
-                .withClaim("id", principalDetails.getMember().getId())
-                .withClaim("userNickname", principalDetails.getMember().getNickname())
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+        // refresh token 저장
+        jwtService.setRefreshToken(member.getEmail(), refreshToken);
 
-        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+        // header를 통해 token 내려주기
+        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + accessToken);
+        response.addHeader(JwtProperties.HEADER_REFRESH, JwtProperties.TOKEN_PREFIX + refreshToken);
 
         // 기존회원이 로그인 시도 하는 경우
-        try {
-            response.getWriter().write(objectMapper.writeValueAsString(new SingleResponse("로그인 완료")));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        setBodyResponse(response, "로그인 성공");
     }
 
     @Override
@@ -91,10 +85,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                               AuthenticationException failed)
             throws IOException, ServletException {
         // 신규회원이 로그인 시도 하는 경우
-        try {
-            response.getWriter().write(objectMapper.writeValueAsString(new SingleResponse("이메일 인증 완료")));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        setBodyResponse(response, "이메일 인증 완료");
+    }
+
+    private void setBodyResponse(HttpServletResponse response, String message) throws IOException {
+        response.getWriter().write(objectMapper.writeValueAsString(new SingleResponse(message)));
     }
 }
