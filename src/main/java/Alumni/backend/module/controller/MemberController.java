@@ -98,7 +98,7 @@ public class MemberController {
         /**
          * jwt 토큰에서 memberId 가져오기
          */
-//        memberService.updateInterest();//data, memberId
+        //memberService.updateInterest();//data, memberId
 
         Map<String, Object> result = new HashMap<>();
         result.put("code", HttpStatus.OK.value());
@@ -114,7 +114,7 @@ public class MemberController {
          /**
          * jwt 토큰에서 memberId 가져오기
          */
-//        memberService.uploadProfileImage(memberId, storageImageName);//회원 프로필 update(member table 에 저장)
+        //memberService.uploadProfileImage(memberId, storageImageName);//회원 프로필 update(member table 에 저장)
 
         Map<String, Object> result = new HashMap<>();
         result.put("code", HttpStatus.OK.value());

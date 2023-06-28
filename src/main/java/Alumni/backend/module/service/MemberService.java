@@ -59,7 +59,7 @@ public class MemberService {
 
         String email = memberInfo.getEmail();
         int index = email.indexOf("@");
-        String univEmail = email.substring(index+1);
+        String univEmail = email.substring(index);
 
         University findUniversity = universityRepository.findByUnivEmail(univEmail);//학교 찾기
 
