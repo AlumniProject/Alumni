@@ -29,7 +29,9 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean agreement2;
 
-    private String profileImage;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image profileImage;
 
     @Column(nullable = false, length = 15)
     private String major;//학과
@@ -52,5 +54,9 @@ public class Member extends BaseTimeEntity {
         member.university = university;
 
         return member;
+    }
+
+    public void uploadProfile(Image profileImage){
+        this.profileImage = profileImage;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice(basePackageClasses = MemberController.class)
 public class MemberControllerAdvice {
@@ -22,6 +23,12 @@ public class MemberControllerAdvice {
     @ExceptionHandler
     public ErrorResult tokenExHandle(EmailCodeException e){
         return new ErrorResult(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    @ExceptionHandler
+    public ErrorResult maxSizeExHandle(MaxUploadSizeExceededException e){
+        return new ErrorResult(HttpStatus.PAYLOAD_TOO_LARGE.value(), "이미지 용량이 큽니다.");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
