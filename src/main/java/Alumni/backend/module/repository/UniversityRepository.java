@@ -12,5 +12,6 @@ public interface UniversityRepository extends JpaRepository<University, Long> {
     Boolean existsByUnivEmail1(String email);
 
     Boolean existsByUnivEmail2(String email);
-    University findByUnivEmail(String univEmail);
+
+    University findByUnivEmail1OrUnivEmail2(String univEmail1, String univEmail2);
 }

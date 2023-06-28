@@ -2,6 +2,7 @@ package Alumni.backend.module.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -16,45 +17,19 @@ import java.util.Random;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-    private final SpringTemplateEngine templateEngine;
-
-    //메일 내용
-    /*public MimeMessage createMailForm(String email) throws MessagingException, UnsupportedEncodingException {
-        String setFrom = "soeun8636@naver.com";
-        String toEmail = email;
-        String title = "ALUMNI";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, toEmail); //메일을 받는 사용자
-        message.setFrom(setFrom);//보내는 사람
-        message.setSubject(title);//제목
-
-
-        message.setText(setContext(emailCode), "utf-8", "html");
-
-        return message;
-    }
 
     //메일 전송
-    public String sendMail(String toEmail){
-        //메일 전송에 필요한 정보 설정
-        MimeMessage emailForm = null;
-
+    public void sendMail(String toEmail, String emailCode){
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
-            emailForm = createMailForm(toEmail);
-        } catch(Exception e){
-            throw new RuntimeException("INTERNAL SERVER ERROR");
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+            mimeMessageHelper.setTo(toEmail);
+            mimeMessageHelper.setFrom("soeun8636@naver.com");
+            mimeMessageHelper.setSubject("ALUMNI 이메일 인증");
+            mimeMessageHelper.setText(emailCode);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e.getMessage());
         }
-
-        //실제 메일 전송
-        mailSender.send(emailForm);
-
-        return emailCode;//인증코드 반환
     }
-
-    public String setContext(String emailCode){
-        Context context = new Context();
-        context.setVariable("emailCode", emailCode);
-        return templateEngine.process("mail", context);
-    }*/
 }

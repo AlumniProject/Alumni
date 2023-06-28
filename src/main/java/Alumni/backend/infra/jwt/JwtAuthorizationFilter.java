@@ -22,13 +22,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private final MemberRepository memberRepository;
     private final JwtService jwtService;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
-                                  MemberRepository memberRepository, JwtService jwtService) {
+                                  JwtService jwtService) {
         super(authenticationManager);
-        this.memberRepository = memberRepository;
         this.jwtService = jwtService;
     }
 

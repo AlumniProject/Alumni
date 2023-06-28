@@ -34,11 +34,8 @@ public class VerifiedEmail {
 
     public void generateEmailToken() {
         Random random = new Random();
-        StringBuilder num = null;
-        for (int i = 0; i<4; i++) {
-            num.append(Integer.toString(random.nextInt(10)));
-        }
-        this.emailCode = num.toString();
+        int randomNumber = random.nextInt(9000) + 1000;
+        this.emailCode = Integer.toString(randomNumber);
     }
 
     //인증된 이메일인 경우 isVerified -> true

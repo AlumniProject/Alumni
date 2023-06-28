@@ -13,16 +13,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+    //private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final ObjectMapper objectMapper;
 
@@ -43,20 +46,25 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // 토큰값 유효한지 + 신규회원이지 확인
         // 신규회원이면 jwt 토큰 생성하지 않음
-        String verify = jwtService.verify(loginRequestDto);
-        if (verify.equals("new")) {
+        if (jwtService.verify(loginRequestDto).equals("new")) {
+            try {
+                setBodyResponse(response, "이메일 인증 완료");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             return null;
         }
 
         // UsernamePassword 토큰 생성
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(
-                loginRequestDto.getEmail(),
+                new PrincipalDetails(jwtService.getMemberByEmail(loginRequestDto.getEmail())),
                 null
         );
-
-        // authenticate 메서드를 호출하면 loadUserByUsername 호출
-        return authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(
+                authenticationToken
+        );
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     // 로그인 인증 완료되면 실행
@@ -80,15 +88,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         setBodyResponse(response, "로그인 성공");
     }
 
-    @Override
+    /*@Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException failed)
             throws IOException, ServletException {
-        // 신규회원이 로그인 시도 하는 경우
         setBodyResponse(response, "이메일 인증 완료");
-    }
+    }*/
 
     private void setBodyResponse(HttpServletResponse response, String message) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(new SingleResponse(message)));
     }
 }

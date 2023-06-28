@@ -15,8 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UniversityService {
 
@@ -33,6 +35,11 @@ public class UniversityService {
           .stream().map(
               line -> {
                 String[] split = line.split(","); // 쉽표를 기준으로 데이터 나누기
+                if (split.length < 3) {
+                  return University.builder()
+                          .name(split[1])
+                          .build();
+                }
                 return University.builder()
                     .name(split[1])
                     .univEmail1(split[3])
@@ -51,7 +58,7 @@ public class UniversityService {
      * 정규식으로 바꿔서 형식 구별하기
      */
     int index = email.indexOf("@");
-    String univEmail = email.substring(index + 1);//@뒷부분
+    String univEmail = email.substring(index);//@뒷부분
 
     if (univEmail.length() < 5) {
       throw new IllegalArgumentException("Bad Request");
@@ -75,7 +82,7 @@ public class UniversityService {
       verifiedEmailRepository.save(verifiedEmail); //이메일, 인증번호 verifiedEmail 테이블에 저장
     }
 
-    /*ToDo 메일 전송*/
+    emailService.sendMail(verifiedEmail.getEmail(), verifiedEmail.getEmailCode());
 
     return "인증번호 발급 완료";
   }

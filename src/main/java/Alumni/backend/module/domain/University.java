@@ -17,12 +17,12 @@ public class University {
   @Column(name = "university_id", nullable = false)
   private Long id;
 
-  @Column(name = "univ_name", nullable = false, length = 10)
+  @Column(name = "univ_name", nullable = false)
   private String name;
 
-  @Column(name = "univ_email1", nullable = false, length = 30)
+  @Column(name = "univ_email1")
   private String univEmail1;
 
-  @Column(name = "univ_email2", nullable = false, length = 30)
+  @Column(name = "univ_email2")
   private String univEmail2;
 }

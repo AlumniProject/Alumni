@@ -50,6 +50,11 @@ public class JwtService {
     }
 
     @Transactional(readOnly = true)
+    public Member getMemberByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
     public Member getMemberByRefreshToken(String refreshToken) {
         return memberRepository.findByRefreshToken(refreshToken);
     }

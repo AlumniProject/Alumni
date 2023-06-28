@@ -1,8 +1,6 @@
 package Alumni.backend.infra.config;
 
-import Alumni.backend.infra.jwt.JwtAuthenticationFilter;
-import Alumni.backend.infra.jwt.JwtAuthorizationFilter;
-import Alumni.backend.infra.jwt.JwtService;
+import Alumni.backend.infra.jwt.*;
 import Alumni.backend.module.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,48 +21,49 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final MemberRepository memberRepository;
-  private final JwtService jwtService;
-  private final CorsConfig corsConfig;
-  private final ObjectMapper objectMapper;
+    private final JwtService jwtService;
+    private final CorsConfig corsConfig;
+    private final ObjectMapper objectMapper;
 
-  @Bean
-  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http
-        .csrf().disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 하지않음
-        .and()
-        .formLogin().disable()
-        .httpBasic().disable()
-        .apply(new MyCustomDsl())
-        .and()
-        .authorizeRequests()
-        .antMatchers("/", "/member/email-validate", "/member/sign-up").permitAll()
-        .anyRequest().authenticated()
-        .and()
-        .logout()
-        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-        .logoutSuccessUrl("/")
-        .permitAll()
-        .and().build();
-  }
-
-  public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
-
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
-      AuthenticationManager authenticationManager = http.getSharedObject(
-          AuthenticationManager.class);
-      http
-          .addFilter(corsConfig.corsFilter())
-          .addFilter(new JwtAuthenticationFilter(authenticationManager, jwtService,
-              objectMapper))
-          .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository, jwtService));
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 하지않음
+                .and()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .apply(new MyCustomDsl())
+                .and()
+                .authorizeRequests()
+                .antMatchers("/", "/member/email-validate", "/member/sign-up").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .permitAll()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper))
+                .accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper))
+                .and().build();
     }
-  }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-  }
+    public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            AuthenticationManager authenticationManager = http.getSharedObject(
+                    AuthenticationManager.class);
+            http
+                    .addFilter(corsConfig.corsFilter())
+                    .addFilter(new JwtAuthenticationFilter(jwtService, objectMapper))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, jwtService));
+        }
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 }
