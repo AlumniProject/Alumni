@@ -1,5 +1,9 @@
 package Alumni.backend.module.controller;
 
+import Alumni.backend.BackendApplication;
+import Alumni.backend.infra.response.BasicResponse;
+import Alumni.backend.infra.response.SingleResponse;
+import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.Terms;
 import Alumni.backend.module.dto.ListResponse;
 import Alumni.backend.module.dto.LoginRequestDto;
@@ -11,6 +15,7 @@ import Alumni.backend.module.service.UniversityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,38 +28,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
-    private final UniversityService universityService;
     private final MemberService memberService;
     private final ImageService imageService;
-
-
-    /*@PostMapping("/member/email-validate")
-    public ResponseEntity<Map<String, Object>> emailValidate(@RequestBody Map<String, String> request){
-
-        universityService.emailVerify(request.get("email"));
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", HttpStatus.OK.value());
-        result.put("message", "인증번호 발급 완료");
-
-        return ResponseEntity.ok(result);
-    }*/
-
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDto request){
-
-        String email = request.getEmail();
-        String emailCode = request.getCertification();
-        String fcmToken = request.getFcmToken();
-
-        String message = memberService.login(email, emailCode, fcmToken);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", HttpStatus.OK.value());
-        result.put("message", message);
-
-        return ResponseEntity.ok(result);
-    }
 
     @PostMapping("/member/sign-up")
     public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpRequestDto request){

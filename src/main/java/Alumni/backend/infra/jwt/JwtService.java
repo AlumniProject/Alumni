@@ -51,6 +51,8 @@ public class JwtService {
         if (!memberRepository.existsMemberByEmail(loginRequestDto.getEmail())) {
             return "new";
         }
+        // fcm token 저장
+        setFcmToken(loginRequestDto.getEmail(), loginRequestDto.getFcmToken());
         return "existing";
     }
 
@@ -103,6 +105,13 @@ public class JwtService {
     @Transactional(readOnly = true)
     public Member getMemberByRefreshToken(String refreshToken) {
         return memberRepository.findByRefreshToken(refreshToken);
+    }
+
+    public void setFcmToken(String email, String fcmToken) {
+        Member member = memberRepository.findByEmail(email);
+        if (member != null) {
+            member.setFcmToken(fcmToken);
+        }
     }
 
     public void setRefreshToken(String email, String refreshToken) {

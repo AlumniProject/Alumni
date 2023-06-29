@@ -69,7 +69,7 @@ public class MemberService {
 
         Member member = Member.createMember(
                 memberInfo.getEmail(), memberInfo.getNickname(), memberInfo.getClassOf(),
-                memberInfo.getMajor(), findUniversity);
+                memberInfo.getMajor(), findUniversity, memberInfo.getFcmToken());
 
         memberRepository.save(member);
     }
