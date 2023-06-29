@@ -1,6 +1,7 @@
 package Alumni.backend.infra.jwt;
 
 import Alumni.backend.infra.principal.PrincipalDetails;
+import Alumni.backend.infra.response.SingleResponse;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.repository.MemberRepository;
 import com.auth0.jwt.JWT;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,38 +38,21 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                                     FilterChain chain)
             throws IOException, ServletException {
         try {
-            jwtService.checkHeaderValid(request);
+            jwtService.checkAccessHeaderValid(request);
             String accessToken = request.getHeader(JwtProperties.HEADER_STRING)
                     .replace(JwtProperties.TOKEN_PREFIX, "");
-            String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH)
-                    .replace(JwtProperties.TOKEN_PREFIX, "");
-            jwtService.checkTokenValid(refreshToken); // refresh 토큰 검증
 
-            // refresh 토큰을 가진 회원을 조회
-            Member memberByRefreshToken = jwtService.getMemberByRefreshToken(refreshToken);
-            Long memberId = memberByRefreshToken.getId();
-            String email = memberByRefreshToken.getEmail();
-            String nickname = memberByRefreshToken.getNickname();
-
-            // refresh 토큰이 7일 이내 만료인 경우 재발급
-            if (jwtService.isNeedToUpdateRefreshToken(refreshToken)) {
-                refreshToken = jwtService.createRefreshToken(email); // 재발급한 토큰으로 교체
-                jwtService.setRefreshToken(email, refreshToken);
-                // 헤더에 재발급한 refresh 토큰 내려주기
-                response.addHeader(JwtProperties.HEADER_REFRESH, JwtProperties.TOKEN_PREFIX + refreshToken);
-            }
-
-            // access 토큰 검증
             try {
                 jwtService.checkTokenValid(accessToken);
             } catch (TokenExpiredException e) {
-                accessToken = jwtService.createAccessToken(memberId, nickname, email); // access 토큰 재발급
-                // 헤더에 재발급한 access 토큰 내려주기
-                response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + accessToken);
+                request.setAttribute(JwtProperties.EXCEPTION, "ACCESS_TOKEN_EXPIRED");
             }
 
-            // 권한 처리를 위해 아래와 같이 토큰을 만들어서 Authentication 객체를 만들고 세션에 저장
-            PrincipalDetails principalDetails = new PrincipalDetails(memberByRefreshToken);
+            String email = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build()
+                    .verify(accessToken).getClaim("email").asString();
+            Member memberByEmail = jwtService.getMemberByEmail(email);
+
+            PrincipalDetails principalDetails = new PrincipalDetails(memberByEmail);
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     principalDetails,
                     null,

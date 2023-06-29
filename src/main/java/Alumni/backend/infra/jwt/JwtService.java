@@ -1,5 +1,6 @@
 package Alumni.backend.infra.jwt;
 
+import Alumni.backend.infra.response.SingleResponse;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.VerifiedEmail;
 import Alumni.backend.module.dto.LoginRequestDto;
@@ -9,12 +10,16 @@ import Alumni.backend.module.repository.VerifiedEmailRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.security.auth.RefreshFailedException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -30,7 +35,7 @@ public class JwtService {
     /**
      * 토큰값이 유효한지 확인 -> 신규회원인지 아닌지 확인
      */
-    public String verify(LoginRequestDto loginRequestDto) {
+    public String verifyNewMemberOrNot(LoginRequestDto loginRequestDto) {
         // email 존재 확인
         if (!verifiedEmailRepository.existsByEmail(loginRequestDto.getEmail())) {
             throw new IllegalArgumentException("Bad Request");
@@ -47,6 +52,47 @@ public class JwtService {
             return "new";
         }
         return "existing";
+    }
+
+    public String verifyToken(HttpServletRequest request, HttpServletResponse response) {
+        checkAccessAndRefreshHeaderValid(request);
+        String accessToken = request.getHeader(JwtProperties.HEADER_STRING)
+                .replace(JwtProperties.TOKEN_PREFIX, "");
+        String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH)
+                .replace(JwtProperties.TOKEN_PREFIX, "");
+        String result = "";
+
+        // refresh 토큰 검증
+        try {
+            checkTokenValid(refreshToken);
+        } catch (TokenExpiredException e) { // 재로그인 필요
+            return "-1";
+        }
+        // refresh 토큰이 유효함
+        // refresh 토큰을 가진 회원을 조회
+        Member memberByRefreshToken = getMemberByRefreshToken(refreshToken);
+        Long memberId = memberByRefreshToken.getId();
+        String email = memberByRefreshToken.getEmail();
+
+        // refresh 토큰이 7일 이내 만료인 경우 재발급
+        if (isNeedToUpdateRefreshToken(refreshToken)) {
+            refreshToken = createRefreshToken(email); // 재발급한 토큰으로 교체
+            setRefreshToken(email, refreshToken);
+            // 헤더에 재발급한 refresh 토큰 내려주기
+            response.addHeader(JwtProperties.HEADER_REFRESH, JwtProperties.TOKEN_PREFIX + refreshToken);
+            result += "refreshToken 갱신 완료";
+        }
+
+        // access 토큰 검증
+        try {
+            checkTokenValid(accessToken);
+        } catch (TokenExpiredException e) {
+            accessToken = createAccessToken(memberId, email); // access 토큰 재발급
+            // 헤더에 재발급한 access 토큰 내려주기
+            response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + accessToken);
+            result += "accessToken 갱신 완료";
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -76,7 +122,7 @@ public class JwtService {
     @Transactional(readOnly = true)
     public void logout(HttpServletRequest request) {
         try {
-            checkHeaderValid(request);
+            checkAccessAndRefreshHeaderValid(request);
             String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH).replace(JwtProperties.TOKEN_PREFIX, "");
             removeRefreshToken(refreshToken);
         } catch (Exception e) {
@@ -84,12 +130,12 @@ public class JwtService {
         }
     }
 
-    public String createAccessToken(Long id, String nickname, String email) {
+    public String createAccessToken(Long id, String email) {
         return JWT.create()
                 .withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
                 .withClaim("id", id)
-                .withClaim("userNickname", nickname)
+                .withClaim("email", email)
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
     }
 
@@ -135,13 +181,20 @@ public class JwtService {
         return false;
     }
 
-    public void checkHeaderValid(HttpServletRequest request) {
+    public void checkAccessAndRefreshHeaderValid(HttpServletRequest request) {
         String accessToken = request.getHeader(JwtProperties.HEADER_STRING);
         String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH);
         if (accessToken == null || !accessToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
             throw new IllegalArgumentException("JWT_ACCESS_NOT_VALID");
         } else if (refreshToken == null || !refreshToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
             throw new IllegalArgumentException("JWT_REFRESH_NOT_VALID");
+        }
+    }
+
+    public void checkAccessHeaderValid(HttpServletRequest request) {
+        String accessToken = request.getHeader(JwtProperties.HEADER_STRING);
+        if (accessToken == null || !accessToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
+            throw new IllegalArgumentException("JWT_ACCESS_NOT_VALID");
         }
     }
 }

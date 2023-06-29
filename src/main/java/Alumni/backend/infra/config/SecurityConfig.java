@@ -1,7 +1,6 @@
 package Alumni.backend.infra.config;
 
 import Alumni.backend.infra.jwt.*;
-import Alumni.backend.module.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +35,7 @@ public class SecurityConfig {
                 .apply(new MyCustomDsl())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/member/email-validate", "/member/sign-up").permitAll()
+                .antMatchers("/", "/member/email-validate", "/member/sign-up", "/reissue").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()

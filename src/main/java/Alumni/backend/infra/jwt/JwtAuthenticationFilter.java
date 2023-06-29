@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // 토큰값 유효한지 + 신규회원이지 확인
         // 신규회원이면 jwt 토큰 생성하지 않음
-        if (jwtService.verify(loginRequestDto).equals("new")) {
+        if (jwtService.verifyNewMemberOrNot(loginRequestDto).equals("new")) {
             try {
                 setBodyResponse(response, "이메일 인증 완료");
             } catch (IOException e) {
@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throws IOException, ServletException {
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
         Member member = principalDetails.getMember();
-        String accessToken = jwtService.createAccessToken(member.getId(), member.getNickname(), member.getEmail());
+        String accessToken = jwtService.createAccessToken(member.getId(), member.getEmail());
         String refreshToken = jwtService.createRefreshToken(member.getEmail());
 
         // refresh token 저장

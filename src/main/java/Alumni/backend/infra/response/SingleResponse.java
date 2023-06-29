@@ -14,4 +14,9 @@ public class SingleResponse extends BasicResponse {
     this.code = 200;
     this.message = message;
   }
+
+  public SingleResponse(int code, String message) {
+    this.code = code;
+    this.message = message;
+  }
 }
