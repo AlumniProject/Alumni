@@ -61,7 +61,7 @@ public class MemberService {
         int index = email.indexOf("@");
         String univEmail = email.substring(index);
 
-        University findUniversity = universityRepository.findByUnivEmail(univEmail);//학교 찾기
+        University findUniversity = universityRepository.findByUnivEmail1OrUnivEmail2(univEmail, univEmail);
 
         /**
          * 중복체크, 없는 경우 체크

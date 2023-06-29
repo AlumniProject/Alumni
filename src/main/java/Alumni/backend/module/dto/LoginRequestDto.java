@@ -8,9 +8,9 @@ import javax.validation.constraints.NotEmpty;
 public class LoginRequestDto {
 
     @NotEmpty
-    private String email;
+    private String email; // 로그인 이메일
     @NotEmpty
-    private String token;
-
-    private String fcmToken;
+    private String certification; // 인증번호
+    @NotEmpty
+    private String fcmToken; // fcm토큰
 }

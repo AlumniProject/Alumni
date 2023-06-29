@@ -28,7 +28,7 @@ public class MemberController {
     private final ImageService imageService;
 
 
-    @PostMapping("/member/email-validate")
+    /*@PostMapping("/member/email-validate")
     public ResponseEntity<Map<String, Object>> emailValidate(@RequestBody Map<String, String> request){
 
         universityService.emailVerify(request.get("email"));
@@ -38,13 +38,13 @@ public class MemberController {
         result.put("message", "인증번호 발급 완료");
 
         return ResponseEntity.ok(result);
-    }
+    }*/
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDto request){
 
         String email = request.getEmail();
-        String emailCode = request.getToken();
+        String emailCode = request.getCertification();
         String fcmToken = request.getFcmToken();
 
         String message = memberService.login(email, emailCode, fcmToken);
