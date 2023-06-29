@@ -42,9 +42,12 @@ public class Member extends BaseTimeEntity {
 
     private String refreshToken;
 
+    @Column(nullable = false)
+    private String fcmToken;
+
     //생성 메서드
     public static Member createMember(String email, String nickname, String classOf,
-                                      String major, University university){
+                                      String major, University university, String fcmToken){
         Member member = new Member();
 
         member.email = email;
@@ -54,6 +57,7 @@ public class Member extends BaseTimeEntity {
         member.agreement2 = true;
         member.major = major;
         member.university = university;
+        member.fcmToken = fcmToken;
 
         return member;
     }
@@ -64,5 +68,8 @@ public class Member extends BaseTimeEntity {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }
