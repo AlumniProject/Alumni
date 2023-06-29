@@ -40,6 +40,8 @@ public class Member extends BaseTimeEntity {
     @JoinColumn(name = "university_id", nullable = false)
     private University university;
 
+    private String refreshToken;
+
     //생성 메서드
     public static Member createMember(String email, String nickname, String classOf,
                                       String major, University university){
@@ -58,5 +60,9 @@ public class Member extends BaseTimeEntity {
 
     public void uploadProfile(Image profileImage){
         this.profileImage = profileImage;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
