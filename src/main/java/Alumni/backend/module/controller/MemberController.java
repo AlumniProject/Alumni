@@ -3,6 +3,10 @@ package Alumni.backend.module.controller;
 import Alumni.backend.infra.response.BasicResponse;
 import Alumni.backend.infra.response.GeneralResponse;
 import Alumni.backend.infra.response.SingleResponse;
+import Alumni.backend.BackendApplication;
+import Alumni.backend.infra.response.BasicResponse;
+import Alumni.backend.infra.response.SingleResponse;
+import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.Terms;
 import Alumni.backend.module.dto.*;
 import Alumni.backend.module.dto.requestDto.LoginRequestDto;
@@ -13,6 +17,7 @@ import Alumni.backend.module.service.MemberService;
 import Alumni.backend.module.service.UniversityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +29,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
-    private final UniversityService universityService;
     private final MemberService memberService;
     private final ImageService imageService;
 

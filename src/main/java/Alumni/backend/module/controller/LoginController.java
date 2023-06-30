@@ -43,6 +43,8 @@ public class LoginController {
     if (result.equals("-1")) {
       response.setStatus(401);
       return ResponseEntity.ok().body(new ErrorResponse(401, "refresh token 만료"));
+    } else if (result.equals("")) {
+      return ResponseEntity.ok().body(new SingleResponse("ALL_TOKEN_VALID"));
     }
     return ResponseEntity.ok().body(new SingleResponse(result));
   }
