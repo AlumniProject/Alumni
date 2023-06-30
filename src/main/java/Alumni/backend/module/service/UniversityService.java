@@ -2,7 +2,7 @@ package Alumni.backend.module.service;
 
 import Alumni.backend.module.domain.University;
 import Alumni.backend.module.domain.VerifiedEmail;
-import Alumni.backend.module.exception.NoExistsException;
+import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.repository.UniversityRepository;
 import Alumni.backend.module.repository.VerifiedEmailRepository;
 import java.io.IOException;

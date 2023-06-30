@@ -1,4 +1,4 @@
-package Alumni.backend.module.dto;
+package Alumni.backend.module.dto.requestDto;
 
 import lombok.Data;
 

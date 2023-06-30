@@ -1,25 +1,21 @@
 package Alumni.backend.infra.jwt;
 
-import Alumni.backend.infra.response.SingleResponse;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.VerifiedEmail;
-import Alumni.backend.module.dto.LoginRequestDto;
-import Alumni.backend.module.exception.EmailCodeException;
+import Alumni.backend.module.dto.requestDto.LoginRequestDto;
+import Alumni.backend.infra.exception.EmailCodeException;
 import Alumni.backend.module.repository.MemberRepository;
 import Alumni.backend.module.repository.VerifiedEmailRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.security.auth.RefreshFailedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 

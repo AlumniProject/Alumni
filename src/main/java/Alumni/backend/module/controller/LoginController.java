@@ -1,22 +1,18 @@
 package Alumni.backend.module.controller;
 
-import Alumni.backend.infra.jwt.JwtProperties;
 import Alumni.backend.infra.jwt.JwtService;
 import Alumni.backend.infra.response.BasicResponse;
 import Alumni.backend.infra.response.ErrorResponse;
 import Alumni.backend.infra.response.SingleResponse;
-import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.service.UniversityService;
 import java.util.Map;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.security.auth.RefreshFailedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
