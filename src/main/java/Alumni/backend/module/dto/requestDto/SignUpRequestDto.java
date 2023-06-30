@@ -21,6 +21,6 @@ public class SignUpRequestDto {
     private String major;
     @NotEmpty
     private String nickname;
-    @NotEmpty
+//    @NotEmpty
     private String fcmToken;
 }

@@ -84,10 +84,10 @@ public class MemberService {
         return termsRepository.findAll();
     }
 
-    public void updateInterest(List<String> interestNames, Long userId){
+    public void updateInterest(List<String> interestNames, Long memberId){
 
         //회원 검증
-        Member findMember = memberRepository.findById(userId)
+        Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NoExistsException("사용자가 존재하지 않습니다"));
 
         //기존 관심사항 삭제

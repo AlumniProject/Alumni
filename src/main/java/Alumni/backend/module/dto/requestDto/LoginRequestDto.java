@@ -10,6 +10,6 @@ public class LoginRequestDto {
     private String email; // 로그인 이메일
     @NotEmpty
     private String certification; // 인증번호
-    @NotEmpty
+    //@NotEmpty
     private String fcmToken; // fcm토큰
 }

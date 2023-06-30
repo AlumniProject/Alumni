@@ -95,7 +95,8 @@ public class JwtService {
 
     @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email);
+//        return memberRepository.findByEmail(email);
+        return memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("Bad Request"));
     }
 
     @Transactional(readOnly = true)
@@ -104,17 +105,26 @@ public class JwtService {
     }
 
     public void setFcmToken(String email, String fcmToken) {
-        Member member = memberRepository.findByEmail(email);
-        if (member != null) {
-            member.setFcmToken(fcmToken);
-        }
+//        Member member = memberRepository.findByEmail(email);
+//        if (member != null) {
+//            member.setFcmToken(fcmToken);
+//        }
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new IllegalArgumentException("Bad Request"));
+
+        member.setFcmToken(fcmToken);
     }
 
     public void setRefreshToken(String email, String refreshToken) {
-        Member member = memberRepository.findByEmail(email);
-        if (member != null) {
-            member.setRefreshToken(refreshToken);
-        }
+//        Member member = memberRepository.findByEmail(email);
+//        if (member != null) {
+//            member.setRefreshToken(refreshToken);
+//        }
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new IllegalArgumentException("Bad Request"));
+
+        member.setRefreshToken(refreshToken);
     }
 
     public void removeRefreshToken(String refreshToken) {
