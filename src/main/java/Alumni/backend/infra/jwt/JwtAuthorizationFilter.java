@@ -62,7 +62,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         } catch (TokenExpiredException e) {
             request.setAttribute(JwtProperties.EXCEPTION, "JWT_NOT_VALID");
         } catch (Exception e) {
-            request.setAttribute(JwtProperties.EXCEPTION, "JWT_UNEXPECTED_ERROR");
+            request.setAttribute(JwtProperties.EXCEPTION, "Internal Server Error");
         }
         /**
          * 필터에서 발생하는 에러는 ControllerAdvice 처리불가
