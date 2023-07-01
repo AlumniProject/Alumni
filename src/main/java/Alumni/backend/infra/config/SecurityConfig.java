@@ -35,7 +35,8 @@ public class SecurityConfig {
                 .apply(new MyCustomDsl())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/member/email-validate", "/member/sign-up", "/reissue").permitAll()
+                .antMatchers("/", "/member/email-validate", "/member/sign-up","/member/terms"
+                        , "/member/inquiry", "/reissue").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()

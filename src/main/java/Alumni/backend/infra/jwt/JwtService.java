@@ -78,7 +78,7 @@ public class JwtService {
             setRefreshToken(email, refreshToken);
             // 헤더에 재발급한 refresh 토큰 내려주기
             response.addHeader(JwtProperties.HEADER_REFRESH, JwtProperties.TOKEN_PREFIX + refreshToken);
-            result += "refreshToken 갱신 완료";
+            result += "refreshToken 갱신 완료 ";
         }
 
         // access 토큰 검증

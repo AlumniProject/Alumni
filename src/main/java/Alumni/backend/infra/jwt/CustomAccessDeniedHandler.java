@@ -23,8 +23,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
         String exceptionMsg = (String) request.getAttribute(JwtProperties.EXCEPTION);
 
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(exceptionMsg)));
+        response.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(401, exceptionMsg)));
     }
 }
