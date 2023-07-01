@@ -1,9 +1,10 @@
 package Alumni.backend.module.service;
 
 import Alumni.backend.module.domain.*;
-import Alumni.backend.module.dto.SignUpRequestDto;
-import Alumni.backend.module.exception.EmailCodeException;
-import Alumni.backend.module.exception.NoExistsException;
+import Alumni.backend.module.dto.requestDto.SignUpRequestDto;
+import Alumni.backend.infra.exception.EmailCodeException;
+import Alumni.backend.infra.exception.NoExistsException;
+import Alumni.backend.infra.exception.DuplicateNicknameException;
 import Alumni.backend.module.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,15 +58,14 @@ public class MemberService {
 
     public void signUp(SignUpRequestDto memberInfo){
 
+        if(memberRepository.existsMemberByNickname(memberInfo.getNickname()))
+            throw new DuplicateNicknameException("이미 존재하는 닉네임입니다.");
+
         String email = memberInfo.getEmail();
         int index = email.indexOf("@");
         String univEmail = email.substring(index);
 
         University findUniversity = universityRepository.findByUnivEmail1OrUnivEmail2(univEmail, univEmail);
-
-        /**
-         * 중복체크, 없는 경우 체크
-         */
 
         Member member = Member.createMember(
                 memberInfo.getEmail(), memberInfo.getNickname(), memberInfo.getClassOf(),
@@ -84,10 +84,10 @@ public class MemberService {
         return termsRepository.findAll();
     }
 
-    public void updateInterest(List<String> interestNames, Long userId){
+    public void updateInterest(List<String> interestNames, Long memberId){
 
         //회원 검증
-        Member findMember = memberRepository.findById(userId)
+        Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NoExistsException("사용자가 존재하지 않습니다"));
 
         //기존 관심사항 삭제

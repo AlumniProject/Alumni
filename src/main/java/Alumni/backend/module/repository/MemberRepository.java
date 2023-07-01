@@ -12,7 +12,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    Member findByEmail(String email);
+    Optional<Member> findByEmail(String email);
 
     Member findByRefreshToken(String refreshToken);
 
@@ -20,4 +20,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("select m.profileImage from Member m where m.id = :id")
     Optional<Image> findImageByMemberId(@Param("id") Long id);
+
+    Boolean existsMemberByNickname(String nickname);
 }

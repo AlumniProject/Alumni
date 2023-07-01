@@ -1,25 +1,21 @@
 package Alumni.backend.infra.jwt;
 
-import Alumni.backend.infra.response.SingleResponse;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.VerifiedEmail;
-import Alumni.backend.module.dto.LoginRequestDto;
-import Alumni.backend.module.exception.EmailCodeException;
+import Alumni.backend.module.dto.requestDto.LoginRequestDto;
+import Alumni.backend.infra.exception.EmailCodeException;
 import Alumni.backend.module.repository.MemberRepository;
 import Alumni.backend.module.repository.VerifiedEmailRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.security.auth.RefreshFailedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -99,7 +95,8 @@ public class JwtService {
 
     @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email);
+//        return memberRepository.findByEmail(email);
+        return memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("Bad Request"));
     }
 
     @Transactional(readOnly = true)
@@ -108,17 +105,26 @@ public class JwtService {
     }
 
     public void setFcmToken(String email, String fcmToken) {
-        Member member = memberRepository.findByEmail(email);
-        if (member != null) {
-            member.setFcmToken(fcmToken);
-        }
+//        Member member = memberRepository.findByEmail(email);
+//        if (member != null) {
+//            member.setFcmToken(fcmToken);
+//        }
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new IllegalArgumentException("Bad Request"));
+
+        member.setFcmToken(fcmToken);
     }
 
     public void setRefreshToken(String email, String refreshToken) {
-        Member member = memberRepository.findByEmail(email);
-        if (member != null) {
-            member.setRefreshToken(refreshToken);
-        }
+//        Member member = memberRepository.findByEmail(email);
+//        if (member != null) {
+//            member.setRefreshToken(refreshToken);
+//        }
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new IllegalArgumentException("Bad Request"));
+
+        member.setRefreshToken(refreshToken);
     }
 
     public void removeRefreshToken(String refreshToken) {

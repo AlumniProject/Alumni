@@ -1,4 +1,4 @@
-package Alumni.backend.module.dto;
+package Alumni.backend.module.dto.requestDto;
 
 import lombok.Data;
 
@@ -21,6 +21,6 @@ public class SignUpRequestDto {
     private String major;
     @NotEmpty
     private String nickname;
-    @NotEmpty
+//    @NotEmpty
     private String fcmToken;
 }

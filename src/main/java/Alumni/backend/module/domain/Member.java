@@ -42,7 +42,7 @@ public class Member extends BaseTimeEntity {
 
     private String refreshToken;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String fcmToken;
 
     //생성 메서드
