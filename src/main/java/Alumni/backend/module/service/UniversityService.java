@@ -32,8 +32,7 @@ public class UniversityService {
     public void initUniversityData() throws IOException {
         if (universityRepository.count() == 0) { // 저장된 대학이메일 정보가 없을 때 실행
             Resource resource = new ClassPathResource("university_email_data.csv");
-            List<University> universityList = Files.readAllLines(resource.getFile().toPath(),
-                            StandardCharsets.UTF_8)
+            List<University> universityList = Files.readAllLines(resource.getFile().toPath(), StandardCharsets.UTF_8)
                     .stream().map(
                             line -> {
                                 String[] split = line.split(","); // 쉽표를 기준으로 데이터 나누기

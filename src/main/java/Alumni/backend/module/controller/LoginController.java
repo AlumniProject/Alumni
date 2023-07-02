@@ -33,7 +33,7 @@ public class LoginController {
     @PostMapping("/logout")
     public ResponseEntity<? extends BasicResponse> logout(HttpServletRequest request) {
         jwtService.logout(request);
-        return ResponseEntity.ok().body(new SingleResponse("로그아웃 성공"));
+        return ResponseEntity.ok().body(new SingleResponse("로그아웃 완료"));
     }
 
     @PostMapping("/reissue")

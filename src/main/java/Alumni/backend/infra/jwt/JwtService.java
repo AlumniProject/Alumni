@@ -1,11 +1,13 @@
 package Alumni.backend.infra.jwt;
 
+import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.VerifiedEmail;
 import Alumni.backend.module.dto.requestDto.LoginRequestDto;
-import Alumni.backend.infra.exception.EmailCodeException;
+import Alumni.backend.module.repository.BlackListRepository;
 import Alumni.backend.module.repository.MemberRepository;
 import Alumni.backend.module.repository.VerifiedEmailRepository;
+import Alumni.backend.module.service.BlackListService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
@@ -27,6 +29,8 @@ public class JwtService {
 
     private final MemberRepository memberRepository;
     private final VerifiedEmailRepository verifiedEmailRepository;
+    private final BlackListService blackListService;
+    private final BlackListRepository blackListRepository;
 
     /**
      * 토큰값이 유효한지 확인 -> 신규회원인지 아닌지 확인
@@ -145,14 +149,23 @@ public class JwtService {
         }
     }
 
-    @Transactional(readOnly = true)
     public void logout(HttpServletRequest request) {
-        try {
+        try { // refresh 토큰 삭제
             checkAccessAndRefreshHeaderValid(request);
             String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH).replace(JwtProperties.TOKEN_PREFIX, "");
             removeRefreshToken(refreshToken);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
+        }
+
+        // blackList에 access 토큰 추가
+        String accessToken = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
+        blackListService.saveBlackList(accessToken);
+    }
+
+    public void isExistBlackListByAccessToken(String accessToken) {
+        if (blackListRepository.existsBlackListByAccessToken(accessToken)) {
+            throw new NoExistsException("NoExistsException");
         }
     }
 
