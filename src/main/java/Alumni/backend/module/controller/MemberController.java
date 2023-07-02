@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -33,15 +34,14 @@ public class MemberController {
     private final ImageService imageService;
 
     @PostMapping("/member/sign-up")
-    public ResponseEntity<? extends BasicResponse> signUp(@RequestBody @Valid SignUpRequestDto request){
-
-        memberService.signUp(request);
-
+    public ResponseEntity<? extends BasicResponse> signUp(@RequestBody @Valid SignUpRequestDto request,
+                                                          HttpServletResponse response) {
+        memberService.signUp(request, response);
         return ResponseEntity.ok().body(new SingleResponse("회원가입 완료"));
     }
 
     @PostMapping("/member/inquiry")
-    public ResponseEntity<? extends BasicResponse> inquiry(@RequestBody @Valid Map<String,String> request){
+    public ResponseEntity<? extends BasicResponse> inquiry(@RequestBody @Valid Map<String, String> request) {
 
         memberService.SaveInquiry(request.get("content"));
 
@@ -49,7 +49,7 @@ public class MemberController {
     }
 
     @GetMapping("/member/terms")
-    public ResponseEntity<? extends BasicResponse> terms(){
+    public ResponseEntity<? extends BasicResponse> terms() {
         List<Terms> terms = memberService.findTerms();
 
         List<TermsDto> termsDto = terms.stream()
@@ -60,14 +60,15 @@ public class MemberController {
     }
 
     @PutMapping("/member/interest-field")
-    public ResponseEntity<? extends BasicResponse> interest(@CurrentUser Member member, @RequestBody interestFieldRequestDto data){
+    public ResponseEntity<? extends BasicResponse> interest(@CurrentUser Member member, @RequestBody interestFieldRequestDto data) {
         memberService.updateInterest(data.getData(), member.getId());//data, memberId
 
         return ResponseEntity.ok().body(new SingleResponse("관심분야 추가 완료"));
     }
 
     @PostMapping("/member/profile-image")
-    public ResponseEntity<? extends BasicResponse> profileImage(@CurrentUser Member member, @RequestPart("file") MultipartFile multipartFile){
+    public ResponseEntity<? extends BasicResponse> profileImage(@CurrentUser Member member,
+                                                                @RequestPart("image") MultipartFile multipartFile) {
         String storageImageName = imageService.saveProfileImage(multipartFile);//s3에 저장
         memberService.uploadProfileImage(member.getId(), storageImageName);//회원 프로필 update(member table 에 저장)
 

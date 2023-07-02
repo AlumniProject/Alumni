@@ -1,6 +1,7 @@
 package Alumni.backend.module.domain;
 
 import java.util.Random;
+
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,7 +11,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class VerifiedEmail {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "verified_email_id", nullable = false)
     private Long id;
 
@@ -24,7 +26,7 @@ public class VerifiedEmail {
     private String emailCode;
 
     //생성 메서드
-    public static VerifiedEmail createVerifiedEmail(String email){
+    public static VerifiedEmail createVerifiedEmail(String email) {
         VerifiedEmail verifiedEmail = new VerifiedEmail();
         verifiedEmail.email = email;
         verifiedEmail.isVerified = false;
@@ -39,7 +41,7 @@ public class VerifiedEmail {
     }
 
     //인증된 이메일인 경우 isVerified -> true
-    public void verifiedTrue(){
+    public void verifiedTrue() {
         this.isVerified = true;
     }
 

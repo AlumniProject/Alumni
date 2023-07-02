@@ -17,11 +17,11 @@ public class ImageService {
     private final ImageRepository imageRepository;
 
     @Transactional
-    public String saveProfileImage(MultipartFile file){
+    public String saveProfileImage(MultipartFile file) {
 
-        if(file.getSize() > 2097152)//2MB 보다 큰 경우
+        if (file.getSize() > 2097152)//2MB 보다 큰 경우
             throw new MaxUploadSizeExceededException(file.getSize());
-        
+
         String storageImageName = fileService.uploadFile(file);
         imageRepository.save(new Image(file.getOriginalFilename(), storageImageName, fileService.getFileUrl(storageImageName)));
         return storageImageName;

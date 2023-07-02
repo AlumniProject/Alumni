@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -14,7 +15,7 @@ public class EmailService {
     private final JavaMailSender mailSender;
 
     //메일 전송
-    public void sendMail(String toEmail, String emailCode){
+    public void sendMail(String toEmail, String emailCode) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");

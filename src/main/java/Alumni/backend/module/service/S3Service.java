@@ -39,7 +39,7 @@ public class S3Service implements FileService{
                     new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                             .withCannedAcl(CannedAccessControlList.PublicReadWrite));
         } catch (IOException e){
-            throw new IllegalArgumentException(String.format("파일 변환 중 에러 발생"));
+            throw new IllegalArgumentException("파일 변환 중 에러 발생");
         }
 
         return fileName;

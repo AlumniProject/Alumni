@@ -10,7 +10,8 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id", nullable = false)
     private Long id;
 
@@ -47,7 +48,7 @@ public class Member extends BaseTimeEntity {
 
     //생성 메서드
     public static Member createMember(String email, String nickname, String classOf,
-                                      String major, University university, String fcmToken){
+                                      String major, University university, String fcmToken) {
         Member member = new Member();
 
         member.email = email;
@@ -62,13 +63,14 @@ public class Member extends BaseTimeEntity {
         return member;
     }
 
-    public void uploadProfile(Image profileImage){
+    public void uploadProfile(Image profileImage) {
         this.profileImage = profileImage;
     }
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
