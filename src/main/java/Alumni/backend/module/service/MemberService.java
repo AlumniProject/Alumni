@@ -1,5 +1,8 @@
 package Alumni.backend.module.service;
 
+import Alumni.backend.infra.jwt.JwtProperties;
+import Alumni.backend.infra.jwt.JwtService;
+import Alumni.backend.infra.principal.PrincipalDetails;
 import Alumni.backend.module.domain.*;
 import Alumni.backend.module.dto.requestDto.SignUpRequestDto;
 import Alumni.backend.infra.exception.EmailCodeException;
@@ -7,9 +10,13 @@ import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.exception.DuplicateNicknameException;
 import Alumni.backend.module.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,39 +33,30 @@ public class MemberService {
     private final InterestedRepository interestedRepository;
     private final ImageRepository imageRepository;
     private final FileService fileService;
+    private final JwtService jwtService;
 
-    public String login(String email, String emailToken, String fcmToken){
-        //1. verified_email 안에 있는지 확인
-        //2. 인증번호가 맞는지 확인
+    public void login(Member member, HttpServletResponse response) {
+        // 회원가입 후 자동로그인
 
-        VerifiedEmail findEmail = verifiedEmailRepository.findByEmail(email)  //verifiedEmail 안에 email 찾기
-                .orElseThrow(() -> new IllegalArgumentException("Bad Request"));
+        // UsernamePassword 토큰 생성
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(
+                new PrincipalDetails(member),
+                null
+        );
+        SecurityContextHolder.getContext().setAuthentication(
+                authenticationToken
+        );
 
-        if(!findEmail.getEmailCode().equals(emailToken))//인증번호 일치하지 않는 경우
-            throw new EmailCodeException("올바르지 않은 인증번호 입니다.");
-
-        //isVerified true로 변경
-        findEmail.verifiedTrue();
-
-        //회원인지 아닌지 구별
-        String message = null;
-
-        /**
-         * jwt 토큰 추가해야함
-         */
-
-        if(memberRepository.existsMemberByEmail(email)){//회원인 경우
-            message = "로그인 완료";
-        } else{//회원이 아닌경우
-            message = "이메일 인증 완료";
-        }
-
-        return message;
+        jwtService.createAllTokenAddHeader(member, response);
     }
 
-    public void signUp(SignUpRequestDto memberInfo){
+    public void signUp(SignUpRequestDto memberInfo, HttpServletResponse response) {
+        if (!verifiedEmailRepository.findByEmail(memberInfo.getEmail()).get().isVerified()) {
+            throw new NoExistsException("검증되지 않은 이메일입니다.");
+        }
 
-        if(memberRepository.existsMemberByNickname(memberInfo.getNickname()))
+        if (memberRepository.existsMemberByNickname(memberInfo.getNickname()))
             throw new DuplicateNicknameException("이미 존재하는 닉네임입니다.");
 
         String email = memberInfo.getEmail();
@@ -70,21 +68,23 @@ public class MemberService {
         Member member = Member.createMember(
                 memberInfo.getEmail(), memberInfo.getNickname(), memberInfo.getClassOf(),
                 memberInfo.getMajor(), findUniversity, memberInfo.getFcmToken());
-
         memberRepository.save(member);
+
+        // 회원가입 후 자동로그인
+        login(member, response);
     }
 
     //문의하기
-    public void SaveInquiry(String content){
+    public void SaveInquiry(String content) {
         Inquiry inquiry = Inquiry.createInquiry(content);
         inquiryRepository.save(inquiry);
     }
 
-    public List<Terms> findTerms(){
+    public List<Terms> findTerms() {
         return termsRepository.findAll();
     }
 
-    public void updateInterest(List<String> interestNames, Long memberId){
+    public void updateInterest(List<String> interestNames, Long memberId) {
 
         //회원 검증
         Member findMember = memberRepository.findById(memberId)
@@ -95,7 +95,7 @@ public class MemberService {
         interestedRepository.deleteAll(deleteInterested);
 
         //관심사항 검증
-        for(int i = 0; i < interestNames.size(); i++){
+        for (int i = 0; i < interestNames.size(); i++) {
             InterestField interestField = interestFieldRepository.findByFieldName(interestNames.get(i)).
                     orElseThrow(() -> new NoExistsException("field 가 존재하지 않습니다."));
 
@@ -106,7 +106,7 @@ public class MemberService {
     }
 
     //이미지 update
-    public void uploadProfileImage(Long memberId, String storageImageName){
+    public void uploadProfileImage(Long memberId, String storageImageName) {
         //기존 이미지 Id
         Optional<Image> oldImage = memberRepository.findImageByMemberId(memberId);
 
@@ -116,7 +116,7 @@ public class MemberService {
         findMember.uploadProfile(profileImage);
 
         //기존 이미지 삭제
-        if(oldImage.isPresent()){
+        if (oldImage.isPresent()) {
             imageRepository.delete(oldImage.get());//db에서 삭제
             fileService.deleteFile(oldImage.get().getStorageImageName());//s3에서 삭제
         }

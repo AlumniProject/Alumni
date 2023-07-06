@@ -7,7 +7,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 public class Terms {//약관 table
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "terms_id", nullable = false)
     private Long id;
 

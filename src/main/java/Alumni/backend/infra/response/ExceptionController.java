@@ -18,72 +18,72 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 @RestControllerAdvice // 모든 Controller 전역에서 발생할 수 있는 예외를 잡아 처리해주는 어노테이션 + ResponseBody
 public class ExceptionController {
 
-  @ExceptionHandler
-  public ResponseEntity<? extends BasicResponse> emailExHandle(NoExistsException e){
-    e.printStackTrace();
+    @ExceptionHandler(NoExistsException.class)
+    public ResponseEntity<? extends BasicResponse> emailExHandle(NoExistsException e) {
+        e.printStackTrace();
 
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-  }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
 
-  @ExceptionHandler
-  public ResponseEntity<? extends BasicResponse> tokenExHandle(EmailCodeException e){
-    e.printStackTrace();
+    @ExceptionHandler(EmailCodeException.class)
+    public ResponseEntity<? extends BasicResponse> tokenExHandle(EmailCodeException e) {
+        e.printStackTrace();
 
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-  }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
 
-  @ExceptionHandler
-  public ResponseEntity<? extends BasicResponse> maxSizeExHandle(MaxUploadSizeExceededException e){
-    e.printStackTrace();
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<? extends BasicResponse> maxSizeExHandle(MaxUploadSizeExceededException e) {
+        e.printStackTrace();
 
-    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-            .body(new ErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE.value(), "이미지 용량이 큽니다."));
-  }
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(new ErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE.value(), "이미지 용량이 큽니다."));
+    }
 
-  @ExceptionHandler
-  public ResponseEntity<? extends BasicResponse> DuplicateExHandle(DuplicateNicknameException e){
-    e.printStackTrace();
+    @ExceptionHandler(DuplicateNicknameException.class)
+    public ResponseEntity<? extends BasicResponse> DuplicateExHandle(DuplicateNicknameException e) {
+        e.printStackTrace();
 
-    return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage()));
-  }
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage()));
+    }
 
-  @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<? extends BasicResponse> IllegalArgumentHandler(
-      IllegalArgumentException e) {
-    e.printStackTrace();
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
-  }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<? extends BasicResponse> IllegalArgumentHandler(
+            IllegalArgumentException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+    }
 
-  @ExceptionHandler(RuntimeException.class)
-  public ResponseEntity<? extends BasicResponse> RunTimeHandler(RuntimeException e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<? extends BasicResponse> RunTimeHandler(RuntimeException e) {
 
-    e.printStackTrace();
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
-  }
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+    }
 
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<? extends BasicResponse> methodValidException(
-      MethodArgumentNotValidException e) {
-    e.printStackTrace();
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(new ErrorResponse(
-            Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage()));
-  }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<? extends BasicResponse> methodValidException(
+            MethodArgumentNotValidException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(
+                        Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage()));
+    }
 
-  @ExceptionHandler(UsernameNotFoundException.class)
-  public ResponseEntity<? extends BasicResponse> usernameNotFoundException(
-      UsernameNotFoundException e) {
-    e.printStackTrace();
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
-  }
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<? extends BasicResponse> usernameNotFoundException(
+            UsernameNotFoundException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+    }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<? extends BasicResponse> exception(Exception e) {
-    e.printStackTrace();
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
-  }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<? extends BasicResponse> exception(Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+    }
 }

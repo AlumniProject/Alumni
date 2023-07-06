@@ -1,5 +1,6 @@
 package Alumni.backend.infra.jwt;
 
+import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.principal.PrincipalDetails;
 import Alumni.backend.infra.response.SingleResponse;
 import Alumni.backend.module.domain.Member;
@@ -42,6 +43,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             String accessToken = request.getHeader(JwtProperties.HEADER_STRING)
                     .replace(JwtProperties.TOKEN_PREFIX, "");
 
+            jwtService.isExistBlackListByAccessToken(accessToken);
+
             try {
                 jwtService.checkTokenValid(accessToken);
             } catch (TokenExpiredException e) {
@@ -61,6 +64,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (TokenExpiredException e) {
             request.setAttribute(JwtProperties.EXCEPTION, "JWT_NOT_VALID");
+        } catch (NoExistsException e) {
+            request.setAttribute(JwtProperties.EXCEPTION, "다시 로그인해주세요");
         } catch (Exception e) {
             request.setAttribute(JwtProperties.EXCEPTION, "Internal Server Error");
         }

@@ -1,11 +1,13 @@
 package Alumni.backend.infra.jwt;
 
+import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.VerifiedEmail;
 import Alumni.backend.module.dto.requestDto.LoginRequestDto;
-import Alumni.backend.infra.exception.EmailCodeException;
+import Alumni.backend.module.repository.BlackListRepository;
 import Alumni.backend.module.repository.MemberRepository;
 import Alumni.backend.module.repository.VerifiedEmailRepository;
+import Alumni.backend.module.service.BlackListService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
@@ -27,6 +29,8 @@ public class JwtService {
 
     private final MemberRepository memberRepository;
     private final VerifiedEmailRepository verifiedEmailRepository;
+    private final BlackListService blackListService;
+    private final BlackListRepository blackListRepository;
 
     /**
      * 토큰값이 유효한지 확인 -> 신규회원인지 아닌지 확인
@@ -34,18 +38,17 @@ public class JwtService {
     public String verifyNewMemberOrNot(LoginRequestDto loginRequestDto) {
         // email 존재 확인
         if (!verifiedEmailRepository.existsByEmail(loginRequestDto.getEmail())) {
-            throw new IllegalArgumentException("Bad Request");
+            return "Bad Request";
         }
         // 인증번호 확인
-        VerifiedEmail verifiedEmail = verifiedEmailRepository.findByEmail(
-                loginRequestDto.getEmail()).get();
+        VerifiedEmail verifiedEmail = verifiedEmailRepository.findByEmail(loginRequestDto.getEmail()).get();
         if (!loginRequestDto.getCertification().equals(verifiedEmail.getEmailCode())) {
-            throw new EmailCodeException("인증번호가 올바르지 않습니다");
+            return "인증번호가 올바르지 않습니다";
         }
         verifiedEmail.verifiedTrue(); // 이메일 검증 완료
         // 신규회원인지 확인
         if (!memberRepository.existsMemberByEmail(loginRequestDto.getEmail())) {
-            return "new";
+            return "이메일 인증 완료";
         }
         // fcm token 저장
         setFcmToken(loginRequestDto.getEmail(), loginRequestDto.getFcmToken());
@@ -93,10 +96,22 @@ public class JwtService {
         return result;
     }
 
+    public void createAllTokenAddHeader(Member member, HttpServletResponse response) {
+        String accessToken = createAccessToken(member.getId(), member.getEmail());
+        String refreshToken = createRefreshToken(member.getEmail());
+
+        // refresh token 저장
+        setRefreshToken(member.getEmail(), refreshToken);
+
+        // header를 통해 token 내려주기
+        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + accessToken);
+        response.addHeader(JwtProperties.HEADER_REFRESH, JwtProperties.TOKEN_PREFIX + refreshToken);
+    }
+
     @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
 //        return memberRepository.findByEmail(email);
-        return memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("Bad Request"));
+        return memberRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
     }
 
     @Transactional(readOnly = true)
@@ -134,14 +149,23 @@ public class JwtService {
         }
     }
 
-    @Transactional(readOnly = true)
     public void logout(HttpServletRequest request) {
-        try {
+        try { // refresh 토큰 삭제
             checkAccessAndRefreshHeaderValid(request);
             String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH).replace(JwtProperties.TOKEN_PREFIX, "");
             removeRefreshToken(refreshToken);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
+        }
+
+        // blackList에 access 토큰 추가
+        String accessToken = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
+        blackListService.saveBlackList(accessToken);
+    }
+
+    public void isExistBlackListByAccessToken(String accessToken) {
+        if (blackListRepository.existsBlackListByAccessToken(accessToken)) {
+            throw new NoExistsException("NoExistsException");
         }
     }
 

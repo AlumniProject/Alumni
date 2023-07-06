@@ -10,9 +10,11 @@ import javax.validation.constraints.NotNull;
 public class SignUpRequestDto {
     @NotEmpty
     private String email;
-    @AssertTrue @NotNull
+    @AssertTrue
+    @NotNull
     private boolean agreement1;
-    @AssertTrue @NotNull
+    @AssertTrue
+    @NotNull
     private boolean agreement2;
 
     @NotEmpty
@@ -21,6 +23,6 @@ public class SignUpRequestDto {
     private String major;
     @NotEmpty
     private String nickname;
-//    @NotEmpty
+    //    @NotEmpty
     private String fcmToken;
 }
