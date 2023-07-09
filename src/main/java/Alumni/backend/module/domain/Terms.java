@@ -1,11 +1,14 @@
 package Alumni.backend.module.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Terms {//약관 table
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +20,11 @@ public class Terms {//약관 table
 
     @Column(nullable = false, length = 1000)
     private String content;
+
+    public static Terms createTerms(String title, String content) {
+        Terms terms = new Terms();
+        terms.title = title;
+        terms.content = content;
+        return terms;
+    }
 }
