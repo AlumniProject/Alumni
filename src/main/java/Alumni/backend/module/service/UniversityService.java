@@ -6,16 +6,20 @@ import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.repository.UniversityRepository;
 import Alumni.backend.module.repository.VerifiedEmailRepository;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +35,28 @@ public class UniversityService {
     @PostConstruct
     public void initUniversityData() throws IOException {
         if (universityRepository.count() == 0) { // 저장된 대학이메일 정보가 없을 때 실행
-            Resource resource = new ClassPathResource("university_email_data.csv");
-            List<University> universityList = Files.readAllLines(resource.getFile().toPath(), StandardCharsets.UTF_8)
+            //Resource resource = new ClassPathResource("university_email_data.csv");
+            InputStream inputStream = new ClassPathResource("university_email_data.csv").getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+
+            List<University> universityList = new ArrayList<>();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] split = line.split(","); // 쉽표를 기준으로 데이터 나누기
+                if (split.length < 3) {
+                    universityList.add(University.builder()
+                            .name(split[1])
+                            .build());
+                } else {
+                    universityList.add(University.builder()
+                            .name(split[1])
+                            .univEmail1(split[3])
+                            .univEmail2(split[4])
+                            .build());
+                }
+            }
+
+            /*List<University> universityList = Files.readAllLines(somethingFile.toPath(), StandardCharsets.UTF_8)
                     .stream().map(
                             line -> {
                                 String[] split = line.split(","); // 쉽표를 기준으로 데이터 나누기
@@ -46,7 +70,7 @@ public class UniversityService {
                                         .univEmail1(split[3])
                                         .univEmail2(split[4])
                                         .build();
-                            }).collect(Collectors.toList());
+                            }).collect(Collectors.toList());*/
             universityRepository.saveAll(universityList);
         }
     }
