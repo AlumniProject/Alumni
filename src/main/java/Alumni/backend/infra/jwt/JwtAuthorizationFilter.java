@@ -2,21 +2,17 @@ package Alumni.backend.infra.jwt;
 
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.principal.PrincipalDetails;
-import Alumni.backend.infra.response.SingleResponse;
 import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.repository.MemberRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import java.io.IOException;
-import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

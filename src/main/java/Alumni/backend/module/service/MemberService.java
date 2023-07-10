@@ -1,11 +1,9 @@
 package Alumni.backend.module.service;
 
-import Alumni.backend.infra.jwt.JwtProperties;
 import Alumni.backend.infra.jwt.JwtService;
 import Alumni.backend.infra.principal.PrincipalDetails;
 import Alumni.backend.module.domain.*;
 import Alumni.backend.module.dto.requestDto.SignUpRequestDto;
-import Alumni.backend.infra.exception.EmailCodeException;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.exception.DuplicateNicknameException;
 import Alumni.backend.module.repository.*;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
