@@ -38,7 +38,7 @@ public class MemberController {
     @PostMapping("/member/inquiry")
     public ResponseEntity<? extends BasicResponse> inquiry(@RequestBody @Valid Map<String, String> request) {
 
-        memberService.SaveInquiry(request.get("content"));
+        memberService.saveInquiry(request.get("content"));
 
         return ResponseEntity.ok().body(new SingleResponse("문의 완료"));
     }

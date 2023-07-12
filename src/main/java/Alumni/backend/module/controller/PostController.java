@@ -9,6 +9,8 @@ import Alumni.backend.module.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -21,9 +23,16 @@ public class PostController {
 
     @PostMapping("/post/create")
     public ResponseEntity<? extends BasicResponse> postCreate(@CurrentUser Member member, @RequestBody @Valid PostCreateRequestDto postCreateRequestDto){
-        postService.PostCreate(member, postCreateRequestDto);
+        postService.postCreate(member, postCreateRequestDto);
 
         return ResponseEntity.ok().body(new SingleResponse("게시글 등록 완료"));
+    }
+
+    @DeleteMapping("/post/{id}")
+    public ResponseEntity<? extends  BasicResponse> postDelete(@CurrentUser Member member, @PathVariable("id") Long postId){
+        postService.postDelete(member, postId);
+
+        return ResponseEntity.ok().body(new SingleResponse("게시글 삭제 완료"));
     }
 }
 

@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @Transactional
@@ -18,7 +20,7 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     private final TagRepository tagRepository;
 
-    public void PostCreate(Member member, PostCreateRequestDto postCreateRequestDto){
+    public void postCreate(Member member, PostCreateRequestDto postCreateRequestDto){
         if(!memberRepository.existsMemberById(member.getId()))//존재하지 않는 회원인 경우
             throw new IllegalArgumentException("Bad Request");
 
@@ -43,5 +45,29 @@ public class PostService {
 
             postTagRepository.save(PostTag.createPostTag(post, tag));
         }
+    }
+
+    public void postDelete(Member member, Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
+
+        if(post.getMember().getId() != member.getId()) //삭제하는 사람이 작성한 글인지 확인
+            throw new IllegalArgumentException("Bad Request");
+
+        //기술 게시판인 경우 해시태그 삭제
+        if(post.getBoard().getId() == 4){
+            List<PostTag> postTag = postTagRepository.findByPostId(postId);
+
+            postTagRepository.deleteAll(postTag);
+
+            for (PostTag findPostTag : postTag) {
+                Tag tag = tagRepository.findById(findPostTag.getTag().getId()).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
+
+                if(tag.getCount() == 1)//마지막인 경우 tag 삭제
+                    tagRepository.delete(tag);
+                else
+                    tag.setCount(tag.getCount() - 1);
+            }
+        }
+        postRepository.delete(post);
     }
 }

@@ -72,7 +72,7 @@ public class MemberService {
     }
 
     //문의하기
-    public void SaveInquiry(String content) {
+    public void saveInquiry(String content) {
         Inquiry inquiry = Inquiry.createInquiry(content);
         inquiryRepository.save(inquiry);
     }
