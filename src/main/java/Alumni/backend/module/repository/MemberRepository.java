@@ -22,4 +22,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Image> findImageByMemberId(@Param("id") Long id);
 
     Boolean existsMemberByNickname(String nickname);
+    Boolean existsMemberById(Long id);
 }
