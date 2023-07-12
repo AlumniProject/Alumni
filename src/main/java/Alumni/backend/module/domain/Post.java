@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -34,4 +36,18 @@ public class Post extends BaseTimeEntity{
 
     @Column(nullable = false)
     private Integer commentNum;
+
+    @OneToMany(mappedBy = "post")
+    private Set<PostTag> postTags = new HashSet<>();
+
+    public static Post createPost(Member member, Board board, String title, String content) {
+        Post post = new Post();
+        post.member = member;
+        post.board = board;
+        post.title = title;
+        post.content = content;
+        post.likeNum = 0;
+        post.commentNum = 0;
+        return post;
+    }
 }
