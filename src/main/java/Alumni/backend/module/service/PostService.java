@@ -28,43 +28,42 @@ public class PostService {
         // post + member + image fetch join
         List<Post> posts = postRepository.findAllPosts();
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
-        posts.forEach(post -> {
+
+        for (Post post : posts) {
             if (post.getBoard().getId() == 2
                     && !post.getMember().getUniversity().getId().equals(user.getUniversity().getId())) {
-                return;
-            } else if (post.getBoard().getId() == 3) {
-                PostResponseDto postResponseDto = PostResponseDto.builder()
-                        .boardId(post.getBoard().getId())
-                        .postId(post.getId())
-                        .title(post.getTitle())
-                        .content(post.getContent())
-                        .createTime(post.getCreateTime())
-                        .hashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
-                                .map(postTag -> postTag.getTag().getName())
-                                .collect(Collectors.toList()))
-                        .writer(MemberResponseDto.builder()
-                                .id(post.getMember().getId())
-                                .nickname(post.getMember().getNickname())
-                                .imagePath(post.getMember().getProfileImage().getImagePath())
-                                .build())
-                        .build();
-                postResponseDtos.add(postResponseDto);
-            } else {
-                PostResponseDto postResponseDto = PostResponseDto.builder()
-                        .boardId(post.getBoard().getId())
-                        .postId(post.getId())
-                        .title(post.getTitle())
-                        .content(post.getContent())
-                        .createTime(post.getCreateTime())
-                        .writer(MemberResponseDto.builder()
-                                .id(post.getMember().getId())
-                                .nickname(post.getMember().getNickname())
-                                .imagePath(post.getMember().getProfileImage().getImagePath())
-                                .build())
-                        .build();
-                postResponseDtos.add(postResponseDto);
+                continue;
             }
-        });
+
+            PostResponseDto postResponseDto = PostResponseDto.builder()
+                    .boardId(post.getBoard().getId())
+                    .postId(post.getId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .createTime(post.getCreateTime())
+                    .build();
+
+            // hashTag 확인
+            if (post.getBoard().getId() == 3 && post.getPostTags() != null) {
+                postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
+                        .map(postTag -> postTag.getTag().getName())
+                        .collect(Collectors.toList()));
+            }
+            // writer 이미지 확인
+            if (post.getMember().getProfileImage() != null) {
+                postResponseDto.setWriter(MemberResponseDto.builder()
+                        .id(post.getMember().getId())
+                        .nickname(post.getMember().getNickname())
+                        .imagePath(post.getMember().getProfileImage().getImagePath())
+                        .build());
+            } else {
+                postResponseDto.setWriter(MemberResponseDto.builder()
+                        .id(post.getMember().getId())
+                        .nickname(post.getMember().getNickname())
+                        .build());
+            }
+            postResponseDtos.add(postResponseDto);
+        }
         return postResponseDtos;
     }
 

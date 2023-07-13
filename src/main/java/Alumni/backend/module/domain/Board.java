@@ -17,7 +17,4 @@ public class Board extends BaseTimeEntity{
 
     @Column(name = "board_name", nullable = false)
     private String name;
-
-    @Column(nullable = false)
-    private String description;
 }

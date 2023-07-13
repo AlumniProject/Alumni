@@ -10,6 +10,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
-    //@Query("select t from Tag t order by t.count desc ")
     List<Tag> findTop5ByOrderByCountDesc();
+
+    Tag findByName(String name);
 }
