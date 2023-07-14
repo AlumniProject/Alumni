@@ -116,4 +116,14 @@ class PostControllerTest {
                     .with(user(new PrincipalDetails(member))))
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글")
+    public void 게시글_상세조회_테스트2() throws Exception {
+        Member member = testData.findMemberByEmail("1");
+
+        mockMvc.perform(get("/post/view/6")
+                        .with(user(new PrincipalDetails(member))))
+                .andDo(print());
+    }
 }

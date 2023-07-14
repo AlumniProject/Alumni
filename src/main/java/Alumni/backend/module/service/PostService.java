@@ -1,5 +1,6 @@
 package Alumni.backend.module.service;
 
+import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.Post;
@@ -121,6 +122,9 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponseDto getPostDetails(Long postId) {
         Post post = postRepository.findByIdFetchJoin(postId);
+        if (post == null) {
+            throw new NoExistsException("존재하지 않는 게시글입니다");
+        }
         PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
         // hashTag 확인
         if (!post.getPostTags().isEmpty()) {
