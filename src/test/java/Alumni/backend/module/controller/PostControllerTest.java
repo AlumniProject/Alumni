@@ -156,4 +156,13 @@ class PostControllerTest {
                         .with(user(new PrincipalDetails(member))))
                 .andDo(print());
     }
+
+    @Test
+    public void 모든_해시태그_조회() throws Exception {
+        Member member = testData.findMemberByEmail("1");
+
+        mockMvc.perform(get("/tag/all")
+                        .with(user(new PrincipalDetails(member))))
+                .andDo(print());
+    }
 }

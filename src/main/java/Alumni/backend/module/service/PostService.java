@@ -45,7 +45,7 @@ public class PostService {
         } else if (postSearch.getId() == 3) {
             tagRankList = tagRank();
             for (Post post : posts) {
-                if (!postSearch.getHashTag().isEmpty()) { // 검색 해시태그 있는 경우
+                if (postSearch.getHashTag() != null) { // 검색 해시태그 있는 경우
                     if (post.getPostTags().isEmpty()) {
                         continue;
                     }
@@ -76,7 +76,7 @@ public class PostService {
                 }
             }
         } else {
-            if (!postSearch.getHashTag().isEmpty()) {
+            if (postSearch.getHashTag() != null) {
                 throw new IllegalArgumentException("Bad Request");
             }
             for (Post post : posts) {

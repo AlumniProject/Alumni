@@ -1,6 +1,7 @@
 package Alumni.backend.module.service;
 
 import Alumni.backend.module.domain.Tag;
+import Alumni.backend.module.dto.TagDto;
 import Alumni.backend.module.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,10 @@ public class TagService {
                     .collect(Collectors.toList());
             tagRepository.saveAll(tags);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<TagDto> findAllTagDto() {
+        return tagRepository.findAll().stream().map(TagDto::new).collect(Collectors.toList());
     }
 }
