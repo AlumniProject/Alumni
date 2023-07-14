@@ -52,13 +52,16 @@ public class PostService {
                     List<String> postTagList = post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                             .map(postTag -> postTag.getTag().getName())
                             .collect(Collectors.toList());
+                    int size = postSearch.getHashTag().size();
                     for (String postSearchHashTag : postSearch.getHashTag()) {
                         if (postTagList.contains(postSearchHashTag)) {
-                            PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
-                            postResponseDto.setHashTag(postTagList);
-                            checkProfileImage(postResponseDtos, post, postResponseDto);
-                            break;
+                            size--;
                         }
+                    }
+                    if (size == 0) {
+                        PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
+                        postResponseDto.setHashTag(postTagList);
+                        checkProfileImage(postResponseDtos, post, postResponseDto);
                     }
                 } else { // 검색 해시태그 없는 경우
                     PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
