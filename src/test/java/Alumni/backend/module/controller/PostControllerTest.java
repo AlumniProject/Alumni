@@ -109,6 +109,36 @@ class PostControllerTest {
     }
 
     @Test
+    @DisplayName("기술 게시글 검색 - 해시태그 여러개")
+    public void 게시글_검색_테스트7() throws Exception {
+        Member member = testData.findMemberByEmail("1");
+
+        mockMvc.perform(get("/post/search?id=3&hashTag=python,Kotlin&content=2")
+                        .with(user(new PrincipalDetails(member))))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("기술 게시글 아닌 경우에 hashTag 있으면 에러")
+    public void 게시글_검색_테스트8() throws Exception {
+        Member member = testData.findMemberByEmail("1");
+
+        mockMvc.perform(get("/post/search?id=2&hashTag=python,Java")
+                        .with(user(new PrincipalDetails(member))))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("hashTag가 5개 초과하는 경우 에러")
+    public void 게시글_검색_테스트9() throws Exception {
+        Member member = testData.findMemberByEmail("1");
+
+        mockMvc.perform(get("/post/search?id=2&hashTag=python,Java,Kotlin,Algorithm,spring,flutter")
+                        .with(user(new PrincipalDetails(member))))
+                .andDo(print());
+    }
+
+    @Test
     public void 게시글_상세조회_테스트() throws Exception {
         Member member = testData.findMemberByEmail("1");
 

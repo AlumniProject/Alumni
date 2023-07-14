@@ -22,7 +22,8 @@ public class TagService {
     @PostConstruct
     public void initTagData() throws IOException {
         if (tagRepository.count() == 0) {
-            List<String> list = Arrays.asList("python", "Java", "AI", "Front-End", "Back-End", "Kotlin");
+            List<String> list = Arrays.asList("python", "Java", "AI", "Front-End", "Back-End", "Kotlin"
+            ,"Algorithm", "C++", "C", "React", "Unity", "HTML", "CSS", "Javascript", "Node.js", "Vue.js");
             List<Tag> tags = list.stream()
                     .map(l -> Tag.builder()
                             .name(l)

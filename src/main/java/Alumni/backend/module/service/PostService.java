@@ -33,6 +33,9 @@ public class PostService {
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
         
         if (postSearch.getId() == 2) {
+            if (!postSearch.getHashTag().isEmpty()) {
+                throw new IllegalArgumentException("Bad Request");
+            }
             for (Post post : posts) {
                 if (!post.getMember().getUniversity().getId().equals(user.getUniversity().getId())) {
                     continue;
@@ -42,19 +45,21 @@ public class PostService {
         } else if (postSearch.getId() == 3) {
             tagRankList = tagRank();
             for (Post post : posts) {
-                if (postSearch.getHashTag() != null) { // 검색 해시태그 있는 경우
+                if (!postSearch.getHashTag().isEmpty()) { // 검색 해시태그 있는 경우
                     if (post.getPostTags().isEmpty()) {
                         continue;
                     }
                     List<String> postTagList = post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                             .map(postTag -> postTag.getTag().getName())
                             .collect(Collectors.toList());
-                    if (!postTagList.contains(postSearch.getHashTag())) {
-                        continue;
+                    for (String postSearchHashTag : postSearch.getHashTag()) {
+                        if (postTagList.contains(postSearchHashTag)) {
+                            PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
+                            postResponseDto.setHashTag(postTagList);
+                            checkProfileImage(postResponseDtos, post, postResponseDto);
+                            break;
+                        }
                     }
-                    PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
-                    postResponseDto.setHashTag(postTagList);
-                    checkProfileImage(postResponseDtos, post, postResponseDto);
                 } else { // 검색 해시태그 없는 경우
                     PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
                     if (!post.getPostTags().isEmpty()) {
@@ -68,6 +73,9 @@ public class PostService {
                 }
             }
         } else {
+            if (!postSearch.getHashTag().isEmpty()) {
+                throw new IllegalArgumentException("Bad Request");
+            }
             for (Post post : posts) {
                 createPostResponseDtoWithProfileImage(postResponseDtos, post);
             }
