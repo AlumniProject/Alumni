@@ -1,13 +1,12 @@
 package Alumni.backend.module.service;
 
-import Alumni.backend.infra.response.BasicResponse;
 import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.Post;
 import Alumni.backend.module.domain.Tag;
 import Alumni.backend.module.dto.MemberResponseDto;
 import Alumni.backend.module.dto.PostResponseDto;
-import Alumni.backend.module.dto.PostSearch;
+import Alumni.backend.module.dto.requestDto.PostSearch;
 import Alumni.backend.module.repository.PostRepository;
 import Alumni.backend.module.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,7 @@ public class PostService {
             tagRankList = tagRank();
             for (Post post : posts) {
                 if (postSearch.getHashTag() != null) { // 검색 해시태그 있는 경우
-                    if (post.getPostTags() == null) {
+                    if (post.getPostTags().isEmpty()) {
                         continue;
                     }
                     List<String> postTagList = post.getPostTags().stream() // hashTag 문자열 리스트로 변환
@@ -57,10 +56,12 @@ public class PostService {
                     checkProfileImage(postResponseDtos, post, postResponseDto);
                 } else { // 검색 해시태그 없는 경우
                     PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
-                    if (post.getPostTags() != null) {
+                    if (!post.getPostTags().isEmpty()) {
                         postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                                 .map(postTag -> postTag.getTag().getName())
                                 .collect(Collectors.toList()));
+                    } else {
+                        postResponseDto.setHashTag(null);
                     }
                     checkProfileImage(postResponseDtos, post, postResponseDto);
                 }
@@ -80,18 +81,7 @@ public class PostService {
     }
 
     private void checkProfileImage(List<PostResponseDto> postResponseDtos, Post post, PostResponseDto postResponseDto) {
-        if (post.getMember().getProfileImage() != null) {
-            postResponseDto.setWriter(MemberResponseDto.builder()
-                    .id(post.getMember().getId())
-                    .nickname(post.getMember().getNickname())
-                    .imagePath(post.getMember().getProfileImage().getImagePath())
-                    .build());
-        } else {
-            postResponseDto.setWriter(MemberResponseDto.builder()
-                    .id(post.getMember().getId())
-                    .nickname(post.getMember().getNickname())
-                    .build());
-        }
+        checkProfileExists(post, postResponseDto);
         postResponseDtos.add(postResponseDto);
     }
 
@@ -126,5 +116,38 @@ public class PostService {
     public List<String> tagRank() {
         return tagRepository.findTop5ByOrderByCountDesc().stream()
                 .map(Tag::getName).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PostResponseDto getPostDetails(Long postId) {
+        Post post = postRepository.findByIdFetchJoin(postId);
+        PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
+        // hashTag 확인
+        if (!post.getPostTags().isEmpty()) {
+            postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
+                    .map(postTag -> postTag.getTag().getName())
+                    .collect(Collectors.toList()));
+        } else {
+            postResponseDto.setHashTag(null);
+        }
+        // writer 이미지 확인
+        checkProfileExists(post, postResponseDto);
+        return postResponseDto;
+    }
+
+    private void checkProfileExists(Post post, PostResponseDto postResponseDto) {
+        if (post.getMember().getProfileImage() != null) {
+            postResponseDto.setWriter(MemberResponseDto.builder()
+                    .id(post.getMember().getId())
+                    .nickname(post.getMember().getNickname())
+                    .imagePath(post.getMember().getProfileImage().getImagePath())
+                    .build());
+        } else {
+            postResponseDto.setWriter(MemberResponseDto.builder()
+                    .id(post.getMember().getId())
+                    .nickname(post.getMember().getNickname())
+                    .imagePath(null)
+                    .build());
+        }
     }
 }

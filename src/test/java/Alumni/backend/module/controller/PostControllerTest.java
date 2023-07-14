@@ -3,6 +3,7 @@ package Alumni.backend.module.controller;
 import Alumni.backend.TestData;
 import Alumni.backend.infra.principal.PrincipalDetails;
 import Alumni.backend.module.domain.Member;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,10 @@ class PostControllerTest {
     /**
      * testDate의 setUp 이용하여 dummy data 생성할 것
      * */
+    @BeforeEach
+    void beforeEach() {
+        testData.SetUp();
+    }
 
     @Test
     public void 전체_게시글_조회_테스트() throws Exception {
@@ -100,6 +105,15 @@ class PostControllerTest {
 
         mockMvc.perform(get("/post/search?id=2&content=c")
                         .with(user(new PrincipalDetails(member))))
+                .andDo(print());
+    }
+
+    @Test
+    public void 게시글_상세조회_테스트() throws Exception {
+        Member member = testData.findMemberByEmail("1");
+
+        mockMvc.perform(get("/post/view/3")
+                    .with(user(new PrincipalDetails(member))))
                 .andDo(print());
     }
 }

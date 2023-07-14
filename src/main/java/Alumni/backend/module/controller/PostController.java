@@ -2,17 +2,15 @@ package Alumni.backend.module.controller;
 
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.BasicResponse;
+import Alumni.backend.infra.response.GeneralResponse;
 import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.dto.PostResponseDto;
-import Alumni.backend.module.dto.PostSearch;
+import Alumni.backend.module.dto.requestDto.PostSearch;
 import Alumni.backend.module.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,5 +33,11 @@ public class PostController {
     public ResponseEntity<? extends BasicResponse> postSearch(@CurrentUser Member member,
                                                               @ModelAttribute PostSearch postSearch) {
         return ResponseEntity.ok().body(postService.search(member, postSearch));
+    }
+
+    @GetMapping("/view/{postId}")
+    public ResponseEntity<? extends BasicResponse> viewPostDetail(@PathVariable("postId") Long postId) {
+        PostResponseDto postDetails = postService.getPostDetails(postId);
+        return ResponseEntity.ok().body(new GeneralResponse<>(postDetails, "게시글 상세보기 전송 완료"));
     }
 }

@@ -1,7 +1,7 @@
 package Alumni.backend.module.repository;
 
 import Alumni.backend.module.domain.Post;
-import Alumni.backend.module.dto.PostSearch;
+import Alumni.backend.module.dto.requestDto.PostSearch;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -35,6 +35,16 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .where(post.board.id.eq(postSearch.getId()),
                         getTitleContentContains(postSearch.getContent()))
                 .fetch();
+    }
+
+    @Override
+    public Post findByIdFetchJoin(Long postId) {
+        return jpaQueryFactory
+                .selectFrom(post)
+                .leftJoin(post.member, member).fetchJoin()
+                .leftJoin(member.profileImage, image).fetchJoin()
+                .where(post.id.eq(postId))
+                .fetchOne();
     }
 
     private BooleanExpression getTitleContentContains(String titleOrContent) {

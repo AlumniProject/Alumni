@@ -1,24 +1,18 @@
 package Alumni.backend.module.service;
 
 import Alumni.backend.TestData;
-import Alumni.backend.infra.response.BasicResponse;
 import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.*;
 import Alumni.backend.module.dto.PostResponseDto;
-import Alumni.backend.module.dto.PostSearch;
+import Alumni.backend.module.dto.requestDto.PostSearch;
 import Alumni.backend.module.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.*;
 
 @SpringBootTest
 @Transactional
