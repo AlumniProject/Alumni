@@ -1,11 +1,14 @@
 package Alumni.backend.module.dto;
 
+import Alumni.backend.module.domain.Post;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class PostResponseDto {
 
@@ -30,6 +33,15 @@ public class PostResponseDto {
         postResponseDto.writer = writer;
         return postResponseDto;
     }*/
+    public static PostResponseDto getPostResponseDto(Post post) {
+        return PostResponseDto.builder()
+                .boardId(post.getBoard().getId())
+                .postId(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createTime(post.getCreateTime())
+                .build();
+    }
 
     public void setHashTag(List<String> hashTag) {
         this.hashTag = hashTag;

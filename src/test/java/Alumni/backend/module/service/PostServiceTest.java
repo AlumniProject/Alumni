@@ -1,8 +1,11 @@
 package Alumni.backend.module.service;
 
 import Alumni.backend.TestData;
+import Alumni.backend.infra.response.BasicResponse;
+import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.*;
 import Alumni.backend.module.dto.PostResponseDto;
+import Alumni.backend.module.dto.PostSearch;
 import Alumni.backend.module.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -47,10 +50,24 @@ class PostServiceTest {
     public void 전체_게시글_조회_테스트() throws Exception {
         testData.SetUp();
 
-        Member m1 = memberRepository.findById(1L).get();
+        Member m1 = memberRepository.findByEmail("1").get();
         List<PostResponseDto> postResponseDtos = postService.findAllPosts(m1);
 
         //then
         Assertions.assertEquals(5, postResponseDtos.size());
+    }
+
+    @Test
+    public void 게시글_검색_테스트() throws Exception {
+        testData.SetUp();
+
+        PostSearch postSearch = new PostSearch();
+        postSearch.setId(1L);
+        Member m1 = memberRepository.findByEmail("1").get();
+
+        PostSearchResponse<?> search = postService.search(m1, postSearch);
+
+        //then
+        Assertions.assertEquals(1, search.getCount());
     }
 }
