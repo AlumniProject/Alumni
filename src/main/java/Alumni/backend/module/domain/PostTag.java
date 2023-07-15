@@ -25,10 +25,13 @@ public class PostTag {
 
     public static PostTag createPostTag(Post post, Tag tag){
         PostTag postTag = new PostTag();
-
-        postTag.post = post;
+        postTag.setPost(post);
         postTag.tag = tag;
-
         return postTag;
+    }
+
+    public void setPost(Post post){
+        this.post = post;
+        post.getPostTags().add(this);
     }
 }
