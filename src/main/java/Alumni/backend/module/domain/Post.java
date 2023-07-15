@@ -50,4 +50,9 @@ public class Post extends BaseTimeEntity{
         post.commentNum = 0;
         return post;
     }
+
+    public void postModify(String title, String content){
+        this.title = title;
+        this.content = content;
+    }
 }
