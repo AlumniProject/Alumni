@@ -51,8 +51,8 @@ public class TestData {
         Post post5 = Post.createPost(member2, compBoard, "t5", "c5");
         postRepository.saveAll(Arrays.asList(post1, post2, post3, post4, post5));
 
-        Tag pythonTag = tagRepository.findByName("python");
-        Tag javaTag = tagRepository.findByName("Java");
+        Tag pythonTag = tagRepository.findByName("python").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그 입니다."));;
+        Tag javaTag = tagRepository.findByName("Java").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그 입니다."));;
         PostTag postTag1 = PostTag.createPostTag(post2, pythonTag);
         PostTag postTag2 = PostTag.createPostTag(post2, javaTag);
         postTagRepository.saveAll(Arrays.asList(postTag1, postTag2));
