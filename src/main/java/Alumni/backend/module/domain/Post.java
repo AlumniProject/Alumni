@@ -35,8 +35,6 @@ public class Post extends BaseTimeEntity{
     @Column(nullable = false)
     private Integer commentNum;
 
-    private Long universityId;
-
     public static Post createPost(Member member, Board board, String title, String content){
         Post post = new Post();
 
@@ -50,7 +48,8 @@ public class Post extends BaseTimeEntity{
         return post;
     }
 
-    public void setUniversityId(Long universityId){
-        this.universityId = universityId;
-    }
+    public void postModify(String title, String content){
+        this.title = title;
+        this.content = content;
+     }
 }
