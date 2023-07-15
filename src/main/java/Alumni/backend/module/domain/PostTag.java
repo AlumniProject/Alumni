@@ -31,4 +31,9 @@ public class PostTag {
 
         return postTag;
     }
+
+    public void setPost(Post post) {
+        this.post = post;
+        post.getPostTags().add(this);
+    }
 }

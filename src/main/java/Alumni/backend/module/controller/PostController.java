@@ -40,5 +40,24 @@ public class PostController {
 
         return ResponseEntity.ok().body(new SingleResponse("게시글 삭제 완료"));
     }
-}
+  
+      @GetMapping("/all")
+    public ResponseEntity<? extends BasicResponse> findAllPost(@CurrentUser Member member) {
+        List<String> tagRankList = postService.tagRank();
+        List<PostResponseDto> postResponseDtos = postService.findAllPosts(member);
+        return ResponseEntity.ok()
+                .body(new PostSearchResponse<>(postResponseDtos, tagRankList, "모든 게시글 조회 완료"));
+    }
 
+    @GetMapping("/search")
+    public ResponseEntity<? extends BasicResponse> postSearch(@CurrentUser Member member,
+                                                              @ModelAttribute PostSearch postSearch) {
+        return ResponseEntity.ok().body(postService.search(member, postSearch));
+    }
+
+    @GetMapping("/view/{postId}")
+    public ResponseEntity<? extends BasicResponse> viewPostDetail(@PathVariable("postId") Long postId) {
+        PostResponseDto postDetails = postService.getPostDetails(postId);
+        return ResponseEntity.ok().body(new GeneralResponse<>(postDetails, "게시글 상세보기 전송 완료"));
+    }
+}
