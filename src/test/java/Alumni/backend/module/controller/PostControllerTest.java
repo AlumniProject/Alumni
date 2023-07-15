@@ -32,7 +32,7 @@ class PostControllerTest {
 
     /**
      * testDate의 setUp 이용하여 dummy data 생성할 것
-     * */
+     */
     @BeforeEach
     void beforeEach() {
         testData.SetUp();
@@ -43,7 +43,7 @@ class PostControllerTest {
         Member member = testData.findMemberByEmail("1");
 
         mockMvc.perform(get("/post/all")
-                .with(user(new PrincipalDetails(member))))
+                        .with(user(new PrincipalDetails(member))))
                 .andDo(print());
 
     }
@@ -142,8 +142,8 @@ class PostControllerTest {
     public void 게시글_상세조회_테스트() throws Exception {
         Member member = testData.findMemberByEmail("1");
 
-        mockMvc.perform(get("/post/view/3")
-                    .with(user(new PrincipalDetails(member))))
+        mockMvc.perform(get("/post/3")
+                        .with(user(new PrincipalDetails(member))))
                 .andDo(print());
     }
 
@@ -152,7 +152,7 @@ class PostControllerTest {
     public void 게시글_상세조회_테스트2() throws Exception {
         Member member = testData.findMemberByEmail("1");
 
-        mockMvc.perform(get("/post/view/6")
+        mockMvc.perform(get("/post/6")
                         .with(user(new PrincipalDetails(member))))
                 .andDo(print());
     }

@@ -51,11 +51,24 @@ public class TestData {
         Post post5 = Post.createPost(member2, compBoard, "t5", "c5");
         postRepository.saveAll(Arrays.asList(post1, post2, post3, post4, post5));
 
-        Tag pythonTag = tagRepository.findByName("python").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그 입니다."));;
-        Tag javaTag = tagRepository.findByName("Java").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그 입니다."));;
+        Tag pythonTag = tagRepository.findByName("python").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그 입니다."));
+        Tag javaTag = tagRepository.findByName("Java").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그 입니다."));
+
         PostTag postTag1 = PostTag.createPostTag(post2, pythonTag);
         PostTag postTag2 = PostTag.createPostTag(post2, javaTag);
         postTagRepository.saveAll(Arrays.asList(postTag1, postTag2));
+    }
+
+    public void SetUpOnlyMember() {
+        //given
+        Image image1 = new Image("1", "1", "1");
+        imageRepository.save(image1);
+
+        University univ1 = universityRepository.findById(1L).get();
+
+        Member member1 = Member.createMember("1", "1", "1", "1", univ1, "1");
+        memberRepository.save(member1);
+        member1.uploadProfile(image1);
     }
 
     public Member findMemberByEmail(String email) {

@@ -30,16 +30,16 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     private final BoardRepository boardRepository;
 
-    public void postCreate(Member member, PostCreateRequestDto postCreateRequestDto){
+    public void postCreate(Member member, PostCreateRequestDto postCreateRequestDto) {
         Board board = boardRepository.findById(postCreateRequestDto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
 
         Post createPost = Post.createPost(member, board, postCreateRequestDto.getTitle(), postCreateRequestDto.getContent());
         Post post = postRepository.save(createPost);
 
-        if(postCreateRequestDto.getBoardId() == 3){//기술게시판인 경우
+        if (postCreateRequestDto.getBoardId() == 3) {//기술게시판인 경우
             List<String> hashTag = postCreateRequestDto.getHashTag();
 
-            if(hashTag.size() > 5)//해시태그는 5개까지 가능
+            if (hashTag.size() > 5)//해시태그는 5개까지 가능
                 throw new IllegalArgumentException("해시태그가 5개 이상입니다.");
 
             List<PostTag> postTagList = savePostTag(hashTag, post);
@@ -52,16 +52,17 @@ public class PostService {
     public void postModify(Member member, Long postId, PostModifyRequestDto postModifyRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
 
-        if(post.getMember().getId() != member.getId()) //수정하는 사람이 작성한 글인지 확인
+        if (post.getMember().getId() != member.getId()) //수정하는 사람이 작성한 글인지 확인
             throw new IllegalArgumentException("Bad Request");
 
         post.postModify(postModifyRequestDto.getTitle(), postModifyRequestDto.getContent());//수정글 update
 
         //기술 게시판인 경우
-        if(post.getBoard().getId() == 3){
+        if (post.getBoard().getId() == 3) {
             List<PostTag> findPostTag = postTagRepository.findByPostId(postId);
 
             //기존 태그 삭제
+            findPostTag.forEach(postTag -> postTag.getPost().getPostTags().remove(postTag));
             postTagRepository.deleteAll(findPostTag);
             deleteTag(findPostTag);
 
@@ -73,14 +74,14 @@ public class PostService {
         }
     }
 
-    public void postDelete(Member member, Long postId){
+    public void postDelete(Member member, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
 
-        if(post.getMember().getId() != member.getId()) //삭제하는 사람이 작성한 글인지 확인
+        if (post.getMember().getId() != member.getId()) //삭제하는 사람이 작성한 글인지 확인
             throw new IllegalArgumentException("Bad Request");
 
         //기술 게시판인 경우 해시태그 삭제
-        if(post.getBoard().getId() == 3){
+        if (post.getBoard().getId() == 3) {
             List<PostTag> postTag = postTagRepository.findByPostId(postId);
             postTagRepository.deleteAll(postTag);
             deleteTag(postTag);
@@ -103,7 +104,7 @@ public class PostService {
     private void deleteTag(List<PostTag> postTag) {
         for (PostTag findPostTag : postTag) {
             Tag tag = findPostTag.getTag();
-            tag.setCount(tag.getCount()-1);
+            tag.setCount(tag.getCount() - 1);
         }
     }
 
@@ -112,9 +113,9 @@ public class PostService {
         List<Post> posts = postRepository.searchPost(postSearch);
         List<String> tagRankList = null;
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
-        
+
         if (postSearch.getId() == 2) {
-            if (!postSearch.getHashTag().isEmpty()) {
+            if (postSearch.getHashTag() != null) {
                 throw new IllegalArgumentException("Bad Request");
             }
             for (Post post : posts) {
@@ -150,8 +151,6 @@ public class PostService {
                         postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                                 .map(postTag -> postTag.getTag().getName())
                                 .collect(Collectors.toList()));
-                    } else {
-                        postResponseDto.setHashTag(null);
                     }
                     checkProfileImage(postResponseDtos, post, postResponseDto);
                 }
@@ -193,7 +192,7 @@ public class PostService {
             PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
 
             // hashTag 확인
-            if (post.getBoard().getId() == 3 && post.getPostTags() != null) {
+            if (post.getBoard().getId() == 3 && !post.getPostTags().isEmpty()) {
                 postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                         .map(postTag -> postTag.getTag().getName())
                         .collect(Collectors.toList()));
@@ -223,8 +222,6 @@ public class PostService {
             postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                     .map(postTag -> postTag.getTag().getName())
                     .collect(Collectors.toList()));
-        } else {
-            postResponseDto.setHashTag(null);
         }
         // writer 이미지 확인
         checkProfileExists(post, postResponseDto);
