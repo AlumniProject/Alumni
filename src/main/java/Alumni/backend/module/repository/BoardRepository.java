@@ -9,4 +9,6 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Board> findById(Long id);
+  
+      Board findByName(String name);
 }
