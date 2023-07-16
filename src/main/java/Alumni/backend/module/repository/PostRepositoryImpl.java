@@ -11,12 +11,12 @@ import java.util.List;
 import static Alumni.backend.module.domain.QImage.*;
 import static Alumni.backend.module.domain.QMember.*;
 import static Alumni.backend.module.domain.QPost.*;
-import static org.springframework.util.StringUtils.hasText;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
+
     @Override
     public List<Post> findAllPosts() {
         return jpaQueryFactory

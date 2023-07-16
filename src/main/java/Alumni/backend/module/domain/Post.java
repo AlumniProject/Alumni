@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post extends BaseTimeEntity{
+public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id", nullable = false)
@@ -22,7 +22,7 @@ public class Post extends BaseTimeEntity{
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="board_id", nullable = false)
+    @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
     @Column(nullable = false)
@@ -51,7 +51,7 @@ public class Post extends BaseTimeEntity{
         return post;
     }
 
-    public void postModify(String title, String content){
+    public void postModify(String title, String content) {
         this.title = title;
         this.content = content;
     }
