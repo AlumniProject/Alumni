@@ -1,13 +1,10 @@
 package Alumni.backend.infra.response;
 
-import java.util.Objects;
-
-import Alumni.backend.infra.exception.DuplicateNicknameException;
-import Alumni.backend.infra.exception.EmailCodeException;
-import Alumni.backend.infra.exception.NoExistsException;
+import Alumni.backend.infra.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +14,20 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 @Slf4j
 @RestControllerAdvice // 모든 Controller 전역에서 발생할 수 있는 예외를 잡아 처리해주는 어노테이션 + ResponseBody
 public class ExceptionController {
+
+    @ExceptionHandler(ImageException.class)
+    public ResponseEntity<? extends BasicResponse> ImageException(ImageException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+
+    @ExceptionHandler(FormalValidationException.class)
+    public ResponseEntity<? extends BasicResponse> formalValidationException(FormalValidationException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
 
     @ExceptionHandler(NoExistsException.class)
     public ResponseEntity<? extends BasicResponse> emailExHandle(NoExistsException e) {
@@ -54,36 +65,45 @@ public class ExceptionController {
     public ResponseEntity<? extends BasicResponse> IllegalArgumentHandler(
             IllegalArgumentException e) {
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request"));
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<? extends BasicResponse> RunTimeHandler(RuntimeException e) {
 
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "RUNTIME_ERROR"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<? extends BasicResponse> methodValidException(
             MethodArgumentNotValidException e) {
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(
-                        Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "VALID_ERROR"));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<? extends BasicResponse> usernameNotFoundException(
             UsernameNotFoundException e) {
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(HttpStatus.FORBIDDEN.value(), "USER_NOT_FOUND"));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<? extends BasicResponse> exception(Exception e) {
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "UNEXPECTED_ERROR"));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<? extends BasicResponse> httpMessageNotReadableException(
+            HttpMessageNotReadableException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "HTTP_REQUEST_ERROR"));
     }
 }

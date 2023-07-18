@@ -8,15 +8,15 @@ import lombok.Setter;
 public class ErrorResponse extends BasicResponse {
 
     private int code;
-    private String errorMessage;
+    private String message;
 
-    public ErrorResponse(String errorMessage) {
+    public ErrorResponse(String message) {
         this.code = 400;
-        this.errorMessage = errorMessage;
+        this.message = message;
     }
 
-    public ErrorResponse(int errorCode, String errorMessage) {
+    public ErrorResponse(int errorCode, String message) {
         this.code = errorCode;
-        this.errorMessage = errorMessage;
+        this.message = message;
     }
 }
