@@ -1,5 +1,6 @@
 package Alumni.backend.module.service;
 
+import Alumni.backend.infra.exception.ImageException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -39,7 +40,7 @@ public class S3Service implements FileService{
                     new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                             .withCannedAcl(CannedAccessControlList.PublicReadWrite));
         } catch (IOException e){
-            throw new IllegalArgumentException("파일 변환 중 에러 발생");
+            throw new ImageException("파일 변환 중 에러 발생");
         }
 
         return fileName;
@@ -55,7 +56,7 @@ public class S3Service implements FileService{
         try{
             return fileName.substring(fileName.lastIndexOf("."));
         }catch(StringIndexOutOfBoundsException e) {
-            throw new IllegalArgumentException(String.format("잘못된 형식의 파일 (%s) 입니다.",fileName));
+            throw new ImageException(String.format("잘못된 형식의 파일 (%s) 입니다.",fileName));
         }
     }
 

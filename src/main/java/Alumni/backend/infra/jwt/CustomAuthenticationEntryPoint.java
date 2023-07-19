@@ -23,7 +23,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                          AuthenticationException authException) throws IOException, ServletException {
         String exceptionMsg = (String) request.getAttribute(JwtProperties.EXCEPTION);
         response.setContentType("application/json;charset=UTF-8");
-        if (exceptionMsg.equals("JWT_NOT_VALID")) {
+        if (exceptionMsg.equals("JWT_NOT_VALID") || exceptionMsg.equals("JWT_ACCESS_NOT_VALID")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(401, exceptionMsg)));
         } else if (exceptionMsg.equals("Internal Server Error")) {

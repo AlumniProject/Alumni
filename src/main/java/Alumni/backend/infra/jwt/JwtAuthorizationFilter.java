@@ -62,6 +62,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             request.setAttribute(JwtProperties.EXCEPTION, "JWT_NOT_VALID");
         } catch (NoExistsException e) {
             request.setAttribute(JwtProperties.EXCEPTION, "다시 로그인해주세요");
+        } catch (IllegalArgumentException e) {
+            request.setAttribute(JwtProperties.EXCEPTION, "JWT_ACCESS_NOT_VALID");
         } catch (Exception e) {
             request.setAttribute(JwtProperties.EXCEPTION, "Internal Server Error");
         }

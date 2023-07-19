@@ -1,5 +1,6 @@
 package Alumni.backend.module.service;
 
+import Alumni.backend.infra.exception.FormalValidationException;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.*;
@@ -40,7 +41,7 @@ public class PostService {
             List<String> hashTag = postCreateRequestDto.getHashTag();
 
             if (hashTag.size() > 5)//해시태그는 5개까지 가능
-                throw new IllegalArgumentException("해시태그가 5개 이상입니다.");
+                throw new FormalValidationException("해시태그가 5개 이상입니다.");
 
             List<PostTag> postTagList = savePostTag(hashTag, post);
 
@@ -93,7 +94,7 @@ public class PostService {
         List<PostTag> postTagList = new ArrayList<>();
 
         for (String s : hashTag) {
-            Tag tag = tagRepository.findByName(s).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그 입니다."));
+            Tag tag = tagRepository.findByName(s).orElseThrow(() -> new NoExistsException("존재하지 않는 해시태그 입니다."));
             postTagList.add(PostTag.createPostTag(post, tag));
             tag.setCount(tag.getCount() + 1);//count 증가
         }

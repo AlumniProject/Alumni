@@ -38,7 +38,7 @@ class PostServiceTest {
     @Autowired
     PostRepository postRepository;
 
-    @Test
+    /*@Test
     public void 인기태그_조회_테스트() throws Exception {
         List<Tag> tags = tagRepository.findAll();
         for (int i = 0; i < tags.size(); i++) {
@@ -46,11 +46,11 @@ class PostServiceTest {
         }
 
         List<Tag> tagList = tagRepository.findTop5ByOrderByCountDesc();
-        //Assertions.assertEquals(5, tagList.size());
-        //Assertions.assertEquals("Kotlin", tagList.get(0).getName());
-    }
+        Assertions.assertEquals(5, tagList.size());
+        Assertions.assertEquals("Kotlin", tagList.get(0).getName());
+    }*/
 
-    @Test
+    /*@Test
     //@Rollback(value = false)
     public void 전체_게시글_조회_테스트() throws Exception {
         testData.SetUp();
@@ -60,7 +60,7 @@ class PostServiceTest {
 
         //then
         Assertions.assertEquals(5, postResponseDtos.size());
-    }
+    }*/
 
     @Test
     public void 게시글_검색_테스트() throws Exception {

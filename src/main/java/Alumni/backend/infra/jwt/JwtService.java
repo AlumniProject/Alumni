@@ -226,7 +226,7 @@ public class JwtService {
         if (accessToken == null || !accessToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
             throw new IllegalArgumentException("JWT_ACCESS_NOT_VALID");
         } else if (refreshToken == null || !refreshToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
-            throw new IllegalArgumentException("JWT_REFRESH_NOT_VALID");
+            throw new IllegalArgumentException("JWT_ACCESS_NOT_VALID");
         }
     }
 
