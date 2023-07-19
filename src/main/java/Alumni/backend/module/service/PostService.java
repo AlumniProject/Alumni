@@ -52,7 +52,7 @@ public class PostService {
     public void postModify(Member member, Long postId, PostModifyRequestDto postModifyRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
 
-        if (post.getMember().getId() != member.getId()) //수정하는 사람이 작성한 글인지 확인
+        if (!post.getMember().getId().equals(member.getId())) //수정하는 사람이 작성한 글인지 확인
             throw new IllegalArgumentException("Bad Request");
 
         post.postModify(postModifyRequestDto.getTitle(), postModifyRequestDto.getContent());//수정글 update
@@ -77,7 +77,7 @@ public class PostService {
     public void postDelete(Member member, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
 
-        if (post.getMember().getId() != member.getId()) //삭제하는 사람이 작성한 글인지 확인
+        if (!post.getMember().getId().equals(member.getId())) //수정하는 사람이 작성한 글인지 확인
             throw new IllegalArgumentException("Bad Request");
 
         //기술 게시판인 경우 해시태그 삭제
