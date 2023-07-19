@@ -1,0 +1,50 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://alumni-sprint-version1.ca3kvvgdhujx.ap-northeast-2.rds.amazonaws.com/alumni?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: ${db-username}
+    password: ${db-password}
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ${mail-username}
+    password: ${mail-password}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+
+cloud:
+  aws:
+    s3:
+      bucket: alumni-profile-image
+    credentials:
+      access-key: ${s3-access-key}
+      secret-key: ${s3-secret-key}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: ERROR
