@@ -40,9 +40,6 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private Set<PostTag> postTags = new HashSet<>();
 
-    @OneToMany(mappedBy = "id")
-    private Set<CommentLike> commentLikes = new HashSet<>();
-
     public static Post createPost(Member member, Board board, String title, String content) {
         Post post = new Post();
         post.member = member;
