@@ -28,7 +28,9 @@ spring:
       ddl-auto: create
     show-sql: true
     properties:
-      hibernate.format_sql: true
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
 
 cloud:
   aws:
