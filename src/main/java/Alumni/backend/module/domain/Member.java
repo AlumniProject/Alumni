@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -45,6 +47,12 @@ public class Member extends BaseTimeEntity {
 
     //@Column(nullable = false)
     private String fcmToken;
+
+    @OneToMany(mappedBy = "id")
+    private Set<PostLike> postLikes = new HashSet<>();
+
+    @OneToMany(mappedBy = "id")
+    private Set<CommentLike> commentLikes = new HashSet<>();
 
     //생성 메서드
     public static Member createMember(String email, String nickname, String classOf,
