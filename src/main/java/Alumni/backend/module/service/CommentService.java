@@ -24,7 +24,7 @@ public class CommentService {
 
         Post post = postRepository.findById(postId).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글 입니다."));
 
-        post.setCommentNum(post.getCommentNum() + 1);//댓글 수 증가
+        postRepository.updateCommentCount(post.getCommentNum()+1, postId);
 
         Comment comment = Comment.createComment(member, post, content);
 
@@ -53,7 +53,7 @@ public class CommentService {
             throw new IllegalArgumentException("Bad Request");
 
         Post post = comment.getPost();
-        post.setCommentNum(post.getCommentNum() - 1);//댓글 수 감소
+        postRepository.updateCommentCount(post.getCommentNum()-1, post.getId());
 
         commentRepository.delete(comment);
     }
