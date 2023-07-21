@@ -9,10 +9,7 @@ import Alumni.backend.module.dto.PostResponseDto;
 import Alumni.backend.module.dto.requestDto.PostCreateRequestDto;
 import Alumni.backend.module.dto.requestDto.PostModifyRequestDto;
 import Alumni.backend.module.dto.requestDto.PostSearch;
-import Alumni.backend.module.repository.BoardRepository;
-import Alumni.backend.module.repository.PostRepository;
-import Alumni.backend.module.repository.PostTagRepository;
-import Alumni.backend.module.repository.TagRepository;
+import Alumni.backend.module.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +27,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     public void postCreate(Member member, PostCreateRequestDto postCreateRequestDto) {
         Board board = boardRepository.findById(postCreateRequestDto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
@@ -87,6 +85,11 @@ public class PostService {
             postTagRepository.deleteAll(postTag);
             deleteTag(postTag);
         }
+
+        //달린 댓글 삭제
+        List<Comment> commentList = commentRepository.findByPostId(postId);
+        commentRepository.deleteAll(commentList);
+
         postRepository.delete(post);
     }
 

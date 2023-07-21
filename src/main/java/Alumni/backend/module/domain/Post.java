@@ -55,8 +55,4 @@ public class Post extends BaseTimeEntity {
         this.title = title;
         this.content = content;
     }
-
-    public void setCommentNum(Integer count){
-        this.commentNum = count;
-    }
 }
