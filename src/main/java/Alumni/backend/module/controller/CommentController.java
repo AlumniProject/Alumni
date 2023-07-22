@@ -37,7 +37,29 @@ public class CommentController {
 
     @DeleteMapping("/{comment_id}")
     public ResponseEntity<? extends BasicResponse> commentDelete(@CurrentUser Member member, @PathVariable("comment_id") Long commentId) {
-        commentService.DeleteComment(member, commentId);
+        commentService.deleteComment(member, commentId);
+
+        return ResponseEntity.ok().body(new SingleResponse("댓글 삭제 완료"));
+    }
+
+    @PostMapping("/recomment/{comment_id}")
+    public  ResponseEntity<? extends BasicResponse> recommentCreate(@CurrentUser Member member, @PathVariable("comment_id") Long commentId, @RequestBody @Valid Map<String, String> request){
+        commentService.createRecomment(member, commentId, request.get("content"));
+
+        return ResponseEntity.ok().body(new SingleResponse("대댓글 작성 완료"));
+    }
+
+    @PutMapping("/recomment/{comment_id}")
+    public ResponseEntity<? extends BasicResponse> recommentModify(@CurrentUser Member member, @PathVariable("comment_id") Long commentId,
+                                                                 @RequestBody @Valid Map<String, String> request) {
+        commentService.modifyRecomment(member, commentId, request.get("content"));
+
+        return ResponseEntity.ok().body(new SingleResponse("댓글 수정 완료"));
+    }
+
+    @DeleteMapping("/recomment/{comment_id}")
+    public ResponseEntity<? extends BasicResponse> recommentDelete(@CurrentUser Member member, @PathVariable("comment_id") Long commentId) {
+        commentService.deleteRecomment(member, commentId);
 
         return ResponseEntity.ok().body(new SingleResponse("댓글 삭제 완료"));
     }

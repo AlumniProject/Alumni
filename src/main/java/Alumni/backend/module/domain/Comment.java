@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,7 +28,7 @@ public class Comment extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Comment comment;
+    private Comment parent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -36,6 +38,10 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> children = new ArrayList<>();//자식 댓글
+
     public static Comment createComment(Member member, Post post, String content){
         Comment comment = new Comment();
 
@@ -43,8 +49,14 @@ public class Comment extends BaseTimeEntity {
         comment.likeNum = 0;
         comment.post = post;
         comment.member = member;
+        comment.parent = null;
 
         return comment;
+    }
+
+    public void setParent(Comment parent){
+        this.parent = parent;
+        parent.getChildren().add(this);
     }
 
     public void modifyComment(String content) {
