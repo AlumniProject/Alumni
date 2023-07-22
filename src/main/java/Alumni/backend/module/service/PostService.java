@@ -11,6 +11,8 @@ import Alumni.backend.module.dto.requestDto.PostCreateRequestDto;
 import Alumni.backend.module.dto.requestDto.PostModifyRequestDto;
 import Alumni.backend.module.dto.requestDto.PostSearch;
 import Alumni.backend.module.repository.*;
+import Alumni.backend.module.repository.Comment.CommentRepository;
+import Alumni.backend.module.repository.Post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

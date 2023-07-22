@@ -1,8 +1,6 @@
-package Alumni.backend.module.repository;
+package Alumni.backend.module.repository.Comment;
 
 import Alumni.backend.module.domain.Comment;
-import Alumni.backend.module.domain.QComment;
-import Alumni.backend.module.domain.QMember;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 

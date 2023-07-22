@@ -1,4 +1,4 @@
-package Alumni.backend.module.repository;
+package Alumni.backend.module.repository.Comment;
 
 import Alumni.backend.module.domain.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;

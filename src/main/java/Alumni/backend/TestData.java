@@ -3,6 +3,8 @@ package Alumni.backend;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.*;
 import Alumni.backend.module.repository.*;
+import Alumni.backend.module.repository.Comment.CommentRepository;
+import Alumni.backend.module.repository.Post.PostRepository;
 import Alumni.backend.module.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
