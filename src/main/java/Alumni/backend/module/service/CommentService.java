@@ -20,7 +20,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    public void createComment(Member member,Long postId, String content){
+    public Long createComment(Member member,Long postId, String content){
         if(content.length() == 0)
             throw new IllegalArgumentException("Bad Request");
 
@@ -28,9 +28,10 @@ public class CommentService {
 
         Comment comment = Comment.createComment(member, post, content);
 
-        commentRepository.save(comment);
+        Comment saveComment = commentRepository.save(comment);
 
         postRepository.updateCommentCount(post.getCommentNum()+1, postId);//게시글에 달린 댓글 수 증가
+        return saveComment.getId();
     }
 
     public void modifyComment(Member member, Long commentId, String content){
