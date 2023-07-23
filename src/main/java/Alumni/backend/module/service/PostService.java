@@ -4,12 +4,15 @@ import Alumni.backend.infra.exception.FormalValidationException;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.*;
-import Alumni.backend.module.dto.MemberResponseDto;
+import Alumni.backend.module.dto.CommentDto;
 import Alumni.backend.module.dto.PostResponseDto;
+import Alumni.backend.module.dto.RecommentDto;
 import Alumni.backend.module.dto.requestDto.PostCreateRequestDto;
 import Alumni.backend.module.dto.requestDto.PostModifyRequestDto;
 import Alumni.backend.module.dto.requestDto.PostSearch;
 import Alumni.backend.module.repository.*;
+import Alumni.backend.module.repository.Comment.CommentRepository;
+import Alumni.backend.module.repository.Post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,7 +129,7 @@ public class PostService {
                 if (!post.getMember().getUniversity().getId().equals(user.getUniversity().getId())) {
                     continue;
                 }
-                createPostResponseDtoWithProfileImage(postResponseDtos, post);
+                postResponseDtos.add(PostResponseDto.getPostResponseDto(post));
             }
         } else if (postSearch.getId() == 3) {
             tagRankList = tagRank();
@@ -147,7 +150,7 @@ public class PostService {
                     if (size == 0) {
                         PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
                         postResponseDto.setHashTag(postTagList);
-                        checkProfileImage(postResponseDtos, post, postResponseDto);
+                        postResponseDtos.add(postResponseDto);
                     }
                 } else { // 검색 해시태그 없는 경우
                     PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
@@ -156,7 +159,7 @@ public class PostService {
                                 .map(postTag -> postTag.getTag().getName())
                                 .collect(Collectors.toList()));
                     }
-                    checkProfileImage(postResponseDtos, post, postResponseDto);
+                    postResponseDtos.add(postResponseDto);
                 }
             }
         } else {
@@ -164,21 +167,10 @@ public class PostService {
                 throw new IllegalArgumentException("Bad Request");
             }
             for (Post post : posts) {
-                createPostResponseDtoWithProfileImage(postResponseDtos, post);
+                postResponseDtos.add(PostResponseDto.getPostResponseDto(post));
             }
         }
         return new PostSearchResponse<>(postResponseDtos, tagRankList, "게시글 검색 결과 전송 완료");
-    }
-
-    private void createPostResponseDtoWithProfileImage(List<PostResponseDto> postResponseDtos, Post post) {
-        PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
-        // writer 이미지 확인
-        checkProfileImage(postResponseDtos, post, postResponseDto);
-    }
-
-    private void checkProfileImage(List<PostResponseDto> postResponseDtos, Post post, PostResponseDto postResponseDto) {
-        checkProfileExists(post, postResponseDto);
-        postResponseDtos.add(postResponseDto);
     }
 
     @Transactional(readOnly = true)
@@ -201,8 +193,7 @@ public class PostService {
                         .map(postTag -> postTag.getTag().getName())
                         .collect(Collectors.toList()));
             }
-            // writer 이미지 확인
-            checkProfileImage(postResponseDtos, post, postResponseDto);
+            postResponseDtos.add(postResponseDto);
         }
         return postResponseDtos;
     }
@@ -227,24 +218,19 @@ public class PostService {
                     .map(postTag -> postTag.getTag().getName())
                     .collect(Collectors.toList()));
         }
-        // writer 이미지 확인
-        checkProfileExists(post, postResponseDto);
+        // 댓글 확인
+        List<CommentDto> commentDtos = new ArrayList<>();
+        commentRepository.findByPostIdAndMemberFetchJoin(post.getId()).forEach(comment -> {
+            if (comment.getParent() == null) { // 대댓글 아닌 경우만
+                CommentDto commentDto = CommentDto.getCommentDto(comment);
+                // recommentList 확인
+                List<RecommentDto> recommentDtos = comment.getChildren().stream()
+                        .map(RecommentDto::getRecommentDto).collect(Collectors.toList());
+                commentDto.setRecommentList(recommentDtos);
+                commentDtos.add(commentDto);
+            }
+        });
+        postResponseDto.setCommentList(commentDtos);
         return postResponseDto;
-    }
-
-    private void checkProfileExists(Post post, PostResponseDto postResponseDto) {
-        if (post.getMember().getProfileImage() != null) {
-            postResponseDto.setWriter(MemberResponseDto.builder()
-                    .id(post.getMember().getId())
-                    .nickname(post.getMember().getNickname())
-                    .imagePath(post.getMember().getProfileImage().getImagePath())
-                    .build());
-        } else {
-            postResponseDto.setWriter(MemberResponseDto.builder()
-                    .id(post.getMember().getId())
-                    .nickname(post.getMember().getNickname())
-                    .imagePath(null)
-                    .build());
-        }
     }
 }

@@ -4,8 +4,8 @@ import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.Comment;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.Post;
-import Alumni.backend.module.repository.CommentRepository;
-import Alumni.backend.module.repository.PostRepository;
+import Alumni.backend.module.repository.Comment.CommentRepository;
+import Alumni.backend.module.repository.Post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    public void createComment(Member member,Long postId, String content){
+    public Long createComment(Member member,Long postId, String content){
         if(content.length() == 0)
             throw new IllegalArgumentException("Bad Request");
 
@@ -28,9 +28,10 @@ public class CommentService {
 
         Comment comment = Comment.createComment(member, post, content);
 
-        commentRepository.save(comment);
+        Comment saveComment = commentRepository.save(comment);
 
         postRepository.updateCommentCount(post.getCommentNum()+1, postId);//게시글에 달린 댓글 수 증가
+        return saveComment.getId();
     }
 
     public void modifyComment(Member member, Long commentId, String content){

@@ -3,24 +3,20 @@ package Alumni.backend.module.service;
 import Alumni.backend.TestData;
 import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.*;
-import Alumni.backend.module.dto.PostResponseDto;
 import Alumni.backend.module.dto.requestDto.PostCreateRequestDto;
 import Alumni.backend.module.dto.requestDto.PostModifyRequestDto;
 import Alumni.backend.module.dto.requestDto.PostSearch;
 import Alumni.backend.module.repository.*;
+import Alumni.backend.module.repository.Post.PostRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @SpringBootTest
