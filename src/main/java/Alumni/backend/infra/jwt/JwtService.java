@@ -149,11 +149,15 @@ public class JwtService {
         }
     }
 
-    public void logout(HttpServletRequest request) {
+    public void logout(Member member, HttpServletRequest request) {
         try { // refresh 토큰 삭제
             checkAccessAndRefreshHeaderValid(request);
             String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH).replace(JwtProperties.TOKEN_PREFIX, "");
             removeRefreshToken(refreshToken);
+            // fcm 토큰 삭제
+            Member currentUser = memberRepository.findById(member.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+            currentUser.setFcmToken("");
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }

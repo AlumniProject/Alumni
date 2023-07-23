@@ -1,9 +1,11 @@
 package Alumni.backend.module.controller;
 
+import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.jwt.JwtService;
 import Alumni.backend.infra.response.BasicResponse;
 import Alumni.backend.infra.response.ErrorResponse;
 import Alumni.backend.infra.response.SingleResponse;
+import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.service.UniversityService;
 
 import java.util.Map;
@@ -31,8 +33,8 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<? extends BasicResponse> logout(HttpServletRequest request) {
-        jwtService.logout(request);
+    public ResponseEntity<? extends BasicResponse> logout(@CurrentUser Member member, HttpServletRequest request) {
+        jwtService.logout(member, request);
         return ResponseEntity.ok().body(new SingleResponse("로그아웃 완료"));
     }
 

@@ -22,4 +22,13 @@ public class CommentRepositoryImpl implements CommentRepositoryCutom {
                 .where(comment.post.id.eq(postId))
                 .fetch();
     }
+
+    @Override
+    public Comment findByIdAndMemberFetchJoin(Long commentId) {
+        return jpaQueryFactory
+                .selectFrom(comment)
+                .leftJoin(comment.member, member).fetchJoin()
+                .where(comment.id.eq(commentId))
+                .fetchOne();
+    }
 }
