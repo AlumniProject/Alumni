@@ -7,4 +7,6 @@ import java.util.List;
 public interface CommentRepositoryCutom {
 
     List<Comment> findByPostIdAndMemberFetchJoin(Long postId);
+
+    Comment findByIdAndMemberFetchJoin(Long commentId);
 }
