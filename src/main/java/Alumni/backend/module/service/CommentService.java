@@ -2,10 +2,13 @@ package Alumni.backend.module.service;
 
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.Comment;
+import Alumni.backend.module.domain.CommentLike;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.Post;
+import Alumni.backend.module.repository.CommentLikeRepository;
 import Alumni.backend.module.repository.CommentRepository;
 import Alumni.backend.module.repository.PostRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     public void createComment(Member member,Long postId, String content){
         if(content.length() == 0)
@@ -56,6 +60,15 @@ public class CommentService {
 
         Post post = comment.getPost();
         int count = comment.getChildren().size() + 1;
+
+        List<CommentLike> parentLikeList = commentLikeRepository.findByCommentId(comment.getId());
+        commentLikeRepository.deleteAll(parentLikeList);
+
+        for(int i = 0; i<count-1; i++){
+            Comment children = comment.getChildren().get(i);
+            List<CommentLike> childrenLikeList = commentLikeRepository.findByCommentId(children.getId());
+            commentLikeRepository.deleteAll(childrenLikeList);
+        }
 
         commentRepository.delete(comment);
 
@@ -104,6 +117,9 @@ public class CommentService {
 
         Post post = recomment.getPost();
         postRepository.updateCommentCount(post.getCommentNum()-1, post.getId());
+
+        List<CommentLike> recommentLikeList = commentLikeRepository.findByCommentId(recomment.getId());
+        commentLikeRepository.deleteAll(recommentLikeList);
 
         commentRepository.delete(recomment);
     }

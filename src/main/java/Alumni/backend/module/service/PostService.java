@@ -28,6 +28,8 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     public void postCreate(Member member, PostCreateRequestDto postCreateRequestDto) {
         Board board = boardRepository.findById(postCreateRequestDto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
@@ -88,7 +90,18 @@ public class PostService {
 
         //달린 댓글 삭제
         List<Comment> commentList = commentRepository.findByPostId(postId);
+
+        //댓글에 달린 좋아요 삭제
+        for (Comment comment : commentList) {
+            List<CommentLike> findCommentLike = commentLikeRepository.findByCommentId(comment.getId());
+            commentLikeRepository.deleteAll(findCommentLike);
+        }
+
         commentRepository.deleteAll(commentList);
+
+        //좋아요 삭제
+        List<PostLike> likeList = postLikeRepository.findByPostId(postId);
+        postLikeRepository.deleteAll(likeList);
 
         postRepository.delete(post);
     }

@@ -22,4 +22,18 @@ public class PostLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public static PostLike createPostLike(Post post, Member member){
+        PostLike postLike = new PostLike();
+
+        postLike.post = post;
+        postLike.member = member;
+
+        return postLike;
+    }
+
+    public void setMember(Member member){
+        this.member = member;
+        member.getPostLikes().add(this);
+    }
 }

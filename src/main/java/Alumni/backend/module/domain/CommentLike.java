@@ -22,4 +22,18 @@ public class CommentLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public static CommentLike createCommentLike(Comment comment, Member member){
+        CommentLike commentLike = new CommentLike();
+
+        commentLike.comment = comment;
+        commentLike.member = member;
+
+        return commentLike;
+    }
+
+    public void setMember(Member member){
+        this.member = member;
+        member.getCommentLikes().add(this);
+    }
 }
