@@ -23,19 +23,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
     private final ImageService imageService;
 
-    @PostMapping("/member/sign-up")
+    @PostMapping("/sign-up")
     public ResponseEntity<? extends BasicResponse> signUp(@RequestBody @Valid SignUpRequestDto request,
                                                           HttpServletResponse response) {
         memberService.signUp(request, response);
         return ResponseEntity.ok().body(new SingleResponse("회원가입 완료"));
     }
 
-    @PostMapping("/member/inquiry")
+    @PostMapping("/inquiry")
     public ResponseEntity<? extends BasicResponse> inquiry(@RequestBody @Valid Map<String, String> request) {
 
         memberService.SaveInquiry(request.get("content"));
@@ -43,7 +44,7 @@ public class MemberController {
         return ResponseEntity.ok().body(new SingleResponse("문의 완료"));
     }
 
-    @GetMapping("/member/terms")
+    @GetMapping("/terms")
     public ResponseEntity<? extends BasicResponse> terms() {
         List<Terms> terms = memberService.findTerms();
 
@@ -54,14 +55,14 @@ public class MemberController {
         return ResponseEntity.ok().body(new GeneralResponse<>(termsDto, "약관내용 전송 완료"));
     }
 
-    @PutMapping("/member/interest-field")
+    @PutMapping("/interest-field")
     public ResponseEntity<? extends BasicResponse> interest(@CurrentUser Member member, @RequestBody interestFieldRequestDto data) {
         memberService.updateInterest(data.getData(), member.getId());//data, memberId
 
         return ResponseEntity.ok().body(new SingleResponse("관심분야 추가 완료"));
     }
 
-    @PostMapping("/member/profile-image")
+    @PostMapping("/profile-image")
     public ResponseEntity<? extends BasicResponse> profileImage(@CurrentUser Member member,
                                                                 @RequestPart("image") MultipartFile multipartFile) {
         String storageImageName = imageService.saveProfileImage(multipartFile);//s3에 저장

@@ -1,4 +1,4 @@
-package Alumni.backend.module.repository;
+package Alumni.backend.module.repository.Post;
 
 import Alumni.backend.module.domain.Comment;
 import Alumni.backend.module.domain.Post;

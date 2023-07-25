@@ -140,9 +140,10 @@ class PostControllerTest {
 
     @Test
     public void 게시글_상세조회_테스트() throws Exception {
+        //testData.SetUpComment();
         Member member = testData.findMemberByEmail("1");
 
-        mockMvc.perform(get("/post/3")
+        mockMvc.perform(get("/post/1")
                         .with(user(new PrincipalDetails(member))))
                 .andDo(print());
     }

@@ -50,6 +50,10 @@ dependencies {
 	//querydsl 추가
 	implementation "com.querydsl:querydsl-jpa:5.0.0"
 	annotationProcessor "com.querydsl:querydsl-apt:5.0.0"
+	//firebase 추가
+	implementation 'com.google.firebase:firebase-admin:6.8.1'
+	//okhttp
+	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
 }
 
 tasks.named('test') {

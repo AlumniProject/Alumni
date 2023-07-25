@@ -19,21 +19,11 @@ public class PostResponseDto {
     private String content;
     private LocalDateTime createTime;
     private List<String> hashTag;
+    private int likes;
+    private int comments;
     private MemberResponseDto writer;
+    private List<CommentDto> commentList;
 
-    /*public static PostResponseDto createPostResponseDto(Long boardId, Long postId, String title,
-                                                        String content, LocalDateTime crateTime,
-                                                        List<String> hashTag, MemberResponseDto writer) {
-        PostResponseDto postResponseDto = new PostResponseDto();
-        postResponseDto.boardId = boardId;
-        postResponseDto.postId = postId;
-        postResponseDto.title = title;
-        postResponseDto.content = content;
-        postResponseDto.createTime = crateTime;
-        postResponseDto.hashTag = hashTag;
-        postResponseDto.writer = writer;
-        return postResponseDto;
-    }*/
     public static PostResponseDto getPostResponseDto(Post post) {
         return PostResponseDto.builder()
                 .boardId(post.getBoard().getId())
@@ -41,6 +31,9 @@ public class PostResponseDto {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .createTime(post.getCreateTime())
+                .likes(post.getLikeNum())
+                .comments(post.getCommentNum())
+                .writer(MemberResponseDto.getMemberResponseDto(post.getMember()))
                 .build();
     }
 
@@ -48,7 +41,7 @@ public class PostResponseDto {
         this.hashTag = hashTag;
     }
 
-    public void setWriter(MemberResponseDto memberResponseDto) {
-        this.writer = memberResponseDto;
+    public void setCommentList(List<CommentDto> commentList) {
+        this.commentList = commentList;
     }
 }
