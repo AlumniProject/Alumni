@@ -4,8 +4,11 @@ import Alumni.backend.infra.Event.CommentCreateEvent;
 import Alumni.backend.infra.Event.RecommentCreateEvent;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.Comment;
+import Alumni.backend.module.domain.CommentLike;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.Post;
+import Alumni.backend.module.repository.CommentLikeRepository;
+import java.util.List;
 import Alumni.backend.module.repository.Comment.CommentRepository;
 import Alumni.backend.module.repository.Post.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
@@ -24,6 +25,7 @@ import java.util.List;
 public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public Long createComment(Member member, Long postId, String content) {
@@ -65,6 +67,15 @@ public class CommentService {
 
         Post post = comment.getPost();
         int count = comment.getChildren().size() + 1;
+
+        List<CommentLike> parentLikeList = commentLikeRepository.findByCommentId(comment.getId());
+        commentLikeRepository.deleteAll(parentLikeList);
+
+        for(int i = 0; i<count-1; i++){
+            Comment children = comment.getChildren().get(i);
+            List<CommentLike> childrenLikeList = commentLikeRepository.findByCommentId(children.getId());
+            commentLikeRepository.deleteAll(childrenLikeList);
+        }
 
         commentRepository.delete(comment);
 
@@ -113,6 +124,9 @@ public class CommentService {
 
         Post post = recomment.getPost();
         postRepository.updateCommentCount(post.getCommentNum() - 1, post.getId());
+
+        List<CommentLike> recommentLikeList = commentLikeRepository.findByCommentId(recomment.getId());
+        commentLikeRepository.deleteAll(recommentLikeList);
 
         commentRepository.delete(recomment);
     }

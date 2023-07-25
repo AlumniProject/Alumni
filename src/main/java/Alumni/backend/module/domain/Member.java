@@ -1,5 +1,7 @@
 package Alumni.backend.module.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,11 +50,13 @@ public class Member extends BaseTimeEntity {
     //@Column(nullable = false)
     private String fcmToken;
 
-    @OneToMany(mappedBy = "id")
-    private Set<PostLike> postLikes = new HashSet<>();
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> postLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "id")
-    private Set<CommentLike> commentLikes = new HashSet<>();
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentLike> commentLikes = new ArrayList<>();
 
     //생성 메서드
     public static Member createMember(String email, String nickname, String classOf,
@@ -82,4 +86,5 @@ public class Member extends BaseTimeEntity {
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
+
 }
