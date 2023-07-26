@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -50,12 +48,10 @@ public class Member extends BaseTimeEntity {
     //@Column(nullable = false)
     private String fcmToken;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<PostLike> postLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<CommentLike> commentLikes = new ArrayList<>();
 
     //생성 메서드

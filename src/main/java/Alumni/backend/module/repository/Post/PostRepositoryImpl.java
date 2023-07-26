@@ -3,6 +3,7 @@ package Alumni.backend.module.repository.Post;
 import Alumni.backend.module.domain.Post;
 import Alumni.backend.module.dto.requestDto.PostSearch;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import javax.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
@@ -20,10 +21,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     @Override
     public List<Post> findAllPosts() {
         return jpaQueryFactory
-                .selectFrom(post)
-                .leftJoin(post.member, member).fetchJoin()
-                .leftJoin(member.profileImage, image).fetchJoin()
-                .fetch();
+            .selectFrom(post)
+            .leftJoin(post.member, member).fetchJoin()
+            .leftJoin(member.profileImage, image).fetchJoin()
+            .fetch();
     }
 
     @Override
@@ -45,6 +46,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .leftJoin(member.profileImage, image).fetchJoin()
                 .where(post.id.eq(postId))
                 .fetchOne();
+    }
+
+    @Override
+    public List<Post> findPopularPosts(List<Long> list) {
+        return jpaQueryFactory
+            .selectFrom(post)
+            .leftJoin(post.member, member).fetchJoin()
+            .leftJoin(member.profileImage, image).fetchJoin()
+            .where(post.board.id.in(1, 3, 5).or(post.id.in(list)))
+            .orderBy(post.likeNum.desc(),
+                post.commentNum.desc().nullsLast())
+            .limit(4)
+            .fetch();
     }
 
     private BooleanExpression getTitleContentContains(String titleOrContent) {
