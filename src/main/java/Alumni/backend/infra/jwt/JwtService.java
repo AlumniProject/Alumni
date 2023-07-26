@@ -1,6 +1,7 @@
 package Alumni.backend.infra.jwt;
 
 import Alumni.backend.infra.exception.NoExistsException;
+import Alumni.backend.infra.exception.UnAuthorizedException;
 import Alumni.backend.module.domain.Member;
 import Alumni.backend.module.domain.VerifiedEmail;
 import Alumni.backend.module.dto.requestDto.LoginRequestDto;
@@ -38,7 +39,7 @@ public class JwtService {
     public String verifyNewMemberOrNot(LoginRequestDto loginRequestDto) {
         // email 존재 확인
         if (!verifiedEmailRepository.existsByEmail(loginRequestDto.getEmail())) {
-            return "Bad Request";
+            return "존재하지 않는 회원";
         }
         // 인증번호 확인
         VerifiedEmail verifiedEmail = verifiedEmailRepository.findByEmail(loginRequestDto.getEmail()).get();
@@ -72,6 +73,9 @@ public class JwtService {
         // refresh 토큰이 유효함
         // refresh 토큰을 가진 회원을 조회
         Member memberByRefreshToken = getMemberByRefreshToken(refreshToken);
+        if (memberByRefreshToken == null) {
+            throw new NoExistsException("존재하지 않는 회원");
+        }
         Long memberId = memberByRefreshToken.getId();
         String email = memberByRefreshToken.getEmail();
 
@@ -156,10 +160,10 @@ public class JwtService {
             removeRefreshToken(refreshToken);
             // fcm 토큰 삭제
             Member currentUser = memberRepository.findById(member.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+                    .orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
             currentUser.setFcmToken("");
         } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+            throw new IllegalArgumentException("Bad Request");
         }
 
         // blackList에 access 토큰 추가
@@ -228,9 +232,9 @@ public class JwtService {
         String accessToken = request.getHeader(JwtProperties.HEADER_STRING);
         String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH);
         if (accessToken == null || !accessToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
-            throw new IllegalArgumentException("JWT_ACCESS_NOT_VALID");
+            throw new UnAuthorizedException("JWT_ACCESS_NOT_VALID");
         } else if (refreshToken == null || !refreshToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
-            throw new IllegalArgumentException("JWT_ACCESS_NOT_VALID");
+            throw new UnAuthorizedException("JWT_ACCESS_NOT_VALID");
         }
     }
 

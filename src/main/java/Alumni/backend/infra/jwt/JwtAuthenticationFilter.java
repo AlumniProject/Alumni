@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     // Authentication 객체를 만들어서 리턴
     // 인증 요청시에 실행되는 함수 => /login
-    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response)
@@ -45,11 +44,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 토큰값 유효한지 + 신규회원이지 확인
         // 신규회원이면 jwt 토큰 생성하지 않음
         String result = jwtService.verifyNewMemberOrNot(loginRequestDto);
-        if (result.equals("Bad Request") || result.equals("인증번호가 올바르지 않습니다")) {
-            setBodyResponse(response, 400, result);
+        if (result.equals("존재하지 않는 회원") || result.equals("인증번호가 올바르지 않습니다")) {
+            try {
+                setBodyResponse(response, 400, result);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             return null;
         } else if (result.equals("이메일 인증 완료")) {
-            setBodyResponse(response, 200, result);
+            try {
+                setBodyResponse(response, 200, result);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             return null;
         }
 
