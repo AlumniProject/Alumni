@@ -1,8 +1,6 @@
 package Alumni.backend.module.dto;
 
-import Alumni.backend.module.domain.Comment;
 import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.domain.Post;
 import lombok.*;
 
 @Data
