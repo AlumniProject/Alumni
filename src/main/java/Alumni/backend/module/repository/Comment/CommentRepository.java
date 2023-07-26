@@ -18,4 +18,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
     @Modifying
     @Query("update Comment c set c.likeNum = :likeNum where c.id = :id")
     int updateLikeCount(@Param("likeNum") Integer likeNum, @Param("id") Long id);//좋아요 수
+
+    @Transactional
+    void deleteAllByMemberId(Long memberId);
 }

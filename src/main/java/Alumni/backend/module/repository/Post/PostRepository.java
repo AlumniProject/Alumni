@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -22,7 +23,9 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     @Modifying
     @Query("update Post p set p.likeNum = :likeNum where p.id = :id")
     int updateLikeCount(@Param("likeNum") Integer likeNum, @Param("id") Long id);//좋아요 수
-
+  
     @Query("select p.id from Post p where p.member.id = :id")
     List<Long> findByMemberId(@Param("id") Long id);
+  
+    List<Post> findAllByMemberId(Long memberId);
 }
