@@ -7,12 +7,15 @@ import Alumni.backend.module.dto.requestDto.SignUpRequestDto;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.exception.DuplicateNicknameException;
 import Alumni.backend.module.repository.*;
+import Alumni.backend.module.repository.Comment.CommentRepository;
+import Alumni.backend.module.repository.Post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +34,12 @@ public class MemberService {
     private final ImageRepository imageRepository;
     private final FileService fileService;
     private final JwtService jwtService;
+    private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
+    private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
+    private final PostService postService;
+    private final EntityManager em;
 
     public void login(Member member, HttpServletResponse response) {
         // 회원가입 후 자동로그인
@@ -117,5 +126,43 @@ public class MemberService {
             imageRepository.delete(oldImage.get());//db에서 삭제
             fileService.deleteFile(oldImage.get().getStorageImageName());//s3에서 삭제
         }
+    }
+
+    // 회원 탈퇴
+    public void deleteMember(Member user) {
+        Member member = memberRepository.findById(user.getId())
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+        // 프로필 이미지 삭제
+        if (member.getProfileImage() != null) {
+            imageRepository.deleteById(member.getProfileImage().getId());
+        }
+
+        // postLike, commentLike 삭제
+        List<PostLike> postLikes = member.getPostLikes();
+        List<CommentLike> commentLikes = member.getCommentLikes();
+        if (!postLikes.isEmpty()) {
+            postLikeRepository.deleteAll(member.getPostLikes());
+        }
+        if (!commentLikes.isEmpty()) {
+            commentLikeRepository.deleteAll(member.getCommentLikes());
+        }
+        // 회원이 작성한 댓글 삭제
+        commentRepository.deleteAllByMemberId(member.getId());
+        // 회원이 설정한 관심분야 삭제
+        interestedRepository.deleteAllByMemberId(member.getId());
+
+        // 회원이 작성한 게시글 + 기술게시글이면 해시태그 삭제 + 게시글에 달린 댓글과 좋아요 삭제
+        List<Post> posts = postRepository.findAllByMemberId(member.getId());
+
+        em.flush();
+        em.clear();
+
+        for (Post post : posts) {
+            postService.postDelete(member, post.getId());
+        }
+        VerifiedEmail verifiedEmail = verifiedEmailRepository.findByEmail(member.getEmail())
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+        verifiedEmail.verifiedFalse();
+        memberRepository.delete(member);
     }
 }

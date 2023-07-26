@@ -26,9 +26,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         if (exceptionMsg.equals("JWT_NOT_VALID") || exceptionMsg.equals("JWT_ACCESS_NOT_VALID")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(401, exceptionMsg)));
-        } else if (exceptionMsg.equals("Internal Server Error")) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(500, exceptionMsg)));
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(exceptionMsg)));

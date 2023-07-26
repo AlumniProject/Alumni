@@ -65,7 +65,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         } catch (IllegalArgumentException e) {
             request.setAttribute(JwtProperties.EXCEPTION, "JWT_ACCESS_NOT_VALID");
         } catch (Exception e) {
-            request.setAttribute(JwtProperties.EXCEPTION, "Internal Server Error");
+            request.setAttribute(JwtProperties.EXCEPTION, "RUNTIME_ERROR");
         }
         /**
          * 필터에서 발생하는 에러는 ControllerAdvice 처리불가

@@ -1,6 +1,7 @@
 package Alumni.backend.infra.response;
 
 import Alumni.backend.infra.exception.*;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,13 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 @Slf4j
 @RestControllerAdvice // 모든 Controller 전역에서 발생할 수 있는 예외를 잡아 처리해주는 어노테이션 + ResponseBody
 public class ExceptionController {
+
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<? extends BasicResponse> UnAuthorizedException(UnAuthorizedException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage()));
+    }
 
     @ExceptionHandler(ImageException.class)
     public ResponseEntity<? extends BasicResponse> ImageException(ImageException e) {
@@ -73,8 +81,8 @@ public class ExceptionController {
     public ResponseEntity<? extends BasicResponse> RunTimeHandler(RuntimeException e) {
 
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "RUNTIME_ERROR"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "RUNTIME_ERROR"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -105,5 +113,12 @@ public class ExceptionController {
             HttpMessageNotReadableException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "HTTP_REQUEST_ERROR"));
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<? extends BasicResponse> tokenExpiredException(
+            TokenExpiredException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "JWT_NOT_VALID"));
     }
 }

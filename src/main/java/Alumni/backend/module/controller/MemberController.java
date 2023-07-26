@@ -70,4 +70,10 @@ public class MemberController {
 
         return ResponseEntity.ok().body(new SingleResponse("이미지 저장 완료"));
     }
+
+    @DeleteMapping("/edit/delete")
+    public ResponseEntity<? extends BasicResponse> deleteMember(@CurrentUser Member member) {
+        memberService.deleteMember(member);
+        return ResponseEntity.ok().body(new SingleResponse("회원 탈퇴 완료"));
+    }
 }
