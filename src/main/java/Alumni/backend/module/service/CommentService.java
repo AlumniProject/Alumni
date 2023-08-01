@@ -50,7 +50,7 @@ public class CommentService {
             throw new IllegalArgumentException("Bad Request");
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoExistsException("존재하지 않는 댓글입니다."));
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 댓글입니다"));
 
         if (!comment.getMember().getId().equals(member.getId()))//수정하는 사람과 작성자가 같은지 확인
             throw new IllegalArgumentException("Bad Request");
@@ -60,7 +60,7 @@ public class CommentService {
 
     public void deleteComment(Member member, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoExistsException("존재하지 않는 댓글입니다."));
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 댓글입니다"));
 
         if (!comment.getMember().getId().equals(member.getId()))//수정하는 사람과 작성자가 같은지 확인
             throw new IllegalArgumentException("Bad Request");
@@ -89,9 +89,9 @@ public class CommentService {
 
         Comment parent = commentRepository.findByIdAndMemberFetchJoin(commentId);
         if (parent == null) {
-            throw new NoExistsException("상위 댓글이 존재하지 않습니다.");
+            throw new NoExistsException("상위 댓글이 존재하지 않습니다");
         }
-        Post post = postRepository.findById(parent.getPost().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
+        Post post = postRepository.findById(parent.getPost().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다"));
         Comment recomment = Comment.createComment(member, post, content);
         recomment.setParent(parent);
         commentRepository.save(recomment);
@@ -105,9 +105,9 @@ public class CommentService {
             throw new IllegalArgumentException("Bad Request");
 
         Comment recomment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoExistsException("존재하지 않는 대댓글입니다."));
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 대댓글입니다"));
 
-        Post post = postRepository.findById(recomment.getPost().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
+        Post post = postRepository.findById(recomment.getPost().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다"));
 
         if (!recomment.getMember().getId().equals(member.getId()))//수정하는 사람과 작성자가 같은지 확인
             throw new IllegalArgumentException("Bad Request");
@@ -117,7 +117,7 @@ public class CommentService {
 
     public void deleteRecomment(Member member, Long commentId) {
         Comment recomment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoExistsException("존재하지 않는 대댓글입니다."));
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 대댓글입니다"));
 
         if (!recomment.getMember().getId().equals(member.getId()))//수정하는 사람과 작성자가 같은지 확인
             throw new IllegalArgumentException("Bad Request");
