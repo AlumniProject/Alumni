@@ -11,6 +11,8 @@ import Alumni.backend.module.dto.requestDto.SignUpRequestDto;
 import Alumni.backend.module.dto.requestDto.interestFieldRequestDto;
 import Alumni.backend.module.service.ImageService;
 import Alumni.backend.module.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Tag(name = "Member", description = "회원 관련 api")
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class MemberController {
     private final MemberService memberService;
     private final ImageService imageService;
 
+    @Operation(summary = "회원가입", description = "회원가입 메서드 입니다.")
     @PostMapping("/sign-up")
     public ResponseEntity<? extends BasicResponse> signUp(@RequestBody @Valid SignUpRequestDto request,
                                                           HttpServletResponse response) {
@@ -36,6 +40,7 @@ public class MemberController {
         return ResponseEntity.ok().body(new SingleResponse("회원가입 완료"));
     }
 
+    @Operation(summary = "문의하기", description = "문의하기 메서드 입니다.")
     @PostMapping("/inquiry")
     public ResponseEntity<? extends BasicResponse> inquiry(@RequestBody @Valid Map<String, String> request) {
 
@@ -44,6 +49,7 @@ public class MemberController {
         return ResponseEntity.ok().body(new SingleResponse("문의 완료"));
     }
 
+    @Operation(summary = "약관동의", description = "약관동의 메서드 입니다.")
     @GetMapping("/terms")
     public ResponseEntity<? extends BasicResponse> terms() {
         List<Terms> terms = memberService.findTerms();
@@ -55,6 +61,7 @@ public class MemberController {
         return ResponseEntity.ok().body(new GeneralResponse<>(termsDto, "약관내용 전송 완료"));
     }
 
+    @Operation(summary = "관심분야 설정", description = "관심분야 설정 메서드 입니다.")
     @PutMapping("/interest-field")
     public ResponseEntity<? extends BasicResponse> interest(@CurrentUser Member member, @RequestBody interestFieldRequestDto data) {
         memberService.updateInterest(data.getData(), member.getId());//data, memberId
@@ -62,6 +69,7 @@ public class MemberController {
         return ResponseEntity.ok().body(new SingleResponse("관심분야 추가 완료"));
     }
 
+    @Operation(summary = "프로필 설정", description = "프로필 설정 메서드 입니다.")
     @PostMapping("/profile-image")
     public ResponseEntity<? extends BasicResponse> profileImage(@CurrentUser Member member,
                                                                 @RequestPart("image") MultipartFile multipartFile) {
@@ -71,6 +79,7 @@ public class MemberController {
         return ResponseEntity.ok().body(new SingleResponse("이미지 저장 완료"));
     }
 
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 메서드 입니다.")
     @DeleteMapping("/edit/delete")
     public ResponseEntity<? extends BasicResponse> deleteMember(@CurrentUser Member member) {
         memberService.deleteMember(member);

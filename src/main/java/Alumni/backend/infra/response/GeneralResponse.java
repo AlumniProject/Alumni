@@ -2,11 +2,13 @@ package Alumni.backend.infra.response;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(description = "성공(List) 형식 Response")
 public class GeneralResponse<T> extends BasicResponse {
 
     private int code; // 응답 코드

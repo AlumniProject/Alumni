@@ -54,6 +54,8 @@ dependencies {
 	implementation 'com.google.firebase:firebase-admin:6.8.1'
 	//okhttp
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+	//swagger
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
 }
 
 tasks.named('test') {
