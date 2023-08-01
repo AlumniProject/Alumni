@@ -1,6 +1,5 @@
 package Alumni.backend.module.repository;
 
-import Alumni.backend.module.domain.Comment;
 import Alumni.backend.module.domain.PostLike;
 import java.util.List;
 import java.util.Optional;

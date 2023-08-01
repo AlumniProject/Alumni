@@ -1,7 +1,7 @@
 package Alumni.backend.module.repository.Post;
 
-import Alumni.backend.module.domain.Comment;
 import Alumni.backend.module.domain.Post;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +23,9 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     @Modifying
     @Query("update Post p set p.likeNum = :likeNum where p.id = :id")
     int updateLikeCount(@Param("likeNum") Integer likeNum, @Param("id") Long id);//좋아요 수
-
+  
+    @Query("select p.id from Post p where p.member.id = :id")
+    List<Long> findByMemberId(@Param("id") Long id);
+  
     List<Post> findAllByMemberId(Long memberId);
 }
