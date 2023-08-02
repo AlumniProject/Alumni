@@ -12,21 +12,16 @@ import java.lang.annotation.*;
 @Documented
 @ApiResponses({
         @ApiResponse(
-                responseCode = "400",
-                description = "Bad Request",
-                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
-        ),
-        @ApiResponse(
-                responseCode = "401",
-                description = "ACCESS_TOKEN_EXPIRED",
+                responseCode = "403",
+                description = "USER_NOT_FOUND",
                 content = @Content(schema = @Schema(implementation = ErrorResponse.class))
         ),
         @ApiResponse(
                 responseCode = "500",
-                description = "Internal Server Error",
+                description = "RUNTIME_ERROR",
                 content = @Content(schema = @Schema(implementation = ErrorResponse.class))
         ),
 }
 )
-public @interface ApiDocumentResponse {
+public @interface ApiDocumentGlobalResponse {
 }
