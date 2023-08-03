@@ -18,9 +18,9 @@ import java.lang.annotation.*;
         ),
         @ApiResponse(
                 responseCode = "500",
-                description = "RUNTIME_ERROR",
+                description = "Internal Server Error",
                 content = @Content(schema = @Schema(implementation = ErrorResponse.class))
-        ),
+        )
 }
 )
 public @interface ApiDocumentGlobalResponse {
