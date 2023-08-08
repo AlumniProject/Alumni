@@ -1,7 +1,7 @@
 package Alumni.backend.module.service;
 
-import Alumni.backend.infra.Event.CommentCreateEvent;
-import Alumni.backend.infra.Event.RecommentCreateEvent;
+import Alumni.backend.infra.event.CommentCreateEvent;
+import Alumni.backend.infra.event.RecommentCreateEvent;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.Comment;
 import Alumni.backend.module.domain.CommentLike;
