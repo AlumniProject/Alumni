@@ -41,3 +41,4 @@ src/main/**/application.properties
 src/main/**/application.yml
 ## firebase file
 src/main/resources/alumni-firebase.json
+/src/main/resources/static/chromedriver-win32/
