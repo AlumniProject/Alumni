@@ -19,6 +19,7 @@ public class PostSearchResponse<T> extends BasicResponse {
     private int count; // 데이터의 개수
     @Schema(description = "hashTag 순위", example = "[\"python\", \"Java\"]")
     private List<String> tagRank; // hashTag 순위
+    @Schema(description = "데이터 결과")
     private T data;
 
     public PostSearchResponse(T data, List<String> tagRank, String message) {
