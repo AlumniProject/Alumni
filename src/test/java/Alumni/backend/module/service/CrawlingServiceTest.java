@@ -11,15 +11,7 @@ import java.io.IOException;
 @SpringBootTest
 @Transactional
 public class CrawlingServiceTest {
-    @Autowired
-    private CrawlingService crawlingService;
     @Autowired ContestCrawlingService contestCrawlingService;
-
-    @Test
-    @Rollback(value = false)
-    void 크롤링테스트() throws IOException, InterruptedException {
-        crawlingService.getCrawlingInfos();
-    }
 
     @Test
     @Rollback(value = false)

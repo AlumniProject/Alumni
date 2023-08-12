@@ -1,7 +1,7 @@
 package Alumni.backend.module.service;
 
-import Alumni.backend.module.domain.CrawlingInfo;
-import Alumni.backend.module.repository.CrawlingInfoRepository;
+import Alumni.backend.module.domain.Contest;
+import Alumni.backend.module.repository.ContestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -9,9 +9,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,15 +22,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ContestCrawlingService {
-    private final CrawlingInfoRepository crawlingInfoRepository;
+    private final ContestRepository contestRepository;
     private WebDriver webDriver;
 
-    public List<CrawlingInfo> getCrawlingInfos() throws IOException, InterruptedException {
-        List<CrawlingInfo> crawlingInfoList = new ArrayList<>();
+    public void getCrawlingInfos() throws IOException, InterruptedException {
 
-        String url = "https://www.wevity.com/";//festa url
+        String url = "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20";//위비티 url
 
-        log.info("요즘것들 크롤링 시작");
+        log.info("위비티 크롤링 시작");
 
         //시스템 property 설정
         System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver-win32/chromedriver.exe");
@@ -39,33 +41,53 @@ public class ContestCrawlingService {
         options.addArguments("--disable-dev-shm-usage");//dev/shm 메모리 사용을 비홯성화
         options.addArguments("--disable-gpu");//GPU 가속 비활성화
         options.addArguments("--remote-allow-origins=*");//ConnectionFailedException 해결 방법
+        options.setHeadless(true);
         options.setCapability("ignoreProtectedModeSettings", true);
 
         webDriver = new ChromeDriver(options);
 
         webDriver.get(url);
 
-        Thread.sleep(1000);
-
         List<WebElement> concertElementList = webDriver.findElements(By.cssSelector("div .tit a"));//div 안 a태그에 있는거 가져오기
         List<String> urlLIst = new ArrayList<>();
+        List<Contest> contestList = new ArrayList<>();
 
         for (WebElement concertEl : concertElementList){
             urlLIst.add(concertEl.getAttribute("href"));//각 공모전 상세 url 가져오기
         }
 
-        Thread.sleep(10000);
-
         for (String concertUrl : urlLIst) {
-            log.info(concertUrl);
+            //log.info(concertUrl);
             webDriver.get(concertUrl);
 
-            Thread.sleep(15000);
+            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(10)); // 대기 시간 설정 (최대 10초)
+
+            //분야
+            WebElement fieldInfo = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".cd-info-list li")));
+            String[] field = fieldInfo.getText().split("\n");
+
+            WebElement elementTitle = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".tit-area .tit")));
+//            String title = elementTitle.getText();
+//            log.info(title);
+            WebElement elementContent = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".article")));
+//            String content = elementContent.getText();
+//            log.info(content);
+
+            Contest contest = Contest.builder()
+                    .contestUrl(concertUrl)
+                    .field(field[1])
+                    .title(elementTitle.getText())
+                    .content(elementContent.getText())
+                    .likeNum(0)
+                    .build();
+
+            contestList.add(contest);
+            Thread.sleep(5000);
         }
+
+        contestRepository.saveAll(contestList);
 
         webDriver.close();
         webDriver.quit();
-
-        return crawlingInfoList;
     }
 }
