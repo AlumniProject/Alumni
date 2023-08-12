@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Transactional(readOnly = true)
-public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCutom {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
     @Query("select c from Comment c where c.post.id = :id")
     List<Comment> findByPostId(@Param("id") Long id);

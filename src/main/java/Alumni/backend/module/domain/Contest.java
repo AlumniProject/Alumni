@@ -32,4 +32,7 @@ public class Contest {
 
     @Column(nullable = false)
     private Integer likeNum;
+
+    @Column(nullable = false)
+    private Integer teamNum;
 }

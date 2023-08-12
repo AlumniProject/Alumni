@@ -1,9 +1,9 @@
 package Alumni.backend.module.service;
 
 import Alumni.backend.module.domain.Contest;
-import Alumni.backend.module.repository.ContestRepository;
+import Alumni.backend.module.repository.Contest.ContestRepository;
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -18,18 +18,16 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-public class ContestCrawlingService {
+@Slf4j
+public class CrawlingService {
     private final ContestRepository contestRepository;
     private WebDriver webDriver;
 
-    public void getCrawlingInfos() throws IOException, InterruptedException {
+    public void contestCrawling() throws IOException, InterruptedException {
 
         String url = "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20";//위비티 url
-
-        log.info("위비티 크롤링 시작");
 
         //시스템 property 설정
         System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver-win32/chromedriver.exe");
@@ -79,6 +77,7 @@ public class ContestCrawlingService {
                     .title(elementTitle.getText())
                     .content(elementContent.getText())
                     .likeNum(0)
+                    .teamNum(0)
                     .build();
 
             contestList.add(contest);

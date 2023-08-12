@@ -10,7 +10,7 @@ import static Alumni.backend.module.domain.QComment.*;
 import static Alumni.backend.module.domain.QMember.*;
 
 @RequiredArgsConstructor
-public class CommentRepositoryImpl implements CommentRepositoryCutom {
+public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
