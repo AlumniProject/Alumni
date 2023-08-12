@@ -15,11 +15,6 @@ import java.lang.annotation.*;
                 responseCode = "403",
                 description = "USER_NOT_FOUND",
                 content = @Content(schema = @Schema(implementation = ErrorResponse.class))
-        ),
-        @ApiResponse(
-                responseCode = "500",
-                description = "Internal Server Error",
-                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
         )
 }
 )

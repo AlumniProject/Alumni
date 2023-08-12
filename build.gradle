@@ -57,7 +57,7 @@ dependencies {
 	//swagger
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
 	//selenium
-	implementation 'org.seleniumhq.selenium:selenium-java:4.1.2'
+	implementation 'org.seleniumhq.selenium:selenium-java:4.6.0'
 }
 
 tasks.named('test') {

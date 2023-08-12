@@ -1,4 +1,4 @@
-package Alumni.backend.infra.Notification;
+package Alumni.backend.infra.notification;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;

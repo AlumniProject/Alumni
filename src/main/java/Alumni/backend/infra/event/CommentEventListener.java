@@ -1,15 +1,12 @@
-package Alumni.backend.infra.Event;
+package Alumni.backend.infra.event;
 
-import Alumni.backend.infra.Notification.NotificationService;
+import Alumni.backend.infra.notification.NotificationService;
 import Alumni.backend.module.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Async
 @Component
