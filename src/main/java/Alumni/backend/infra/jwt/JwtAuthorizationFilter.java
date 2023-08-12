@@ -22,11 +22,13 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final JwtService jwtService;
+    private final String SECRET;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
-                                  JwtService jwtService) {
+                                  JwtService jwtService, String SECRET) {
         super(authenticationManager);
         this.jwtService = jwtService;
+        this.SECRET = SECRET;
     }
 
     // 요청마다 jwt 토큰 검증
@@ -47,7 +49,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 request.setAttribute(JwtProperties.EXCEPTION, "ACCESS_TOKEN_EXPIRED");
             }
 
-            String email = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build()
+            String email = JWT.require(Algorithm.HMAC512(SECRET)).build()
                     .verify(accessToken).getClaim("email").asString();
             Member memberByEmail = jwtService.getMemberByEmail(email);
 

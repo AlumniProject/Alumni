@@ -13,12 +13,7 @@ import java.lang.annotation.*;
 @ApiResponses({
         @ApiResponse(
                 responseCode = "401",
-                description = "JWT_NOT_VALID",
-                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
-        ),
-        @ApiResponse(
-                responseCode = "500",
-                description = "RUNTIME_ERROR",
+                description = "JWT_NOT_VALID" + "<br>JWT_ACCESS_NOT_VALID",
                 content = @Content(schema = @Schema(implementation = ErrorResponse.class))
         )
 }

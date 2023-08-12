@@ -3,6 +3,7 @@ package Alumni.backend.infra.config;
 import Alumni.backend.infra.jwt.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,8 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final CorsConfig corsConfig;
     private final ObjectMapper objectMapper;
+    @Value("${jwt.secret-key}")
+    private String SECRET;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -35,8 +38,8 @@ public class SecurityConfig {
                 .apply(new MyCustomDsl())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui/**").permitAll()//swagger
-                .antMatchers("/", "/member/email-validate", "/member/sign-up", "/member/terms"
+                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()//swagger
+                .antMatchers( "/member/email-validate", "/member/sign-up", "/member/terms"
                         , "/member/inquiry", "/reissue").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -59,12 +62,7 @@ public class SecurityConfig {
             http
                     .addFilter(corsConfig.corsFilter())
                     .addFilter(new JwtAuthenticationFilter(jwtService, objectMapper))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, jwtService));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, jwtService, SECRET));
         }
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
