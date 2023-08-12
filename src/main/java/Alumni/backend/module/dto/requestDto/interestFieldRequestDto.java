@@ -7,6 +7,6 @@ import java.util.List;
 
 @Data
 public class interestFieldRequestDto {
-    @Schema(name = "data", description = "이메일", example = "[\"Frontend\", \"Backend\"]")
+    @Schema(name = "data", description = "관심분야", example = "[\"Frontend\", \"Backend\"]")
     List<String> data;
 }
