@@ -14,6 +14,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,12 @@ public class JwtService {
     private final VerifiedEmailRepository verifiedEmailRepository;
     private final BlackListService blackListService;
     private final BlackListRepository blackListRepository;
+    @Value("${jwt.secret-key}")
+    private String SECRET;
+    @Value("${jwt.access-token.expiration-time}")
+    private int EXPIRATION_TIME;
+    @Value("${jwt.refresh-token.expiration-time}")
+    private long REFRESH_EXPIRATION_TIME;
 
     /**
      * 토큰값이 유효한지 확인 -> 신규회원인지 아닌지 확인
@@ -180,21 +187,21 @@ public class JwtService {
     public String createAccessToken(Long id, String email) {
         return JWT.create()
                 .withSubject(email)
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .withClaim("id", id)
                 .withClaim("email", email)
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+                .sign(Algorithm.HMAC512(SECRET));
     }
 
     public String createRefreshToken(String email) {
         return JWT.create()
                 .withSubject(email)
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.REFRESH_EXPIRATION_TIME))
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME))
+                .sign(Algorithm.HMAC512(SECRET));
     }
 
     public void checkTokenValid(String token) {
-        JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token);
+        JWT.require(Algorithm.HMAC512(SECRET)).build().verify(token);
     }
 
     // true : 만료
@@ -210,7 +217,7 @@ public class JwtService {
 
     public boolean isNeedToUpdateRefreshToken(String refreshToken) {
         try {
-            Date expiresAt = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
+            Date expiresAt = JWT.require(Algorithm.HMAC512(SECRET))
                     .build().verify(refreshToken).getExpiresAt();
             Date current = new Date(System.currentTimeMillis());
             Calendar calendar = Calendar.getInstance();

@@ -99,16 +99,20 @@ public class PostController {
                     + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @Operation(summary = "게시글 검색", description = "게시글 검색 메서드입니다.")
+    @Parameter(name = "id", description = "게시판 id", example = "1", in = ParameterIn.QUERY)
+    @Parameter(name = "hashTag", description = "hashTag", example = "python,Kotlin", in = ParameterIn.QUERY)
+    @Parameter(name = "content", description = "검색 내용", example = "게시글", in = ParameterIn.QUERY)
     @GetMapping("/search")
     public ResponseEntity<? extends BasicResponse> postSearch(@Schema(hidden = true) @CurrentUser Member member,
-                                                              @ModelAttribute PostSearch postSearch) {
+                                                              @Schema(hidden = true) @ModelAttribute PostSearch postSearch) {
         return ResponseEntity.ok().body(postService.search(member, postSearch));
     }
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 상세보기 전송 완료", content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
-                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요" + "<br>존재하지 않는 게시글입니다",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @Operation(summary = "게시글 상세보기", description = "게시글 상세보기 메서드 입니다.")

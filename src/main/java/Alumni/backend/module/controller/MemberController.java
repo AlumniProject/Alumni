@@ -121,7 +121,7 @@ public class MemberController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원 탈퇴 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
-                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요" + "<br>존재하지 않는 회원",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 메서드 입니다.")
