@@ -1,6 +1,7 @@
 package Alumni.backend.module.domain.community;
 
 import Alumni.backend.module.domain.BaseTimeEntity;
+import Alumni.backend.module.domain.contest.Team;
 import Alumni.backend.module.domain.registration.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,6 +37,10 @@ public class Comment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
