@@ -3,7 +3,6 @@ package Alumni.backend.module.repository.Post;
 import Alumni.backend.module.domain.Post;
 import Alumni.backend.module.dto.requestDto.PostSearch;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import javax.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
