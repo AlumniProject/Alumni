@@ -1,5 +1,6 @@
 package Alumni.backend.module.service;
 
+import Alumni.backend.module.service.contest.CrawlingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

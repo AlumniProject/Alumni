@@ -1,6 +1,6 @@
 package Alumni.backend.infra.event;
 
-import Alumni.backend.module.domain.Member;
+import Alumni.backend.module.domain.registration.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

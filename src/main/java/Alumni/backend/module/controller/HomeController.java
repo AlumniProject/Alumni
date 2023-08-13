@@ -2,9 +2,9 @@ package Alumni.backend.module.controller;
 
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
-import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.dto.PopularPostResponseDto;
-import Alumni.backend.module.service.HomeService;
+import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.dto.community.PopularPostResponseDto;
+import Alumni.backend.module.service.community.HomeService;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;

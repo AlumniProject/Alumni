@@ -2,8 +2,8 @@ package Alumni.backend.module.controller;
 
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
-import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.service.LikeService;
+import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.service.community.LikeService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

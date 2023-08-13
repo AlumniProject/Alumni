@@ -1,8 +1,8 @@
 package Alumni.backend.module.controller;
 
 import Alumni.backend.infra.response.*;
-import Alumni.backend.module.dto.ContestResponseDto;
-import Alumni.backend.module.service.ContestService;
+import Alumni.backend.module.dto.contest.ContestResponseDto;
+import Alumni.backend.module.service.contest.ContestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

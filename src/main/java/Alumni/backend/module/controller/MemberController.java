@@ -2,14 +2,14 @@ package Alumni.backend.module.controller;
 
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
-import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.domain.Terms;
-import Alumni.backend.module.dto.*;
-import Alumni.backend.module.dto.requestDto.InquiryRequestDto;
-import Alumni.backend.module.dto.requestDto.SignUpRequestDto;
-import Alumni.backend.module.dto.requestDto.interestFieldRequestDto;
+import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.domain.registration.Terms;
+import Alumni.backend.module.dto.registration.InquiryRequestDto;
+import Alumni.backend.module.dto.registration.SignUpRequestDto;
+import Alumni.backend.module.dto.registration.InterestFieldRequestDto;
+import Alumni.backend.module.dto.registration.TermsDto;
 import Alumni.backend.module.service.ImageService;
-import Alumni.backend.module.service.MemberService;
+import Alumni.backend.module.service.registration.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -93,7 +93,7 @@ public class MemberController {
     })
     @Operation(summary = "관심분야 설정", description = "관심분야 설정 메서드 입니다.")
     @PutMapping("/interest-field")
-    public ResponseEntity<? extends BasicResponse> interest(@Schema(hidden = true) @CurrentUser Member member, @RequestBody interestFieldRequestDto data) {
+    public ResponseEntity<? extends BasicResponse> interest(@Schema(hidden = true) @CurrentUser Member member, @RequestBody InterestFieldRequestDto data) {
         memberService.updateInterest(data.getData(), member.getId());//data, memberId
 
         return ResponseEntity.ok().body(new SingleResponse("관심분야 추가 완료"));

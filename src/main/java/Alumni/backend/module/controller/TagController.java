@@ -1,7 +1,7 @@
 package Alumni.backend.module.controller;
 
 import Alumni.backend.infra.response.*;
-import Alumni.backend.module.service.TagService;
+import Alumni.backend.module.service.community.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
