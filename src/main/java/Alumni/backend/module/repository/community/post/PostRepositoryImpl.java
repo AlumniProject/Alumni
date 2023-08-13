@@ -2,15 +2,16 @@ package Alumni.backend.module.repository.community.post;
 
 import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.dto.community.PostSearch;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import com.querydsl.core.types.dsl.BooleanExpression;
 
 import java.util.List;
 
-import static Alumni.backend.module.domain.QImage.*;
-import static Alumni.backend.module.domain.QMember.*;
-import static Alumni.backend.module.domain.QPost.*;
+import static Alumni.backend.module.domain.QImage.image;
+import static Alumni.backend.module.domain.community.QPost.post;
+import static Alumni.backend.module.domain.registration.QMember.member;
+
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
-import static Alumni.backend.module.domain.QContest.contest;
+import static Alumni.backend.module.domain.contest.QContest.contest;
 
 @RequiredArgsConstructor
 public class ContestRepositoryImpl implements ContestRepositoryCustom{

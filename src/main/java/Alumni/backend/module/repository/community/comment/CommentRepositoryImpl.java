@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static Alumni.backend.module.domain.QComment.*;
-import static Alumni.backend.module.domain.QMember.*;
+import static Alumni.backend.module.domain.community.QComment.comment;
+import static Alumni.backend.module.domain.registration.QMember.member;
 
 @RequiredArgsConstructor
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
