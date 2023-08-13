@@ -2,7 +2,7 @@ package Alumni.backend.infra.jwt;
 
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.principal.PrincipalDetails;
-import Alumni.backend.module.domain.Member;
+import Alumni.backend.module.domain.registration.Member;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 

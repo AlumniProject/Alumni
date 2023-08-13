@@ -2,8 +2,8 @@ package Alumni.backend.infra.jwt;
 
 import Alumni.backend.infra.principal.PrincipalDetails;
 import Alumni.backend.infra.response.SingleResponse;
-import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.dto.requestDto.LoginRequestDto;
+import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.dto.registration.LoginRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

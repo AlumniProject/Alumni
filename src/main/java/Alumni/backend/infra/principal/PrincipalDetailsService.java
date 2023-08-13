@@ -1,7 +1,7 @@
 package Alumni.backend.infra.principal;
 
-import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.repository.MemberRepository;
+import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.repository.registration.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -3,9 +3,9 @@ package Alumni.backend.module.controller;
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.jwt.JwtService;
 import Alumni.backend.infra.response.*;
-import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.dto.requestDto.EmailValidateRequestDto;
-import Alumni.backend.module.service.UniversityService;
+import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.dto.registration.EmailValidateRequestDto;
+import Alumni.backend.module.service.registration.UniversityService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

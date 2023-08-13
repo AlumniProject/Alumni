@@ -1,7 +1,7 @@
 package Alumni.backend.infra.event;
 
 import Alumni.backend.infra.notification.NotificationService;
-import Alumni.backend.module.domain.Member;
+import Alumni.backend.module.domain.registration.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

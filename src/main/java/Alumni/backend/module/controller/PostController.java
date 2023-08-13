@@ -2,12 +2,12 @@ package Alumni.backend.module.controller;
 
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
-import Alumni.backend.module.domain.Member;
-import Alumni.backend.module.dto.PostResponseDto;
-import Alumni.backend.module.dto.requestDto.PostCreateRequestDto;
-import Alumni.backend.module.dto.requestDto.PostModifyRequestDto;
-import Alumni.backend.module.dto.requestDto.PostSearch;
-import Alumni.backend.module.service.PostService;
+import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.dto.community.PostResponseDto;
+import Alumni.backend.module.dto.community.PostCreateRequestDto;
+import Alumni.backend.module.dto.community.PostModifyRequestDto;
+import Alumni.backend.module.dto.community.PostSearch;
+import Alumni.backend.module.service.community.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

@@ -1,6 +1,6 @@
 package Alumni.backend.infra.principal;
 
-import Alumni.backend.module.domain.Member;
+import Alumni.backend.module.domain.registration.Member;
 
 import java.util.Collection;
 
