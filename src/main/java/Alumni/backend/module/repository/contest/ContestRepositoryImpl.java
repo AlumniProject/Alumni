@@ -11,6 +11,7 @@ import static Alumni.backend.module.domain.contest.QContest.contest;
 
 @RequiredArgsConstructor
 public class ContestRepositoryImpl implements ContestRepositoryCustom{
+
     private final JPAQueryFactory jpaQueryFactory;
     @Override
     public Optional<List<Contest>> findByContent(String content) {

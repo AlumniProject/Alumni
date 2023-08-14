@@ -44,9 +44,9 @@ public class Comment extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> children = new ArrayList<>();//자식 댓글
+    private List<Comment> children = new ArrayList<>(); // 자식 댓글
 
-    public static Comment createComment(Member member, Post post, String content){
+    public static Comment createComment(Member member, Post post, String content) {
         Comment comment = new Comment();
 
         comment.content = content;
@@ -58,7 +58,7 @@ public class Comment extends BaseTimeEntity {
         return comment;
     }
 
-    public void setParent(Comment parent){
+    public void setParent(Comment parent) {
         this.parent = parent;
         parent.getChildren().add(this);
     }

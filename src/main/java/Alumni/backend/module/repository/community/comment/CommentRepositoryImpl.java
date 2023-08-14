@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static Alumni.backend.module.domain.QImage.image;
 import static Alumni.backend.module.domain.community.QComment.comment;
 import static Alumni.backend.module.domain.registration.QMember.member;
 
@@ -15,11 +16,22 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Comment> findByPostIdAndMemberFetchJoin(Long postId) {
+    public List<Comment> findByPostIdFetchJoinMemberAndImage(Long postId) {
         return jpaQueryFactory
                 .selectFrom(comment)
                 .leftJoin(comment.member, member).fetchJoin()
+                .leftJoin(member.profileImage, image).fetchJoin()
                 .where(comment.post.id.eq(postId))
+                .fetch();
+    }
+
+    @Override
+    public List<Comment> findByTeamIdFetchJoinMemberAndImage(Long teamId) {
+        return jpaQueryFactory
+                .selectFrom(comment)
+                .leftJoin(comment.member, member).fetchJoin()
+                .leftJoin(member.profileImage, image).fetchJoin()
+                .where(comment.team.id.eq(teamId))
                 .fetch();
     }
 

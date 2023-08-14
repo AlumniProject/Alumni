@@ -234,7 +234,7 @@ public class PostService {
         }
         // 댓글 확인
         List<CommentDto> commentDtos = new ArrayList<>();
-        commentRepository.findByPostIdAndMemberFetchJoin(post.getId()).forEach(comment -> {
+        commentRepository.findByPostIdFetchJoinMemberAndImage(post.getId()).forEach(comment -> {
             if (comment.getParent() == null) { // 대댓글 아닌 경우만
                 CommentDto commentDto = CommentDto.getCommentDto(comment);
                 // recommentList 확인

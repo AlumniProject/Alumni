@@ -25,7 +25,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 30)
     private String email;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 10, unique = true)
     private String nickname;
 
     @Column(nullable = false, length = 4)

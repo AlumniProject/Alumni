@@ -1,6 +1,7 @@
 package Alumni.backend.module.dto.contest;
 
 import Alumni.backend.module.domain.contest.Team;
+import Alumni.backend.module.dto.community.CommentDto;
 import Alumni.backend.module.dto.registration.MemberResponseDto;
 import lombok.Builder;
 import lombok.Data;
@@ -18,21 +19,21 @@ public class TeamResponseDto {
     private Integer current; // 현재 인원
     private String region; // 활동 지역
     private MemberResponseDto writer;
-    private List<TeamCommentDto> commentList;
+    private List<CommentDto> commentList;
 
-    public static TeamResponseDto getTeamResponseDto(Team team, Integer currentCount) {
+    public static TeamResponseDto getTeamResponseDto(Team team) {
         return TeamResponseDto.builder()
                 .teamId(team.getId())
                 .title(team.getTitle())
                 .content(team.getContent())
                 .total(team.getHeadcount())
-                .current(currentCount)
+                .current(team.getCurrent())
                 .region(team.getRegion())
                 .writer(MemberResponseDto.getMemberResponseDto(team.getMember()))
                 .build();
     }
 
-    public void setCommentList(List<TeamCommentDto> commentList) {
+    public void setCommentList(List<CommentDto> commentList) {
         this.commentList = commentList;
     }
 }

@@ -2,7 +2,7 @@ package Alumni.backend.module.domain.contest;
 
 import Alumni.backend.module.domain.BaseTimeEntity;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.dto.contest.TeamCreateDto;
+import Alumni.backend.module.dto.contest.TeamRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -42,15 +42,34 @@ public class Team extends BaseTimeEntity {
     @JoinColumn(name = "contest_id", nullable = false)
     private Contest contest;
 
-    public static Team createTeam(TeamCreateDto teamCreateDto, Member member, Contest contest) {
+    public static Team createTeam(TeamRequestDto teamRequestDto, Member member, Contest contest) {
         return Team.builder()
-                .title(teamCreateDto.getTitle())
-                .content(teamCreateDto.getContent())
-                .region(teamCreateDto.getRegion())
-                .headcount(teamCreateDto.getTotal())
+                .title(teamRequestDto.getTitle())
+                .content(teamRequestDto.getContent())
+                .region(teamRequestDto.getRegion())
+                .headcount(teamRequestDto.getTotal())
                 .current(0)
                 .member(member)
                 .contest(contest)
                 .build();
+    }
+
+    public void teamModify(TeamRequestDto teamRequestDto) {
+        this.title = teamRequestDto.getTitle();
+        this.content = teamRequestDto.getContent();
+        this.region = teamRequestDto.getRegion();
+        this.headcount = teamRequestDto.getTotal();
+    }
+
+    public void approveTeam(int num) {
+        Integer current = this.current;
+        if (current + num <= this.headcount)
+            this.current = current + num;
+    }
+
+    public void cancelTeam(int num) {
+        Integer current = this.current;
+        if (current - num >= 0)
+            this.current = current - num;
     }
 }
