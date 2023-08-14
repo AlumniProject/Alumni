@@ -31,6 +31,9 @@ public class Team extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer headcount; // 총 인원
 
+    @Column(nullable = false)
+    private Integer current;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -45,6 +48,7 @@ public class Team extends BaseTimeEntity {
                 .content(teamCreateDto.getContent())
                 .region(teamCreateDto.getRegion())
                 .headcount(teamCreateDto.getTotal())
+                .current(0)
                 .member(member)
                 .contest(contest)
                 .build();
