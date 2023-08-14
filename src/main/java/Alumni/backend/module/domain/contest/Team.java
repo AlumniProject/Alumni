@@ -2,7 +2,7 @@ package Alumni.backend.module.domain.contest;
 
 import Alumni.backend.module.domain.BaseTimeEntity;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.dto.contest.TeamRequestDto;
+import Alumni.backend.module.dto.contest.TeamCreateDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,6 +31,9 @@ public class Team extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer headcount; // 총 인원
 
+    @Column(nullable = false)
+    private Integer current;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -39,21 +42,15 @@ public class Team extends BaseTimeEntity {
     @JoinColumn(name = "contest_id", nullable = false)
     private Contest contest;
 
-    public static Team createTeam(TeamRequestDto teamRequestDto, Member member, Contest contest) {
+    public static Team createTeam(TeamCreateDto teamCreateDto, Member member, Contest contest) {
         return Team.builder()
-                .title(teamRequestDto.getTitle())
-                .content(teamRequestDto.getContent())
-                .region(teamRequestDto.getRegion())
-                .headcount(teamRequestDto.getTotal())
+                .title(teamCreateDto.getTitle())
+                .content(teamCreateDto.getContent())
+                .region(teamCreateDto.getRegion())
+                .headcount(teamCreateDto.getTotal())
+                .current(0)
                 .member(member)
                 .contest(contest)
                 .build();
-    }
-
-    public void teamModify(TeamRequestDto teamRequestDto) {
-        this.title = teamRequestDto.getTitle();
-        this.region = teamRequestDto.getRegion();
-        this.headcount = teamRequestDto.getTotal();
-        this.content = teamRequestDto.getContent();
     }
 }
