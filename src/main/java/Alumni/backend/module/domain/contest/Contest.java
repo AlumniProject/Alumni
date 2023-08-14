@@ -19,7 +19,7 @@ public class Contest {
     private Long id;
 
     @Column(nullable = false)
-    private String contestUrl;
+    private String link;
 
     @Column(nullable = false)
     private String field;
@@ -29,6 +29,9 @@ public class Contest {
 
     @Column(nullable = false, length = 4000)
     private String content;
+
+    @Column(nullable = false)
+    private String poster;
 
     @Column(nullable = false)
     private Integer likeNum;

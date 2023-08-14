@@ -2,8 +2,8 @@ package Alumni.backend.module.service.contest;
 
 import Alumni.backend.module.domain.contest.Contest;
 import Alumni.backend.module.repository.contest.ContestRepository;
-import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -18,9 +18,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CrawlingService {
     private final ContestRepository contestRepository;
 
@@ -59,22 +59,30 @@ public class CrawlingService {
 
             WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(10)); // 대기 시간 설정 (최대 10초)
 
+            //공모전 image
+            WebElement imgElement = webDriver.findElement(By.cssSelector(".thumb img"));
+            String poster = imgElement.getAttribute("src");
+//            log.info(poster);
+
             //분야
             WebElement fieldInfo = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".cd-info-list li")));
             String[] field = fieldInfo.getText().split("\n");
 
+            //제목
             WebElement elementTitle = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".tit-area .tit")));
 //            String title = elementTitle.getText();
 //            log.info(title);
+            //상세내용
             WebElement elementContent = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".article")));
 //            String content = elementContent.getText();
 //            log.info(content);
 
             Contest contest = Contest.builder()
-                    .contestUrl(concertUrl)
+                    .link(concertUrl)
                     .field(field[1])
                     .title(elementTitle.getText())
                     .content(elementContent.getText())
+                    .poster(poster)
                     .likeNum(0)
                     .teamNum(0)
                     .build();
