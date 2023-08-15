@@ -51,19 +51,6 @@ public class CommentService {
         return saveComment.getId();
     }
 
-    public void modifyComment(Member member, Long commentId, String content) {
-
-        if (content.length() == 0)
-            throw new IllegalArgumentException("Bad Request");
-
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoExistsException("존재하지 않는 댓글입니다"));
-
-        if (!comment.getMember().getId().equals(member.getId()))//수정하는 사람과 작성자가 같은지 확인
-            throw new IllegalArgumentException("Bad Request");
-
-        comment.modifyComment(content);
-    }
 
     public void deleteComment(Member member, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
@@ -108,21 +95,6 @@ public class CommentService {
         eventPublisher.publishEvent(new RecommentCreateEvent(parent.getMember()));
     }
 
-    public void modifyRecomment(Member member, Long commentId, String content) {
-        if (content.length() == 0)
-            throw new IllegalArgumentException("Bad Request");
-
-        Comment recomment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoExistsException("존재하지 않는 대댓글입니다"));
-
-        Post post = postRepository.findById(recomment.getPost().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다"));
-
-        if (!recomment.getMember().getId().equals(member.getId()))//수정하는 사람과 작성자가 같은지 확인
-            throw new IllegalArgumentException("Bad Request");
-
-        recomment.modifyComment(content);
-    }
-
     public void deleteRecomment(Member member, Long commentId) {
         Comment recomment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NoExistsException("존재하지 않는 대댓글입니다"));
@@ -154,20 +126,6 @@ public class CommentService {
         commentRepository.save(teamComment);
     }
 
-    public void modifyTeamComment(Member member, Long commentId, String content) {
-        if (content.length() == 0)
-            throw new IllegalArgumentException("Bad Request");
-
-        Comment teamComment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("존재하지 않는 댓글"));
-
-        if(!member.getId().equals(teamComment.getMember().getId())) //동일한 사람인지 확인
-            throw new IllegalArgumentException("Bad Request");
-
-        teamRepository.findById(teamComment.getTeam().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 팀"));
-
-        teamComment.modifyComment(content);
-    }
-
     public void deleteTeamComment(Member member, Long commentId) {
         Comment teamComment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("존재하지 않는 댓글"));
 
@@ -187,20 +145,6 @@ public class CommentService {
         recomment.setParent(parentComment);
 
         commentRepository.save(recomment);
-    }
-
-    public void modifyTeamRecomment(Member member, Long commentId, String content) {
-        if (content.length() == 0)
-            throw new IllegalArgumentException("Bad Request");
-
-        Comment recomment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("존재하지 않는 댓글"));
-
-        if(!member.getId().equals(recomment.getMember().getId())) //동일한 사람인지 확인
-            throw new IllegalArgumentException("Bad Request");
-
-        teamRepository.findById(recomment.getTeam().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 팀"));
-
-        recomment.modifyComment(content);
     }
 
     public void deleteTeamRecomment(Member member, Long commentId) {

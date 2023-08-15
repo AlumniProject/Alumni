@@ -1,12 +1,17 @@
 package Alumni.backend.module.service.community;
 
+import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.domain.community.Post;
+import Alumni.backend.module.dto.community.HomeDto;
+import Alumni.backend.module.dto.community.MemberProfileDto;
 import Alumni.backend.module.dto.community.PopularPostResponseDto;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import Alumni.backend.module.repository.registration.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class HomeService {
 
   private final PostRepository postRepository;
+  private final MemberRepository memberRepository;
 
-  public List<PopularPostResponseDto> findPopularPosts(Member member) {
+  public HomeDto findPopularPosts(Member member) {
+    HomeDto homeDto = new HomeDto();
+
+    Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+
+    MemberProfileDto profile = MemberProfileDto.memberProfileDto(findMember);
 
     List<Long> list = postRepository.findByMemberId(member.getId());
     List<Post> popularPosts = postRepository.findPopularPosts(list);
@@ -38,6 +49,8 @@ public class HomeService {
       popularPostResponseDtos.add(popularPostResponseDto);
     }
 
-    return popularPostResponseDtos;
+    homeDto.setHomeDto(profile,popularPostResponseDtos);
+
+    return homeDto;
   }
 }

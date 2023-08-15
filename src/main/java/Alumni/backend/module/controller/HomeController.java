@@ -3,6 +3,7 @@ package Alumni.backend.module.controller;
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
 import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.dto.community.HomeDto;
 import Alumni.backend.module.dto.community.PopularPostResponseDto;
 import Alumni.backend.module.service.community.HomeService;
 import java.util.List;
@@ -39,9 +40,9 @@ public class HomeController {
   @GetMapping
   public ResponseEntity<? extends BasicResponse> home(@Schema(hidden = true) @CurrentUser Member member){
 
-    List<PopularPostResponseDto> popularPosts = homeService.findPopularPosts(member);
+    HomeDto homeDto = homeService.findPopularPosts(member);
 
     return ResponseEntity.ok()
-        .body(new GeneralResponse<>(popularPosts, "인기 게시글 조회 완료"));
+        .body(new GeneralResponse<>(homeDto, "인기 게시글 조회 완료"));
   }
 }
