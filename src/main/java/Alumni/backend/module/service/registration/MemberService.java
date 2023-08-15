@@ -107,6 +107,7 @@ public class MemberService {
 
         //기존 관심사항 삭제
         List<Interested> deleteInterested = interestedRepository.findByMemberId(findMember.getId());
+        findMember.clearInterestFields();
         interestedRepository.deleteAll(deleteInterested);
 
         //관심사항 검증
@@ -116,6 +117,7 @@ public class MemberService {
 
             //새로운 관심사항 업데이트
             Interested interested = Interested.createInterested(findMember, interestField);
+            interested.addMemberInterestedFields(findMember);
             interestedRepository.save(interested);
         }
     }

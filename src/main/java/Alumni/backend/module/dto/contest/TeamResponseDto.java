@@ -18,6 +18,7 @@ public class TeamResponseDto {
     private Integer total; // 총 인원수
     private Integer current; // 현재 인원
     private String region; // 활동 지역
+    private Boolean closed; // 마감 여부
     private MemberResponseDto writer;
     private List<CommentDto> commentList;
 
@@ -29,6 +30,7 @@ public class TeamResponseDto {
                 .total(team.getHeadcount())
                 .current(team.getCurrent())
                 .region(team.getRegion())
+                .closed(team.getClosed())
                 .writer(MemberResponseDto.getMemberResponseDto(team.getMember()))
                 .build();
     }

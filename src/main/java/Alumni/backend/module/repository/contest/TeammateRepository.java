@@ -1,7 +1,6 @@
 package Alumni.backend.module.repository.contest;
 
 import Alumni.backend.module.domain.contest.Teammate;
-import Alumni.backend.module.domain.registration.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,5 +12,5 @@ public interface TeammateRepository extends JpaRepository<Teammate, Long>, Teamm
 
     Optional<Teammate> findByMemberIdAndTeamId(Long memberId, Long teamId);
 
-    List<Teammate> findByTeamIdAndMemberIn(Long teamId, List<Member> members);
+    List<Teammate> findByTeamIdAndMemberIdIn(Long teamId, List<Long> memberIds);
 }
