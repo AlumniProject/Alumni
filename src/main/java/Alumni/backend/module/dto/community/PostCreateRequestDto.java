@@ -1,7 +1,5 @@
 package Alumni.backend.module.dto.community;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

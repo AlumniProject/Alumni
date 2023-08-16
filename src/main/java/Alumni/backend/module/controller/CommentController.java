@@ -45,22 +45,6 @@ public class CommentController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "댓글 수정 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 댓글입니다" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
-                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    @Operation(summary = "댓글 수정", description = "댓글 수정 메서드 입니다.")
-    @Parameter(name = "comment_id", description = "수정할 댓글 id", required = true, example = "1", in = ParameterIn.PATH)
-    @PutMapping("/{comment_id}")
-    public ResponseEntity<? extends BasicResponse> commentModify(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("comment_id") Long commentId,
-                                                                 @RequestBody @Valid CommentRequestDto commentRequestDto) {
-        commentService.modifyComment(member, commentId, commentRequestDto.getContent());
-
-        return ResponseEntity.ok().body(new SingleResponse("댓글 수정 완료"));
-    }
-
-    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 삭제 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 댓글입니다" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
                     + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
@@ -88,22 +72,6 @@ public class CommentController {
         commentService.createRecomment(member, commentId, commentRequestDto.getContent());
 
         return ResponseEntity.ok().body(new SingleResponse("대댓글 작성 완료"));
-    }
-
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "대댓글 수정 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 대댓글입니다" + "\t\n존재하지 않는 게시글입니다" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
-                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    @Operation(summary = "대댓글 수정", description = "대댓글 수정 메서드 입니다.")
-    @Parameter(name = "comment_id", description = "수정할 대댓글 id", required = true, example = "1", in = ParameterIn.PATH)
-    @PutMapping("/recomment/{comment_id}")
-    public ResponseEntity<? extends BasicResponse> recommentModify(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("comment_id") Long commentId,
-                                                                 @RequestBody @Valid CommentRequestDto commentRequestDto) {
-        commentService.modifyRecomment(member, commentId, commentRequestDto.getContent());
-
-        return ResponseEntity.ok().body(new SingleResponse("대댓글 수정 완료"));
     }
 
     @ApiResponses({
