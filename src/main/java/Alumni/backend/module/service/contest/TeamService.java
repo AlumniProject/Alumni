@@ -1,8 +1,10 @@
 package Alumni.backend.module.service.contest;
 
+import Alumni.backend.infra.event.contest.*;
 import Alumni.backend.infra.exception.BadRequestException;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.response.TeamListResponse;
+import Alumni.backend.module.domain.community.Comment;
 import Alumni.backend.module.domain.contest.Contest;
 import Alumni.backend.module.domain.contest.Team;
 import Alumni.backend.module.domain.contest.Teammate;
@@ -14,7 +16,9 @@ import Alumni.backend.module.repository.community.comment.CommentRepository;
 import Alumni.backend.module.repository.contest.ContestRepository;
 import Alumni.backend.module.repository.contest.TeamRepository;
 import Alumni.backend.module.repository.contest.TeammateRepository;
+import Alumni.backend.module.repository.registration.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +36,8 @@ public class TeamService {
     private final ContestRepository contestRepository;
     private final CommentRepository commentRepository;
     private final TeammateRepository teammateRepository;
+    private final MemberRepository memberRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void saveDummyContest() {
         Contest contest = Contest.builder()
@@ -59,7 +65,10 @@ public class TeamService {
         if (!team.getMember().getId().equals(member.getId())) // 수정하는 사람이 작성한 팀모집인지 확인
             throw new IllegalArgumentException("Bad Request");
         team.teamModify(teamRequestDto);
-        //TODO : 수정 이전에 이미 팀원으로 승인된 회원들 처리 + 팀원들에게 알림 처리
+        // 신청한 모든 사람들에게 수정 알림
+        List<Member> members = teammateRepository.findByTeamIdFetchJoinMember(teamId).stream()
+                .map(Teammate::getMember).collect(Collectors.toList());
+        eventPublisher.publishEvent(new TeamModifyEvent(members));
     }
 
     public void teamDelete(Member member, Long teamId) {
@@ -67,9 +76,20 @@ public class TeamService {
                 .orElseThrow(() -> new NoExistsException("NO_EXIST_TEAM"));
         if (!team.getMember().getId().equals(member.getId())) // 수정하는 사람이 작성한 팀모집인지 확인
             throw new IllegalArgumentException("Bad Request");
+
+        // 달린 댓글 대댓글 삭제
+        List<Comment> comments = commentRepository.findByTeamId(teamId);
+        commentRepository.deleteAll(comments);
+        // teammate 삭제
+        List<Teammate> teammates = teammateRepository.findByTeamIdFetchJoinMember(teamId);
+        List<Member> members = teammates.stream().map(Teammate::getMember).collect(Collectors.toList());
+        teammateRepository.deleteAll(teammates);
+        // team 삭제
         teamRepository.delete(team);
+        // teamNum - 1
         team.getContest().updateTeamNum(team.getContest().getTeamNum() - 1);
-        //TODO : teammate 테이블에서 관련 데이터 삭제 + 달린 댓글 삭제 + 알림처리 할건지
+        // 신청한 모든 사람들에게 삭제 알림
+        eventPublisher.publishEvent(new TeamDeleteEvent(members));
     }
 
     @Transactional(readOnly = true)
@@ -97,7 +117,7 @@ public class TeamService {
     }
 
     public void applyTeam(Member member, Long teamId) {
-        Team team = teamRepository.findById(teamId)
+        Team team = teamRepository.findByIdFetchJoinMember(teamId)
                 .orElseThrow(() -> new NoExistsException("NO_EXIST_TEAM"));
         if (team.getClosed()) { // 마감했을 경우
             throw new BadRequestException("CLOSED");
@@ -107,7 +127,8 @@ public class TeamService {
             throw new BadRequestException("EXIST_TEAMMATE");
         }
         teammateRepository.save(Teammate.createTeammate(team, member));
-        //TODO : 작성자에게 알림
+        // 작성자에게 알림
+        eventPublisher.publishEvent(new TeamApplyEvent(team.getMember()));
     }
 
     public void cancelTeam(Member member, Long teamId) {
@@ -137,7 +158,8 @@ public class TeamService {
         // 승인으로 변경
         teammateRepository.findByTeamIdAndMemberIdIn(teamId, memberIds).forEach(Teammate::approveTeammate);
         team.updateCurrent(team.getCurrent() + size);
-        //TODO : 승인된 팀원들에게 알림
+        // 승인된 팀원들에게 알림
+        eventPublisher.publishEvent(new TeamLeaderApproveEvent(memberRepository.findByIdIn(memberIds)));
     }
 
     public void teamLeaderCancelMate(Member member, Long teamId, TeamLeaderCancelDto cancelDto) {
@@ -160,7 +182,10 @@ public class TeamService {
         if (!team.getMember().getId().equals(member.getId()))
             throw new IllegalArgumentException("Bad Request");
         team.closedTeam();
-        // TODO : 승인된 팀원들에게 마감 알림
+        // 승인된 팀원들에게 마감 알림
+        List<Member> members = teammateRepository.findByTeamIdFetchJoinMemberWithApprove(teamId).stream()
+                .map(Teammate::getMember).collect(Collectors.toList());
+        eventPublisher.publishEvent(new TeamCloseEvent(members));
     }
 
     @Transactional(readOnly = true)

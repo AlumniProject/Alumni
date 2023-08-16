@@ -25,4 +25,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Boolean existsMemberByNickname(String nickname);
 
     List<Member> findByNicknameIn(List<String> nicknameList);
+
+    List<Member> findByIdIn(List<Long> memberIds);
 }

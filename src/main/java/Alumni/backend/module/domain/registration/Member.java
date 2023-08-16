@@ -52,7 +52,7 @@ public class Member extends BaseTimeEntity {
 
     private String refreshToken;
 
-    //@Column(nullable = false)
+    @Column(nullable = false)
     private String fcmToken;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)

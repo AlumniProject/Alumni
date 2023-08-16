@@ -1,6 +1,5 @@
 package Alumni.backend.module.repository.contest;
 
-import Alumni.backend.module.domain.contest.QContest;
 import Alumni.backend.module.domain.contest.Team;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Optional;
 
 import static Alumni.backend.module.domain.QImage.image;
-import static Alumni.backend.module.domain.contest.QContest.*;
+import static Alumni.backend.module.domain.contest.QContest.contest;
 import static Alumni.backend.module.domain.contest.QTeam.team;
 import static Alumni.backend.module.domain.registration.QMember.member;
 
@@ -21,10 +20,19 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom {
     public Team findByIdFetchJoinMemberAndImage(Long teamId) {
         return jpaQueryFactory
                 .selectFrom(team)
-                .leftJoin(team.member, member).fetchJoin()
+                .join(team.member, member).fetchJoin()
                 .leftJoin(member.profileImage, image).fetchJoin()
                 .where(team.id.eq(teamId))
                 .fetchOne();
+    }
+
+    @Override
+    public Optional<Team> findByIdFetchJoinMember(Long teamId) {
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(team)
+                .join(team.member, member).fetchJoin()
+                .where(team.id.eq(teamId))
+                .fetchOne());
     }
 
     @Override

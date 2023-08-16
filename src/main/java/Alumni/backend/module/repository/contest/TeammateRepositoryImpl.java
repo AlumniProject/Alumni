@@ -40,4 +40,23 @@ public class TeammateRepositoryImpl implements TeammateRepositoryCustom {
                 .where(teammate.team.id.eq(teamId))
                 .fetch();
     }
+
+    @Override
+    public List<Teammate> findByTeamIdFetchJoinMember(Long teamId) {
+        return jpaQueryFactory
+                .selectFrom(teammate)
+                .join(teammate.member, member).fetchJoin()
+                .where(teammate.team.id.eq(teamId))
+                .fetch();
+    }
+
+    @Override
+    public List<Teammate> findByTeamIdFetchJoinMemberWithApprove(Long teamId) {
+        return jpaQueryFactory
+                .selectFrom(teammate)
+                .join(teammate.member, member).fetchJoin()
+                .where(teammate.team.id.eq(teamId),
+                        teammate.approve.eq(true))
+                .fetch();
+    }
 }

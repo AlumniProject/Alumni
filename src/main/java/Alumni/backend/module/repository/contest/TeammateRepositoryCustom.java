@@ -10,4 +10,8 @@ public interface TeammateRepositoryCustom {
     Optional<Teammate> findByMemberIdAndTeamIdFetchJoinTeam(Long memberId, Long teamId);
 
     List<Teammate> findByTeamIdFetchJoinMemberAndImageAndUniv(Long teamId);
+
+    List<Teammate> findByTeamIdFetchJoinMember(Long teamId);
+
+    List<Teammate> findByTeamIdFetchJoinMemberWithApprove(Long teamId);
 }
