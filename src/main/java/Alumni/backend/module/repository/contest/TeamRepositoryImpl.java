@@ -4,6 +4,7 @@ import Alumni.backend.module.domain.contest.Team;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 import static Alumni.backend.module.domain.QImage.image;
@@ -42,5 +43,15 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom {
                 .join(team.contest, contest).fetchJoin()
                 .where(team.id.eq(teamId))
                 .fetchOne());
+    }
+
+    @Override
+    public List<Team> findByContestIdFetchJoinMemberAndImage(Long contestId) {
+        return jpaQueryFactory
+                .selectFrom(team)
+                .join(team.member, member).fetchJoin()
+                .leftJoin(member.profileImage, image).fetchJoin()
+                .where(team.contest.id.eq(contestId))
+                .fetch();
     }
 }

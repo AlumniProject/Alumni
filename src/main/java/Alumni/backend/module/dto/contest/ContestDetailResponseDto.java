@@ -1,7 +1,6 @@
 package Alumni.backend.module.dto.contest;
 
 import Alumni.backend.module.domain.contest.Contest;
-import Alumni.backend.module.domain.contest.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +29,7 @@ public class ContestDetailResponseDto {
     private String poster;
     private List<TeamListDto> teamList;
 
-    public static ContestDetailResponseDto contestDetailResponseDto(Contest contest){
+    public static ContestDetailResponseDto contestDetailResponseDto(Contest contest) {
         return ContestDetailResponseDto.builder()
                 .contestId(contest.getId())
                 .title(contest.getTitle())

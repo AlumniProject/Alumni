@@ -39,7 +39,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Post findByIdFetchJoin(Long postId) {
+    public Post findByIdFetchJoinMemberAndImage(Long postId) {
         return jpaQueryFactory
                 .selectFrom(post)
                 .leftJoin(post.member, member).fetchJoin()

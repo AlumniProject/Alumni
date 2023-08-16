@@ -28,7 +28,7 @@ public class ContestSearchResponseDto {
 
     private Integer teams;
 
-    public static ContestSearchResponseDto contestSearchResponseDto(Contest contest){
+    public static ContestSearchResponseDto contestSearchResponseDto(Contest contest) {
         return ContestSearchResponseDto.builder()
                 .contestId(contest.getId())
                 .title(contest.getTitle())

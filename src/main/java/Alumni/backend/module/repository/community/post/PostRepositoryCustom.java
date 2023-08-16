@@ -11,7 +11,7 @@ public interface PostRepositoryCustom {
 
     List<Post> searchPost(PostSearch postSearch);
 
-    Post findByIdFetchJoin(Long postId);
+    Post findByIdFetchJoinMemberAndImage(Long postId);
 
     List<Post> findPopularPosts(List<Long> list);
 }

@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team, Long>, TeamRepositoryCustom {
-    Optional<List<Team>> findByContestId(Long contestId);
+    //Optional<List<Team>> findByContestId(Long contestId);
 }

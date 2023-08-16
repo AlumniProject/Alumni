@@ -53,7 +53,6 @@ public class PostService {
         }
     }
 
-    @Transactional
     public void postModify(Member member, Long postId, PostModifyRequestDto postModifyRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
 
@@ -221,7 +220,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponseDto getPostDetails(Long postId) {
-        Post post = postRepository.findByIdFetchJoin(postId);
+        Post post = postRepository.findByIdFetchJoinMemberAndImage(postId);
         if (post == null) {
             throw new NoExistsException("존재하지 않는 게시글입니다");
         }
