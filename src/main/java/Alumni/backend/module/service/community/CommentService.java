@@ -1,7 +1,7 @@
 package Alumni.backend.module.service.community;
 
-import Alumni.backend.infra.event.CommentCreateEvent;
-import Alumni.backend.infra.event.RecommentCreateEvent;
+import Alumni.backend.infra.event.community.CommentCreateEvent;
+import Alumni.backend.infra.event.community.RecommentCreateEvent;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.community.Comment;
 import Alumni.backend.module.domain.community.CommentLike;
@@ -35,10 +35,10 @@ public class CommentService {
      * 게시글 댓글 관련 메소드
      */
     public Long createComment(Member member, Long postId, String content) {
-        if (content.length() == 0)
+        if (content.isBlank())
             throw new IllegalArgumentException("Bad Request");
 
-        Post post = postRepository.findByIdFetchJoin(postId);
+        Post post = postRepository.findByIdFetchJoinMemberAndImage(postId);
         if (post == null) {
             throw new NoExistsException("존재하지 않는 게시글입니다");
         }
@@ -65,7 +65,7 @@ public class CommentService {
         List<CommentLike> parentLikeList = commentLikeRepository.findByCommentId(comment.getId());
         commentLikeRepository.deleteAll(parentLikeList);
 
-        for(int i = 0; i<count-1; i++){
+        for (int i = 0; i < count - 1; i++) {
             Comment children = comment.getChildren().get(i);
             List<CommentLike> childrenLikeList = commentLikeRepository.findByCommentId(children.getId());
             commentLikeRepository.deleteAll(childrenLikeList);
@@ -78,7 +78,7 @@ public class CommentService {
     }
 
     public void createRecomment(Member member, Long commentId, String content) {
-        if (content.length() == 0)
+        if (content.isBlank())
             throw new IllegalArgumentException("Bad Request");
 
         Comment parent = commentRepository.findByIdAndMemberFetchJoin(commentId);
@@ -86,7 +86,7 @@ public class CommentService {
             throw new NoExistsException("상위 댓글이 존재하지 않습니다");
         }
         Post post = postRepository.findById(parent.getPost().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다"));
-        Comment recomment = Comment.createComment(member,content);
+        Comment recomment = Comment.createComment(member, content);
         recomment.setPost(post);
         recomment.setParent(parent);
         commentRepository.save(recomment);
@@ -115,7 +115,7 @@ public class CommentService {
      * 공모전 팀 댓글 관련 메소드
      */
     public void createTeamComment(Member member, Long teamId, String content) {
-        if (content.length() == 0)
+        if (content.isBlank())
             throw new IllegalArgumentException("Bad Request");
 
         Team team = teamRepository.findById(teamId).orElseThrow(() -> new NoExistsException("존재하지 않는 팀"));
@@ -129,14 +129,14 @@ public class CommentService {
     public void deleteTeamComment(Member member, Long commentId) {
         Comment teamComment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("존재하지 않는 댓글"));
 
-        if(!member.getId().equals(teamComment.getMember().getId())) //동일한 사람인지 확인
+        if (!member.getId().equals(teamComment.getMember().getId())) //동일한 사람인지 확인
             throw new IllegalArgumentException("Bad Request");
 
         commentRepository.delete(teamComment);
     }
 
     public void createTeamRecomment(Member member, Long commentId, String content) {
-        if (content.length() == 0)
+        if (content.isBlank())
             throw new IllegalArgumentException("Bad Request");
 
         Comment parentComment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("상위 댓글이 존재하지 않습니다"));
@@ -150,7 +150,7 @@ public class CommentService {
     public void deleteTeamRecomment(Member member, Long commentId) {
         Comment recomment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("존재하지 않는 댓글"));
 
-        if(!member.getId().equals(recomment.getMember().getId())) //동일한 사람인지 확인
+        if (!member.getId().equals(recomment.getMember().getId())) // 동일한 사람인지 확인
             throw new IllegalArgumentException("Bad Request");
 
         commentRepository.delete(recomment);

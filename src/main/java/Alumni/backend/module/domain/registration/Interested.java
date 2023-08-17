@@ -25,10 +25,12 @@ public class Interested {
 
     public static Interested createInterested(Member member, InterestField interestField) {
         Interested interested = new Interested();
-
         interested.member = member;
         interested.interestField = interestField;
-
         return interested;
+    }
+
+    public void addMemberInterestedFields(Member member) {
+        ;member.getInterestFields().add(this);
     }
 }

@@ -21,5 +21,22 @@ public class Teammate {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @Column(nullable = false)
     private Boolean approve;
+
+    public static Teammate createTeammate(Team team, Member member) {
+        Teammate teammate = new Teammate();
+        teammate.team = team;
+        teammate.member = member;
+        teammate.approve = false;
+        return teammate;
+    }
+
+    public void approveTeammate() {
+        this.approve = true;
+    }
+
+    public void cancelTeammate() {
+        this.approve = false;
+    }
 }

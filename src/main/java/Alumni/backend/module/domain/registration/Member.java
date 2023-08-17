@@ -1,7 +1,9 @@
 package Alumni.backend.module.domain.registration;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import Alumni.backend.module.domain.BaseTimeEntity;
 import Alumni.backend.module.domain.community.CommentLike;
@@ -25,7 +27,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 30)
     private String email;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 10, unique = true)
     private String nickname;
 
     @Column(nullable = false, length = 4)
@@ -50,7 +52,7 @@ public class Member extends BaseTimeEntity {
 
     private String refreshToken;
 
-    //@Column(nullable = false)
+    @Column(nullable = false)
     private String fcmToken;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
@@ -58,6 +60,9 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<CommentLike> commentLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private Set<Interested> interestFields = new HashSet<>();
 
     //생성 메서드
     public static Member createMember(String email, String nickname, String classOf,
@@ -88,4 +93,7 @@ public class Member extends BaseTimeEntity {
         this.fcmToken = fcmToken;
     }
 
+    public void clearInterestFields() {
+        this.interestFields.clear();
+    }
 }

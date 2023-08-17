@@ -29,15 +29,15 @@ public class ContestController {
     private final ContestService contestService;
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "검색 결과 없음" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+            @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
                     + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @Operation(summary = "공모전 검색", description = "공모전 내용으로 검색하는 메서드 입니다.")
     @Parameter(name = "content", description = "검색 내용", example = "개발", in = ParameterIn.QUERY)
     @GetMapping("/search")
-    public ResponseEntity<? extends BasicResponse> searchContest(@RequestParam(value = "content") String content) {
+    public ResponseEntity<? extends BasicResponse> searchContest(@RequestParam(value = "content", required = false) String content) {
 
         List<ContestSearchResponseDto> contestResponseDtos = contestService.contestSearch(content);
 
@@ -45,7 +45,7 @@ public class ContestController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 공모전" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
                     + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))

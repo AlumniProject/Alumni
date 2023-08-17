@@ -2,7 +2,7 @@ package Alumni.backend.module.domain.contest;
 
 import Alumni.backend.module.domain.BaseTimeEntity;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.dto.contest.TeamCreateDto;
+import Alumni.backend.module.dto.contest.TeamRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,7 +32,10 @@ public class Team extends BaseTimeEntity {
     private Integer headcount; // 총 인원
 
     @Column(nullable = false)
-    private Integer current;
+    private Integer current; // 현재 인원
+
+    @Column(nullable = false)
+    private Boolean closed; // 마감 여부
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -42,15 +45,31 @@ public class Team extends BaseTimeEntity {
     @JoinColumn(name = "contest_id", nullable = false)
     private Contest contest;
 
-    public static Team createTeam(TeamCreateDto teamCreateDto, Member member, Contest contest) {
+    public static Team createTeam(TeamRequestDto teamRequestDto, Member member, Contest contest) {
         return Team.builder()
-                .title(teamCreateDto.getTitle())
-                .content(teamCreateDto.getContent())
-                .region(teamCreateDto.getRegion())
-                .headcount(teamCreateDto.getTotal())
+                .title(teamRequestDto.getTitle())
+                .content(teamRequestDto.getContent())
+                .region(teamRequestDto.getRegion())
+                .headcount(teamRequestDto.getTotal())
                 .current(0)
+                .closed(false)
                 .member(member)
                 .contest(contest)
                 .build();
+    }
+
+    public void teamModify(TeamRequestDto teamRequestDto) {
+        this.title = teamRequestDto.getTitle();
+        this.content = teamRequestDto.getContent();
+        this.region = teamRequestDto.getRegion();
+        this.headcount = teamRequestDto.getTotal();
+    }
+
+    public void updateCurrent(Integer current) {
+        this.current = current;
+    }
+
+    public void closedTeam() {
+        this.closed = true;
     }
 }

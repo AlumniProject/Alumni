@@ -53,7 +53,6 @@ public class PostService {
         }
     }
 
-    @Transactional
     public void postModify(Member member, Long postId, PostModifyRequestDto postModifyRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
 
@@ -221,7 +220,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponseDto getPostDetails(Long postId) {
-        Post post = postRepository.findByIdFetchJoin(postId);
+        Post post = postRepository.findByIdFetchJoinMemberAndImage(postId);
         if (post == null) {
             throw new NoExistsException("존재하지 않는 게시글입니다");
         }
@@ -234,7 +233,7 @@ public class PostService {
         }
         // 댓글 확인
         List<CommentDto> commentDtos = new ArrayList<>();
-        commentRepository.findByPostIdAndMemberFetchJoin(post.getId()).forEach(comment -> {
+        commentRepository.findByPostIdFetchJoinMemberAndImage(post.getId()).forEach(comment -> {
             if (comment.getParent() == null) { // 대댓글 아닌 경우만
                 CommentDto commentDto = CommentDto.getCommentDto(comment);
                 // recommentList 확인

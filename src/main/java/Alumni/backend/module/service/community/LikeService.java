@@ -20,93 +20,93 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LikeService {
 
-  private final PostRepository postRepository;
-  private final PostLikeRepository postLikeRepository;
-  private final MemberRepository memberRepository;
-  private final CommentRepository commentRepository;
-  private final CommentLikeRepository commentLikeRepository;
+    private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
-  public String postLike(Member member, Long postId) {
-    String message = "게시글 좋아요 완료";
-    Post post = postRepository.findById(postId).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
-    Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원입니다."));
+    public String postLike(Member member, Long postId) {
+        String message = "게시글 좋아요 완료";
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
+        Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원입니다."));
 
-    if (postLikeRepository.findByMemberAndPost(findMember.getId(), post.getId()).isPresent()) {
-      PostLike findPostLike = postLikeRepository.findByMemberAndPost(findMember.getId(), post.getId()).get();
+        if (postLikeRepository.findByMemberAndPost(findMember.getId(), post.getId()).isPresent()) {
+            PostLike findPostLike = postLikeRepository.findByMemberAndPost(findMember.getId(), post.getId()).get();
 
-      postLikeRepository.delete(findPostLike);
+            postLikeRepository.delete(findPostLike);
 
-      postRepository.updateLikeCount(post.getLikeNum()-1, post.getId());//좋아요 수 감소
-      message = "게시글 좋아요 취소 완료";
-      return message;
-   }
+            postRepository.updateLikeCount(post.getLikeNum() - 1, post.getId());//좋아요 수 감소
+            message = "게시글 좋아요 취소 완료";
+            return message;
+        }
 
-    PostLike postLike = PostLike.createPostLike(post, findMember);
-    postLikeRepository.save(postLike);
-    postLike.setMember(findMember);
+        PostLike postLike = PostLike.createPostLike(post, findMember);
+        postLikeRepository.save(postLike);
+        postLike.setMember(findMember);
 
-    postRepository.updateLikeCount(post.getLikeNum()+1, post.getId());//좋아요 수 증가
+        postRepository.updateLikeCount(post.getLikeNum() + 1, post.getId());//좋아요 수 증가
 
-    return message;
-  }
-
-  public String commentLike(Member member, Long commentId) {
-    String message = "댓글 좋아요 완료";
-
-    Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원입니다."));
-    Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("존재하지 않는 댓글입니다."));
-    Post post = postRepository.findById(comment.getPost().getId())
-        .orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
-
-    if (commentLikeRepository.findByMemberAndComment(findMember.getId(), comment.getId()).isPresent()) {
-      minusLike(findMember, comment);
-      message = "댓글 좋아요 취소 완료";
-      return message;
+        return message;
     }
 
-    plusLike(comment, findMember);
+    public String commentLike(Member member, Long commentId) {
+        String message = "댓글 좋아요 완료";
 
-    return message;
-  }
+        Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원입니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("존재하지 않는 댓글입니다."));
+        Post post = postRepository.findById(comment.getPost().getId())
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
 
-  public String recommentLike(Member member, Long commentId){
-    String message = "대댓글 좋아요 완료";
+        if (commentLikeRepository.findByMemberAndComment(findMember.getId(), comment.getId()).isPresent()) {
+            minusLike(findMember, comment);
+            message = "댓글 좋아요 취소 완료";
+            return message;
+        }
 
-    Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원입니다."));
-    Comment parent = commentRepository.findById(commentId)
-        .orElseThrow(() -> new NoExistsException("상위 댓글이 존재하지 않습니다."));//부모 댓글 찾기
+        plusLike(comment, findMember);
 
-    if(parent.getParent()==null)
-      throw new IllegalArgumentException("Bad request");
-
-    Post post = postRepository.findById(parent.getPost().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
-
-    if (commentLikeRepository.findByMemberAndComment(findMember.getId(), parent.getId()).isPresent()) {
-
-      minusLike(findMember, parent);
-      message = "대댓글 좋아요 취소 완료";
-      return message;
+        return message;
     }
 
-    plusLike(parent, findMember);
+    public String recommentLike(Member member, Long commentId) {
+        String message = "대댓글 좋아요 완료";
 
-    return message;
-  }
+        Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원입니다."));
+        Comment parent = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoExistsException("상위 댓글이 존재하지 않습니다."));//부모 댓글 찾기
 
-  private void plusLike(Comment comment, Member findMember) {
-    CommentLike commentLike = CommentLike.createCommentLike(comment, findMember);
-    commentLikeRepository.save(commentLike);
-    commentLike.setMember(findMember);
+        if (parent.getParent() == null)
+            throw new IllegalArgumentException("Bad request");
 
-    commentRepository.updateLikeCount(comment.getLikeNum()+1, comment.getId());
-  }
+        Post post = postRepository.findById(parent.getPost().getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
 
-  private void minusLike(Member findMember, Comment comment) {
-    CommentLike findCommentLike = commentLikeRepository.findByMemberAndComment(findMember.getId(),
-        comment.getId()).get();
+        if (commentLikeRepository.findByMemberAndComment(findMember.getId(), parent.getId()).isPresent()) {
 
-    commentLikeRepository.delete(findCommentLike);
+            minusLike(findMember, parent);
+            message = "대댓글 좋아요 취소 완료";
+            return message;
+        }
 
-    commentRepository.updateLikeCount(comment.getLikeNum()-1, comment.getId());
-  }
+        plusLike(parent, findMember);
+
+        return message;
+    }
+
+    private void plusLike(Comment comment, Member findMember) {
+        CommentLike commentLike = CommentLike.createCommentLike(comment, findMember);
+        commentLikeRepository.save(commentLike);
+        commentLike.setMember(findMember);
+
+        commentRepository.updateLikeCount(comment.getLikeNum() + 1, comment.getId());
+    }
+
+    private void minusLike(Member findMember, Comment comment) {
+        CommentLike findCommentLike = commentLikeRepository.findByMemberAndComment(findMember.getId(),
+                comment.getId()).get();
+
+        commentLikeRepository.delete(findCommentLike);
+
+        commentRepository.updateLikeCount(comment.getLikeNum() - 1, comment.getId());
+    }
 }

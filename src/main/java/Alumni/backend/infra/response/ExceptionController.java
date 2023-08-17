@@ -16,6 +16,13 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 @RestControllerAdvice // 모든 Controller 전역에서 발생할 수 있는 예외를 잡아 처리해주는 어노테이션 + ResponseBody
 public class ExceptionController {
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<? extends BasicResponse> BadRequestException(BadRequestException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<? extends BasicResponse> UnAuthorizedException(UnAuthorizedException e) {
         e.printStackTrace();

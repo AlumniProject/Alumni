@@ -15,7 +15,7 @@ public class RecommentDto {
     private Long id;
 
     @Schema(description = "좋아요 수", example = "5", type = "int")
-    private int likes;
+    private Integer likes;
 
     @Schema(description = "내용", example = "content", type = "String")
     private String content;
@@ -27,6 +27,15 @@ public class RecommentDto {
         return RecommentDto.builder()
                 .id(comment.getId())
                 .likes(comment.getLikeNum())
+                .content(comment.getContent())
+                .writer(MemberResponseDto.getMemberResponseDto(comment.getMember()))
+                .build();
+    }
+
+    public static RecommentDto getTeamRecommentDto(Comment comment) {
+        return RecommentDto.builder()
+                .id(comment.getId())
+                .likes(null)
                 .content(comment.getContent())
                 .writer(MemberResponseDto.getMemberResponseDto(comment.getMember()))
                 .build();

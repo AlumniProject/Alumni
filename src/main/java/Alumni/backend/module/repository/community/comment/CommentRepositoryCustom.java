@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface CommentRepositoryCustom {
 
-    List<Comment> findByPostIdAndMemberFetchJoin(Long postId);
+    List<Comment> findByPostIdFetchJoinMemberAndImage(Long postId);
+
+    List<Comment> findByTeamIdFetchJoinMemberAndImage(Long teamId);
 
     Comment findByIdAndMemberFetchJoin(Long commentId);
 }

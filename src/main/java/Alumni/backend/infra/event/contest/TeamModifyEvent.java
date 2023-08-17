@@ -1,12 +1,14 @@
-package Alumni.backend.infra.event;
+package Alumni.backend.infra.event.contest;
 
 import Alumni.backend.module.domain.registration.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @RequiredArgsConstructor
-public class RecommentCreateEvent {
+public class TeamModifyEvent {
 
-    private final Member member;
+    private final List<Member> members;
 }
