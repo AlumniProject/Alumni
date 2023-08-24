@@ -18,7 +18,7 @@ public class Terms {//약관 table
     @Column(nullable = false, length = 20)
     private String title;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 8000)
     private String content;
 
     public static Terms createTerms(String title, String content) {

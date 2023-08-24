@@ -34,11 +34,11 @@ public class TeamController {
     private final TeamService teamService;
     private final CommentService commentService;
 
-    @PostMapping("/contestDummy")
+    /*@PostMapping("/contestDummy")
     public ResponseEntity<? extends BasicResponse> contestDummy() {
         teamService.saveDummyContest();
         return ResponseEntity.ok().body(new SingleResponse("SUCCESS"));
-    }
+    }*/
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
