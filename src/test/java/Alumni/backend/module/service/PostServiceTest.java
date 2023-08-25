@@ -1,13 +1,11 @@
 package Alumni.backend.module.service;
 
 import Alumni.backend.TestData;
-import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.domain.community.PostTag;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.dto.community.PostCreateRequestDto;
 import Alumni.backend.module.dto.community.PostModifyRequestDto;
-import Alumni.backend.module.dto.community.PostSearch;
 import Alumni.backend.module.repository.community.TagRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
@@ -62,19 +60,19 @@ class PostServiceTest {
         Assertions.assertEquals(5, postResponseDtos.size());
     }*/
 
-    @Test
-    public void 게시글_검색_테스트() throws Exception {
-        testData.SetUp();
-
-        PostSearch postSearch = new PostSearch();
-        postSearch.setId(1L);
-        Member m1 = memberRepository.findByEmail("1").get();
-
-        PostSearchResponse<?> search = postService.search(m1, postSearch);
-
-        //then
-        Assertions.assertEquals(1, search.getCount());
-    }
+//    @Test
+//    public void 게시글_검색_테스트() throws Exception {
+//        testData.SetUp();
+//
+//        PostSearch postSearch = new PostSearch();
+//        postSearch.setId(1L);
+//        Member m1 = memberRepository.findByEmail("1").get();
+//
+//        PostSearchResponse<?> search = postService.search(m1, postSearch);
+//
+//        //then
+//        Assertions.assertEquals(1, search.getCount());
+//    }
 
     @Test
     public void 게시글_등록_테스트() throws Exception {

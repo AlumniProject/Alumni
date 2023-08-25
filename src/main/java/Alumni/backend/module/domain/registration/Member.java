@@ -55,6 +55,17 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String fcmToken;
 
+    @Column(length = 50)
+    private String introduction;
+
+    @Column(nullable = false)
+    private Boolean alarmOn;
+
+    private String instagram;
+    private String facebook;
+    private String github;
+
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<PostLike> postLikes = new ArrayList<>();
 
@@ -77,6 +88,7 @@ public class Member extends BaseTimeEntity {
         member.major = major;
         member.university = university;
         member.fcmToken = fcmToken;
+        member.alarmOn = true;
 
         return member;
     }
