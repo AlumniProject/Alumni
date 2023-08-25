@@ -1,4 +1,4 @@
-package Alumni.backend.module.domain.Member;
+package Alumni.backend.module.domain.Profile;
 
 import Alumni.backend.module.domain.registration.Member;
 import lombok.Getter;
