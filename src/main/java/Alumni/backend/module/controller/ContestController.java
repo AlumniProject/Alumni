@@ -4,6 +4,7 @@ import Alumni.backend.infra.response.*;
 import Alumni.backend.module.dto.contest.ContestDetailResponseDto;
 import Alumni.backend.module.dto.contest.ContestSearchResponseDto;
 import Alumni.backend.module.service.contest.ContestService;
+import Alumni.backend.module.service.contest.CrawlingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @ApiDocumentGlobalResponse
@@ -27,6 +29,7 @@ import java.util.List;
 public class ContestController {
 
     private final ContestService contestService;
+    private final CrawlingService crawlingService;
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
@@ -37,7 +40,7 @@ public class ContestController {
     @Operation(summary = "공모전 검색", description = "공모전 내용으로 검색하는 메서드 입니다.")
     @Parameter(name = "content", description = "검색 내용", example = "개발", in = ParameterIn.QUERY)
     @GetMapping("/search")
-    public ResponseEntity<? extends BasicResponse> searchContest(@RequestParam(value = "content", required = false) String content) {
+    public ResponseEntity<? extends BasicResponse> searchContest(@RequestParam(value = "content", required = false) String content) throws IOException, InterruptedException {
 
         List<ContestSearchResponseDto> contestResponseDtos = contestService.contestSearch(content);
 
