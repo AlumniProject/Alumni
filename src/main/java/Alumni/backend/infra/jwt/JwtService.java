@@ -77,17 +77,16 @@ public class JwtService {
         }
         // refresh 토큰이 유효함
         // refresh 토큰을 가진 회원을 조회
-        Member memberByRefreshToken = getMemberByRefreshToken(refreshToken);
-        if (memberByRefreshToken == null) {
-            throw new NoExistsException("존재하지 않는 회원");
-        }
-        Long memberId = memberByRefreshToken.getId();
-        String email = memberByRefreshToken.getEmail();
+        String email = JWT.require(Algorithm.HMAC512(SECRET)).build()
+                .verify(refreshToken).getClaim("email").asString();
+        Member memberByEmail = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+        Long memberId = memberByEmail.getId();
 
         // refresh 토큰이 7일 이내 만료인 경우 재발급
         if (isNeedToUpdateRefreshToken(refreshToken)) {
             refreshToken = createRefreshToken(email); // 재발급한 토큰으로 교체
-            setRefreshToken(email, refreshToken);
+            updateRefreshToken(refreshToken);
             // 헤더에 재발급한 refresh 토큰 내려주기
             response.addHeader(JwtProperties.HEADER_REFRESH, JwtProperties.TOKEN_PREFIX + refreshToken);
             result += "refreshToken 갱신 완료 ";
@@ -110,7 +109,7 @@ public class JwtService {
         String refreshToken = createRefreshToken(member.getEmail());
 
         // refresh token 저장
-        setRefreshToken(member.getEmail(), refreshToken);
+        saveRefreshToken(refreshToken);
 
         // header를 통해 token 내려주기
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + accessToken);
@@ -119,43 +118,28 @@ public class JwtService {
 
     @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
-//        return memberRepository.findByEmail(email);
         return memberRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
     }
 
-    @Transactional(readOnly = true)
-    public Member getMemberByRefreshToken(String refreshToken) {
-        return memberRepository.findByRefreshToken(refreshToken);
-    }
-
     public void setFcmToken(String email, String fcmToken) {
-//        Member member = memberRepository.findByEmail(email);
-//        if (member != null) {
-//            member.setFcmToken(fcmToken);
-//        }
-
         Member member = memberRepository.findByEmail(email).orElseThrow(
                 () -> new IllegalArgumentException("Bad Request"));
 
         member.setFcmToken(fcmToken);
     }
 
-    public void setRefreshToken(String email, String refreshToken) {
-//        Member member = memberRepository.findByEmail(email);
-//        if (member != null) {
-//            member.setRefreshToken(refreshToken);
-//        }
-        Member member = memberRepository.findByEmail(email).orElseThrow(
-                () -> new IllegalArgumentException("Bad Request"));
+    public void saveRefreshToken(String refreshToken) {
+        Date expireTime = getExpireTime(refreshToken);
+        redisService.setValueWithDate(refreshToken, "refresh", expireTime);
+    }
 
-        member.setRefreshToken(refreshToken);
+    public void updateRefreshToken(String refreshToken) {
+        Date expireTime = getExpireTime(refreshToken);
+        redisService.updateValueWithDate(refreshToken, expireTime);
     }
 
     public void removeRefreshToken(String refreshToken) {
-        Member member = memberRepository.findByRefreshToken(refreshToken);
-        if (member != null) {
-            member.setRefreshToken(null);
-        }
+        redisService.deleteValue(refreshToken);
     }
 
     public void logout(Member member, HttpServletRequest request) {
@@ -204,6 +188,7 @@ public class JwtService {
         return JWT.create()
                 .withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME))
+                .withClaim("email", email)
                 .sign(Algorithm.HMAC512(SECRET));
     }
 
@@ -228,8 +213,7 @@ public class JwtService {
 
     public boolean isNeedToUpdateRefreshToken(String refreshToken) {
         try {
-            Date expiresAt = JWT.require(Algorithm.HMAC512(SECRET))
-                    .build().verify(refreshToken).getExpiresAt();
+            Date expiresAt = getExpireTime(refreshToken);
             Date current = new Date(System.currentTimeMillis());
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(current);

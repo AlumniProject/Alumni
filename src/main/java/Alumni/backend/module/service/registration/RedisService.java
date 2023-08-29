@@ -39,6 +39,19 @@ public class RedisService {
         valueOperations.set(key, value, expiredTime, TimeUnit.MILLISECONDS);
     }
 
+    public void updateValueWithDate(String key, Date newExpiresAt) {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        String value = valueOperations.get(key);
+        if (value != null) {
+            long durationMills = newExpiresAt.getTime() - System.currentTimeMillis();
+            if (durationMills <= 0) {
+                redisTemplate.delete(key);
+            } else {
+                valueOperations.set(key, value, durationMills, TimeUnit.MILLISECONDS);
+            }
+        }
+    }
+
     public void deleteValue(String key) {
         redisTemplate.delete(key);
     }
