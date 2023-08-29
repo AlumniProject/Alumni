@@ -5,10 +5,9 @@ import Alumni.backend.infra.exception.UnAuthorizedException;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.domain.registration.VerifiedEmail;
 import Alumni.backend.module.dto.registration.LoginRequestDto;
-import Alumni.backend.module.repository.registration.BlackListRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.VerifiedEmailRepository;
-import Alumni.backend.module.service.registration.BlackListService;
+import Alumni.backend.module.service.registration.RedisService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
@@ -23,16 +22,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 import java.util.Date;
 
-@Service
 @Getter
+@Service
 @Transactional
 @RequiredArgsConstructor
 public class JwtService {
 
     private final MemberRepository memberRepository;
     private final VerifiedEmailRepository verifiedEmailRepository;
-    private final BlackListService blackListService;
-    private final BlackListRepository blackListRepository;
+    private final RedisService redisService;
     @Value("${jwt.secret-key}")
     private String SECRET;
     @Value("${jwt.access-token.expiration-time}")
@@ -175,11 +173,20 @@ public class JwtService {
 
         // blackList에 access 토큰 추가
         String accessToken = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
-        blackListService.saveBlackList(accessToken);
+        //blackListService.saveBlackList(accessToken);
+        Date expireTime = getExpireTime(accessToken);
+        redisService.setValueWithDate(accessToken, "logout", expireTime);
     }
 
-    public void isExistBlackListByAccessToken(String accessToken) {
+    /*public void isExistBlackListByAccessToken(String accessToken) {
         if (blackListRepository.existsBlackListByAccessToken(accessToken)) {
+            throw new NoExistsException("NoExistsException");
+        }
+    }*/
+
+    public void isExistBlackListByAccessToken(String accessToken) {
+        String value = redisService.getValue(accessToken);
+        if (value != null) {
             throw new NoExistsException("NoExistsException");
         }
     }
@@ -213,6 +220,10 @@ public class JwtService {
             return true;
         }
         return false;
+    }
+
+    public Date getExpireTime(String token) {
+        return JWT.require(Algorithm.HMAC512(SECRET)).build().verify(token).getExpiresAt();
     }
 
     public boolean isNeedToUpdateRefreshToken(String refreshToken) {
