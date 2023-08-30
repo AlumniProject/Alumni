@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 @Getter
 @Service
@@ -43,11 +44,12 @@ public class JwtService {
      */
     public String verifyNewMemberOrNot(LoginRequestDto loginRequestDto) {
         // email 존재 확인
-        if (!verifiedEmailRepository.existsByEmail(loginRequestDto.getEmail())) {
+        Optional<VerifiedEmail> byEmail = verifiedEmailRepository.findByEmail(loginRequestDto.getEmail());
+        if (byEmail.isEmpty()) {
             return "존재하지 않는 회원";
         }
         // 인증번호 확인
-        VerifiedEmail verifiedEmail = verifiedEmailRepository.findByEmail(loginRequestDto.getEmail()).get();
+        VerifiedEmail verifiedEmail = byEmail.get();
         if (!loginRequestDto.getCertification().equals(verifiedEmail.getEmailCode())) {
             return "인증번호가 올바르지 않습니다";
         }
@@ -55,6 +57,11 @@ public class JwtService {
         // 신규회원인지 확인
         if (!memberRepository.existsMemberByEmail(loginRequestDto.getEmail())) {
             return "이메일 인증 완료";
+        }
+        // fem token 존재하는지 확인
+        String fcmToken = loginRequestDto.getFcmToken();
+        if (fcmToken == null || fcmToken.isBlank()) {
+            return "blank";
         }
         // fcm token 저장
         setFcmToken(loginRequestDto.getEmail(), loginRequestDto.getFcmToken());
