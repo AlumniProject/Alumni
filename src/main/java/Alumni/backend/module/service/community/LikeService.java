@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -91,6 +93,17 @@ public class LikeService {
         plusLike(parent, findMember);
 
         return message;
+    }
+
+    public void deleteLikesProcess(Member member) {
+        List<PostLike> postLikes = member.getPostLikes();
+        List<CommentLike> commentLikes = member.getCommentLikes();
+        if (!postLikes.isEmpty()) {
+            postLikeRepository.deleteAll(member.getPostLikes());
+        }
+        if (!commentLikes.isEmpty()) {
+            commentLikeRepository.deleteAll(member.getCommentLikes());
+        }
     }
 
     private void plusLike(Comment comment, Member findMember) {

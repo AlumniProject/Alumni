@@ -205,4 +205,11 @@ public class TeamService {
 
         return new TeamListResponse(teamApplyDtos, team, "SUCCESS");
     }
+
+    public void deleteTeammateProcess(Member member) {
+        List<Teammate> teammates = teammateRepository.findByMemberId(member.getId());
+        if (!teammates.isEmpty()) {
+            teammateRepository.deleteAll(teammates);
+        }
+    }
 }

@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class S3Service implements FileService{
+public class S3Service implements FileService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -35,11 +34,11 @@ public class S3Service implements FileService{
         objectMetadata.setContentType(file.getContentType());
 
         //파일 업로드
-        try(InputStream inputStream = file.getInputStream()){
+        try (InputStream inputStream = file.getInputStream()) {
             amazonS3.putObject(
                     new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                             .withCannedAcl(CannedAccessControlList.PublicReadWrite));
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new ImageException("파일 변환 중 에러 발생");
         }
 
@@ -53,10 +52,10 @@ public class S3Service implements FileService{
 
     //파일 확장자명 가져오는 로직
     private String getFileExtension(String fileName) {
-        try{
+        try {
             return fileName.substring(fileName.lastIndexOf("."));
-        }catch(StringIndexOutOfBoundsException e) {
-            throw new ImageException(String.format("잘못된 형식의 파일 (%s) 입니다.",fileName));
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new ImageException(String.format("잘못된 형식의 파일 (%s) 입니다.", fileName));
         }
     }
 

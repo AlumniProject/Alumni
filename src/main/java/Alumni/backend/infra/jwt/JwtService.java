@@ -135,6 +135,11 @@ public class JwtService {
         member.setFcmToken(fcmToken);
     }
 
+    public void saveAccessToken(String accessToken) {
+        Date expireTime = getExpireTime(accessToken);
+        redisService.setValueWithDate(accessToken, "logout", expireTime);
+    }
+
     public void saveRefreshToken(String refreshToken) {
         Date expireTime = getExpireTime(refreshToken);
         redisService.setValueWithDate(refreshToken, "refresh", expireTime);
@@ -165,8 +170,7 @@ public class JwtService {
         // blackList에 access 토큰 추가
         String accessToken = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
         //blackListService.saveBlackList(accessToken);
-        Date expireTime = getExpireTime(accessToken);
-        redisService.setValueWithDate(accessToken, "logout", expireTime);
+        saveAccessToken(accessToken);
     }
 
     /*public void isExistBlackListByAccessToken(String accessToken) {
