@@ -7,7 +7,7 @@ import Alumni.backend.module.domain.registration.VerifiedEmail;
 import Alumni.backend.module.dto.registration.LoginRequestDto;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.VerifiedEmailRepository;
-import Alumni.backend.module.service.registration.RedisService;
+import Alumni.backend.module.service.RedisService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;

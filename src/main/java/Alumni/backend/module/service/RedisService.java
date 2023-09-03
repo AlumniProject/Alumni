@@ -1,4 +1,4 @@
-package Alumni.backend.module.service.registration;
+package Alumni.backend.module.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -60,16 +60,40 @@ public class RedisService {
         redisTemplate.opsForValue().increment(key);
     }
 
+    public void incrValueByDelta(String key, Integer delta) {
+        redisTemplate.opsForValue().increment(key, delta);
+    }
+
     public void decrValue(String key) {
-        redisTemplate.opsForValue().decrement(key);
+        ValueOperations<String, String> value = redisTemplate.opsForValue();
+        String str = value.get(key);
+        if (str != null) {
+            if (Integer.parseInt(str) <= 0) {
+                deleteValue(key);
+            } else {
+                redisTemplate.opsForValue().decrement(key);
+            }
+        }
+    }
+
+    public void decrValueByDelta(String key, Integer delta) {
+        ValueOperations<String, String> value = redisTemplate.opsForValue();
+        String str = value.get(key);
+        if (str != null) {
+            if (Integer.parseInt(str) <= 0) {
+                deleteValue(key);
+            } else {
+                redisTemplate.opsForValue().decrement(key, delta);
+            }
+        }
     }
 
     @Transactional(readOnly = true)
-    public Long getValueCount(String key) {
+    public Integer getValueCount(String key) {
         String str = redisTemplate.opsForValue().get(key);
         if (str == null) {
-            return 0L;
+            return 0;
         }
-        return Long.valueOf(str);
+        return Integer.valueOf(str);
     }
 }

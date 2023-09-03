@@ -32,9 +32,6 @@ public class Team extends BaseTimeEntity {
     private Integer headcount; // 총 인원
 
     @Column(nullable = false)
-    private Integer current; // 현재 인원
-
-    @Column(nullable = false)
     private Boolean closed; // 마감 여부
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,7 +48,6 @@ public class Team extends BaseTimeEntity {
                 .content(teamRequestDto.getContent())
                 .region(teamRequestDto.getRegion())
                 .headcount(teamRequestDto.getTotal())
-                .current(0)
                 .closed(false)
                 .member(member)
                 .contest(contest)
@@ -63,10 +59,6 @@ public class Team extends BaseTimeEntity {
         this.content = teamRequestDto.getContent();
         this.region = teamRequestDto.getRegion();
         this.headcount = teamRequestDto.getTotal();
-    }
-
-    public void updateCurrent(Integer current) {
-        this.current = current;
     }
 
     public void closedTeam() {

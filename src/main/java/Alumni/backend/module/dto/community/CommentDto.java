@@ -28,10 +28,10 @@ public class CommentDto {
     @Schema(description = "대댓글 리스트")
     private List<RecommentDto> recommentList;
 
-    public static CommentDto getCommentDto(Comment comment) {
+    public static CommentDto getCommentDto(Comment comment, Integer likeNum) {
         return CommentDto.builder()
                 .id(comment.getId())
-                .likes(comment.getLikeNum())
+                .likes(likeNum)
                 .content(comment.getContent())
                 .writer(MemberResponseDto.getMemberResponseDto(comment.getMember()))
                 .build();

@@ -22,13 +22,13 @@ public class TeamResponseDto {
     private MemberResponseDto writer;
     private List<CommentDto> commentList;
 
-    public static TeamResponseDto getTeamResponseDto(Team team) {
+    public static TeamResponseDto getTeamResponseDto(Team team, Integer current) {
         return TeamResponseDto.builder()
                 .teamId(team.getId())
                 .title(team.getTitle())
                 .content(team.getContent())
                 .total(team.getHeadcount())
-                .current(team.getCurrent())
+                .current(current)
                 .region(team.getRegion())
                 .closed(team.getClosed())
                 .writer(MemberResponseDto.getMemberResponseDto(team.getMember()))
