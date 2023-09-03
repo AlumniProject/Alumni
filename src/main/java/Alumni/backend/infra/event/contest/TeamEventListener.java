@@ -1,6 +1,7 @@
 package Alumni.backend.infra.event.contest;
 
 import Alumni.backend.infra.notification.NotificationService;
+import Alumni.backend.module.domain.contest.Team;
 import Alumni.backend.module.domain.registration.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -21,43 +22,57 @@ public class TeamEventListener {
 
     @EventListener
     public void handleTeamModifyEvent(TeamModifyEvent teamModifyEvent) {
-        multiMessageEvent(teamModifyEvent.getMembers(), "팀원 모집글이 수정되었습니다");
+        Team team = teamModifyEvent.getTeam();
+        multiMessageEvent(teamModifyEvent.getMembers(),
+                "팀원 모집글 <" + team.getTitle() + ">이 수정되었습니다",
+                team.getId());
     }
 
     @EventListener
     public void handleTeamDeleteEvent(TeamDeleteEvent teamDeleteEvent) {
-        multiMessageEvent(teamDeleteEvent.getMembers(), "팀원 모집글이 삭제되었습니다");
+        multiMessageEvent(teamDeleteEvent.getMembers(),
+                "팀원 모집글 <" + teamDeleteEvent.getTeam().getTitle() + ">이 삭제되었습니다",
+                null);
     }
 
     @EventListener
     public void handleTeamApplyEvent(TeamApplyEvent teamApplyEvent) {
         Member member = teamApplyEvent.getMember();
-        singleMessageEvent(member, "팀원 모집글에 " + member.getNickname() + "님이 지원하였습니다");
+        Team team = teamApplyEvent.getTeam();
+        singleMessageEvent(member,
+                "팀원 모집글 <" + team.getTitle() + ">에 " + member.getNickname() + "님이 지원하였습니다",
+                team.getId());
     }
 
     @EventListener
     public void handleTeamLeaderApproveEvent(TeamLeaderApproveEvent teamLeaderApproveEvent) {
-        multiMessageEvent(teamLeaderApproveEvent.getMembers(), "팀원으로 승인되었습니다");
+        Team team = teamLeaderApproveEvent.getTeam();
+        multiMessageEvent(teamLeaderApproveEvent.getMembers(),
+                "팀원 모집글 <" + team.getTitle() + ">에 팀원으로 승인되었습니다",
+                team.getId());
     }
 
     @EventListener
     public void handleTeamCloseEvent(TeamCloseEvent teamCloseEvent) {
-        multiMessageEvent(teamCloseEvent.getMembers(), "팀 모집이 마감되었습니다");
+        Team team = teamCloseEvent.getTeam();
+        multiMessageEvent(teamCloseEvent.getMembers(),
+                "팀원 모집글 <" + team.getTitle() + ">이 팀 모집을 마감하였습니다",
+                team.getId());
     }
 
-    private void multiMessageEvent(List<Member> members, String body) {
+    private void multiMessageEvent(List<Member> members, String body, Long teamId) {
         if (!members.isEmpty()) {
             List<String> tokenList = members.stream()
                     .map(Member::getFcmToken)
                     .filter(fcmToken -> !fcmToken.isBlank()).collect(Collectors.toList()); // 로그이웃한 사용자 제외
-            notificationService.sendByTokenList(tokenList, "동문개발자 커뮤니티(Alumni)", body);
+            notificationService.sendByTokenList(tokenList, "동문개발자 커뮤니티(Alumni)", body, "1", teamId);
         }
     }
 
-    private void singleMessageEvent(Member member, String body) {
+    private void singleMessageEvent(Member member, String body, Long teamId) {
         String fcmToken = member.getFcmToken();
         if (!fcmToken.isBlank()) { // 로그아웃하면 fcmToken black 됨
-            notificationService.sendByToken(fcmToken, "동문개발자 커뮤니티(Alumni)", body);
+            notificationService.sendByToken(fcmToken, "동문개발자 커뮤니티(Alumni)", body, "1", teamId);
         }
     }
 }

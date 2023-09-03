@@ -1,5 +1,6 @@
 package Alumni.backend.infra.event.contest;
 
+import Alumni.backend.module.domain.contest.Team;
 import Alumni.backend.module.domain.registration.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,4 +10,5 @@ import lombok.RequiredArgsConstructor;
 public class TeamApplyEvent {
 
     private final Member member;
+    private final Team team;
 }
