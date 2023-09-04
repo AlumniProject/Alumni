@@ -15,9 +15,16 @@ public class Follow {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Member follower;
+    private Member follower;//하는 사람(나)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Member following;
+    private Member following;//하려는 사람(상대방)
+
+    public static Follow createFollow(Member follower, Member following){
+        Follow follow = new Follow();
+        follow.follower = follower;
+        follow.following = following;
+        return follow;
+    }
 }
