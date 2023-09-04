@@ -31,6 +31,9 @@ public class Contest {
     private String content;
 
     @Column(nullable = false)
+    private String period;
+
+    @Column(nullable = false)
     private String poster;
 
     @Column(nullable = false)
