@@ -8,6 +8,7 @@ import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.domain.community.PostLike;
 import Alumni.backend.module.repository.community.comment.CommentRepository;
 import Alumni.backend.module.repository.community.CommentLikeRepository;
+import Alumni.backend.module.repository.contest.ContestRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.community.PostLikeRepository;
@@ -29,6 +30,7 @@ public class LikeService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final ContestRepository contestRepository;
     private final RedisService redisService;
 
     public String postLike(Member member, Long postId) {

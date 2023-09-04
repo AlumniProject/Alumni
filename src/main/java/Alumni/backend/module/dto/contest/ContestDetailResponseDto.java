@@ -22,11 +22,18 @@ public class ContestDetailResponseDto {
     private String title;
     @NotEmpty
     private String content;
+    @NotEmpty
+    private String period;
+    @NotEmpty
     private String field;
     @NotEmpty
     private String link;
     @NotEmpty
     private String poster;
+    @NotEmpty
+    private Integer likes;
+    @NotEmpty
+    private Boolean isLike;
     private List<TeamListDto> teamList;
 
     public static ContestDetailResponseDto contestDetailResponseDto(Contest contest) {
@@ -34,13 +41,19 @@ public class ContestDetailResponseDto {
                 .contestId(contest.getId())
                 .title(contest.getTitle())
                 .content(contest.getContent())
+                .period(contest.getPeriod())
                 .field(contest.getField())
                 .link(contest.getLink())
                 .poster(contest.getPoster())
+                .likes(contest.getLikeNum())
                 .build();
     }
 
     public void setTeamList(List<TeamListDto> teamList){
         this.teamList = teamList;
+    }
+
+    public void setIsLikeTrue(){
+        this.isLike = true;
     }
 }

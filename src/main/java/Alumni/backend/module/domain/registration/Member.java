@@ -27,7 +27,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 30)
     private String email;
 
-    @Column(nullable = false, length = 10, unique = true)
+    @Column(nullable = false, length = 15, unique = true)
     private String nickname;
 
     @Column(nullable = false, length = 4)
@@ -101,5 +101,13 @@ public class Member extends BaseTimeEntity {
 
     public void clearInterestFields() {
         this.interestFields.clear();
+    }
+
+    public void editNickname(String nickname){
+        this.nickname = nickname;
+    }
+
+    public void editIntroduction(String introduction){
+        this.introduction = introduction;
     }
 }

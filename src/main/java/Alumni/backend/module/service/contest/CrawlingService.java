@@ -68,27 +68,32 @@ public class CrawlingService {
                 WebElement fieldInfo = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".cd-info-list li")));
                 String[] field = fieldInfo.getText().split("\n");
 
-                //제목
-                WebElement elementTitle = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".tit-area .tit")));
-//            String title = elementTitle.getText();
-//            log.info(title);
-                //상세내용
-                WebElement elementContent = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".article")));
+            WebElement periodInfo = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dday-area")));
+            String period = periodInfo.getText().replaceAll("D-\\d+", "").trim();//디데이 부분 제거하기
+            String[] cleanPeriod = period.split("\n");
+            log.info(cleanPeriod[1]);
+
+            //제목
+            WebElement elementTitle = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".tit-area .tit")));
+            String title = elementTitle.getText();
+            log.info(title);
+            //상세내용
+            WebElement elementContent = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".article")));
 //            String content = elementContent.getText();
 //            log.info(content);
 
-                Contest contest = Contest.builder()
-                        .link(concertUrl)
-                        .field(field[1])
-                        .title(elementTitle.getText())
-                        .content(elementContent.getText())
-                        .poster(poster)
-                        .build();
+            Contest contest = Contest.builder()
+                    .title(elementTitle.getText())
+                    .content(elementContent.getText())
+                    .period(cleanPeriod[1])
+                    .link(concertUrl)
+                    .field(field[1])
+                    .poster(poster)
+                    .build();
 
-                contestList.add(contest);
-                Thread.sleep(5000);
-            }
-
+            contestList.add(contest);
+            Thread.sleep(5000);
+        }
             contestRepository.saveAll(contestList);
 
             webDriver.close();

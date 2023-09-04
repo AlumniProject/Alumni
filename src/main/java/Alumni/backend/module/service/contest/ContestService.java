@@ -3,9 +3,11 @@ package Alumni.backend.module.service.contest;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.contest.Contest;
 import Alumni.backend.module.domain.contest.Team;
+import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.dto.contest.ContestDetailResponseDto;
 import Alumni.backend.module.dto.contest.ContestSearchResponseDto;
 import Alumni.backend.module.dto.contest.TeamListDto;
+import Alumni.backend.module.repository.contest.ContestLikeRepository;
 import Alumni.backend.module.repository.contest.ContestRepository;
 import Alumni.backend.module.repository.contest.TeamRepository;
 import Alumni.backend.module.service.RedisService;
@@ -21,14 +23,26 @@ import java.util.stream.Collectors;
 public class ContestService {
     private final ContestRepository contestRepository;
     private final TeamRepository teamRepository;
+    private final ContestLikeRepository contestLikeRepository;
     private final RedisService redisService;
 
-    public List<ContestSearchResponseDto> contestSearch(String content) {
+    public List<ContestSearchResponseDto> contestSearch(Member member, String content) {
         List<ContestSearchResponseDto> contestResponseDtos = new ArrayList<>();
 
         List<Contest> contests = contestRepository.searchContest(content);
 
         for (Contest contest : contests) {
+            //좋아요 여부
+            Long contestId = contest.getId();
+
+            ContestSearchResponseDto contestSearchResponseDto = ContestSearchResponseDto.contestSearchResponseDto(contest);
+
+            if(contestLikeRepository.findByMemberIdAndContestId(member.getId(), contestId).isPresent()){
+                contestSearchResponseDto.setIsLikeTrue();
+            }
+
+            contestResponseDtos.add(contestSearchResponseDto);
+
             contestResponseDtos.add(ContestSearchResponseDto.contestSearchResponseDto(contest,
                     redisService.getValueCount("contest_id:" + contest.getId() + "_likes"),
                     redisService.getValueCount("contest_id:" + contest.getId() + "_teams")));
@@ -37,9 +51,19 @@ public class ContestService {
         return contestResponseDtos;
     }
 
-    public ContestDetailResponseDto viewContestDetail(Long contestId) {
+    public ContestDetailResponseDto viewContestDetail(Member member, Long contestId) {
         Contest contest = contestRepository.findById(contestId).orElseThrow(() -> new NoExistsException("존재하지 않는 공모전"));
         ContestDetailResponseDto contestDetailResponseDto = ContestDetailResponseDto.contestDetailResponseDto(contest);
+
+        //좋아요 여부
+        if(contestLikeRepository.findByMemberIdAndContestId(member.getId(), contestId).isPresent()){
+            contestDetailResponseDto.setIsLikeTrue();
+        }
+
+        List<Team> teams = teamRepository.findByContestIdFetchJoinMemberAndImage(contest.getId());
+
+        List<TeamListDto> teamListDtos = teams.stream().map(TeamListDto::teamListDto).collect(Collectors.toList());
+        contestDetailResponseDto.setTeamList(teamListDtos);
 
         List<Team> teams = teamRepository.findByContestIdFetchJoinMemberAndImage(contest.getId());
         if (!teams.isEmpty()) {
