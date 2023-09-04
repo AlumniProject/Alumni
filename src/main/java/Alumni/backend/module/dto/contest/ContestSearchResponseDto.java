@@ -6,33 +6,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ContestSearchResponseDto {
-    @NotNull
     private Long contestId;
-    @NotEmpty
     private String title;
-    @NotEmpty
     private String content;
     @NotEmpty
     private String period;
     private String field;
-    @NotEmpty
     private String poster;
-    @NotEmpty
     private Integer likes;
     @NotEmpty
     private Boolean isLike;
     @NotNull
     private Integer teams;
 
-    public static ContestSearchResponseDto contestSearchResponseDto(Contest contest) {
+    public static ContestSearchResponseDto contestSearchResponseDto(Contest contest, Integer likeNum, Integer teamNum) {
         return ContestSearchResponseDto.builder()
                 .contestId(contest.getId())
                 .title(contest.getTitle())
@@ -40,9 +32,9 @@ public class ContestSearchResponseDto {
                 .period(contest.getPeriod())
                 .field(contest.getField())
                 .poster(contest.getPoster())
-                .likes(contest.getLikeNum())
                 .isLike(false)
-                .teams(contest.getTeamNum())
+                .likes(likeNum)
+                .teams(teamNum)
                 .build();
     }
 

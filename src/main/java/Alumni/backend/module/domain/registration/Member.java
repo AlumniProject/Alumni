@@ -50,8 +50,6 @@ public class Member extends BaseTimeEntity {
     @JoinColumn(name = "university_id", nullable = false)
     private University university;
 
-    private String refreshToken;
-
     @Column(nullable = false)
     private String fcmToken;
 
@@ -95,10 +93,6 @@ public class Member extends BaseTimeEntity {
 
     public void uploadProfile(Image profileImage) {
         this.profileImage = profileImage;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 
     public void setFcmToken(String fcmToken) {

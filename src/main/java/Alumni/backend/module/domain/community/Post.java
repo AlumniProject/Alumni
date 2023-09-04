@@ -33,12 +33,6 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false, length = 4000)
     private String content;
 
-    @Column(nullable = false)
-    private Integer likeNum;
-
-    @Column(nullable = false)
-    private Integer commentNum;
-
     @OneToMany(mappedBy = "post")
     private Set<PostTag> postTags = new HashSet<>();
 
@@ -48,8 +42,6 @@ public class Post extends BaseTimeEntity {
         post.board = board;
         post.title = title;
         post.content = content;
-        post.likeNum = 0;
-        post.commentNum = 0;
         return post;
     }
 

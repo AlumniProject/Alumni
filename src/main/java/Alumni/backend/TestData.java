@@ -1,22 +1,19 @@
 package Alumni.backend;
 
-import Alumni.backend.infra.exception.NoExistsException;
-import Alumni.backend.module.domain.*;
+import Alumni.backend.module.domain.Image;
 import Alumni.backend.module.domain.community.Board;
 import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.domain.community.PostTag;
 import Alumni.backend.module.domain.community.Tag;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.domain.registration.University;
-import Alumni.backend.module.repository.*;
-import Alumni.backend.module.repository.community.comment.CommentRepository;
+import Alumni.backend.module.repository.ImageRepository;
 import Alumni.backend.module.repository.community.BoardRepository;
 import Alumni.backend.module.repository.community.PostTagRepository;
 import Alumni.backend.module.repository.community.TagRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.UniversityRepository;
-import Alumni.backend.module.service.community.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +32,6 @@ public class TestData {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
-    private final CommentService commentService;
-    private final CommentRepository commentRepository;
 
     public void SetUp() {
         //given
@@ -72,18 +67,6 @@ public class TestData {
         PostTag postTag1 = PostTag.createPostTag(post2, pythonTag);
         PostTag postTag2 = PostTag.createPostTag(post2, javaTag);
         postTagRepository.saveAll(Arrays.asList(postTag1, postTag2));
-    }
-
-    public void SetUpComment() {
-        Member member = memberRepository.findByEmail("1").orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
-        Post freepost = postRepository.findByTitle("t1").orElseThrow(() -> new NoExistsException("존재하지 않는 게시글"));
-        Post techpost = postRepository.findByTitle("t2").orElseThrow(() -> new NoExistsException("존재하지 않는 게시글"));
-
-        Long ct1 = commentService.createComment(member, freepost.getId(), "ct1");
-        Long ct2 = commentService.createComment(member, techpost.getId(), "ct2");
-
-        commentService.createRecomment(member, ct1, "recnd1");
-        commentService.createRecomment(member, ct1, "recnd2");
     }
 
     public void SetUpOnlyMember() {

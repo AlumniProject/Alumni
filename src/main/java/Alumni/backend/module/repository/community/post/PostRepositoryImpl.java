@@ -10,6 +10,7 @@ import java.util.List;
 
 import static Alumni.backend.module.domain.QImage.image;
 import static Alumni.backend.module.domain.community.QPost.post;
+import static Alumni.backend.module.domain.community.QPostLike.postLike;
 import static Alumni.backend.module.domain.registration.QMember.member;
 
 
@@ -49,16 +50,14 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public List<Post> findPopularPosts(List<Long> list) {
+    public List<Post> findPopularPosts() {
         return jpaQueryFactory
-            .selectFrom(post)
-            .leftJoin(post.member, member).fetchJoin()
-            .leftJoin(member.profileImage, image).fetchJoin()
-            .where(post.board.id.in(1, 3, 5).or(post.id.in(list)))
-            .orderBy(post.likeNum.desc(),
-                post.commentNum.desc().nullsLast())
-            .limit(4)
-            .fetch();
+                .select(postLike.post)
+                .from(postLike)
+                .leftJoin(postLike.post, post).fetchJoin()
+                .groupBy(postLike.post)
+                .orderBy(postLike.post.count().desc())
+                .fetch();
     }
 
     private BooleanExpression getTitleContentContains(String titleOrContent) {

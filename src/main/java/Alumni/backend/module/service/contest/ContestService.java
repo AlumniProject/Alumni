@@ -10,6 +10,7 @@ import Alumni.backend.module.dto.contest.TeamListDto;
 import Alumni.backend.module.repository.contest.ContestLikeRepository;
 import Alumni.backend.module.repository.contest.ContestRepository;
 import Alumni.backend.module.repository.contest.TeamRepository;
+import Alumni.backend.module.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class ContestService {
     private final ContestRepository contestRepository;
     private final TeamRepository teamRepository;
     private final ContestLikeRepository contestLikeRepository;
+    private final RedisService redisService;
 
     public List<ContestSearchResponseDto> contestSearch(Member member, String content) {
         List<ContestSearchResponseDto> contestResponseDtos = new ArrayList<>();
@@ -40,6 +42,10 @@ public class ContestService {
             }
 
             contestResponseDtos.add(contestSearchResponseDto);
+
+            contestResponseDtos.add(ContestSearchResponseDto.contestSearchResponseDto(contest,
+                    redisService.getValueCount("contest_id:" + contest.getId() + "_likes"),
+                    redisService.getValueCount("contest_id:" + contest.getId() + "_teams")));
         }
 
         return contestResponseDtos;
@@ -59,6 +65,13 @@ public class ContestService {
         List<TeamListDto> teamListDtos = teams.stream().map(TeamListDto::teamListDto).collect(Collectors.toList());
         contestDetailResponseDto.setTeamList(teamListDtos);
 
+        List<Team> teams = teamRepository.findByContestIdFetchJoinMemberAndImage(contest.getId());
+        if (!teams.isEmpty()) {
+            List<TeamListDto> teamListDtos = teams.stream()
+                    .map(t -> TeamListDto.teamListDto(t, redisService.getValueCount("team_id:" + t.getId() + "_current")))
+                    .collect(Collectors.toList());
+            contestDetailResponseDto.setTeamList(teamListDtos);
+        }
         return contestDetailResponseDto;
     }
 }
