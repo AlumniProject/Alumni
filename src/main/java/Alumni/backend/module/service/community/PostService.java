@@ -240,15 +240,14 @@ public class PostService {
                     .collect(Collectors.toList()));
         }
         // 댓글 확인
-        String key = "post_id:" + post.getId() + "_likes";
         List<CommentDto> commentDtos = new ArrayList<>();
         commentRepository.findByPostIdFetchJoinMemberAndImage(post.getId()).forEach(comment -> {
             if (comment.getParent() == null) { // 대댓글 아닌 경우만
                 CommentDto commentDto = CommentDto.getCommentDto(comment,
-                        redisService.getValueCount(key));
+                        redisService.getValueCount("comment_id:" + comment.getId() + "_likes"));
                 // recommentList 확인
                 List<RecommentDto> recommentDtos = comment.getChildren().stream()
-                        .map(c -> RecommentDto.getRecommentDto(c, redisService.getValueCount(key)))
+                        .map(rc -> RecommentDto.getRecommentDto(rc, redisService.getValueCount("comment_id:" + rc.getId() + "_likes")))
                         .collect(Collectors.toList());
                 commentDto.setRecommentList(recommentDtos);
                 commentDtos.add(commentDto);
