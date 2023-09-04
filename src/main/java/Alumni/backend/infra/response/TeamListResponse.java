@@ -26,11 +26,11 @@ public class TeamListResponse extends BasicResponse {
     @Schema(description = "데이터 결과")
     private List<TeamApplyDto> data;
 
-    public TeamListResponse(List<TeamApplyDto> teamApplyDtos, Team team, String message) {
+    public TeamListResponse(List<TeamApplyDto> teamApplyDtos, Team team, Integer current, String message) {
         this.code = 200;
         this.message = message;
         this.total = team.getHeadcount();
-        this.current = team.getCurrent();
+        this.current = current;
         this.count = teamApplyDtos.size();
         this.data = teamApplyDtos;
     }

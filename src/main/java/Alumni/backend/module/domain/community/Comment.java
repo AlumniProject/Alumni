@@ -23,9 +23,6 @@ public class Comment extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private Integer likeNum;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
@@ -50,7 +47,6 @@ public class Comment extends BaseTimeEntity {
         Comment comment = new Comment();
 
         comment.content = content;
-        comment.likeNum = 0;
         comment.member = member;
         comment.parent = null;
 

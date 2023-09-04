@@ -28,29 +28,22 @@ public class HomeService {
     HomeDto homeDto = new HomeDto();
 
     Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
-
     MemberProfileDto profile = MemberProfileDto.memberProfileDto(findMember);
 
-    List<Long> list = postRepository.findByMemberId(member.getId());
-    List<Post> popularPosts = postRepository.findPopularPosts(list);
+    List<Post> popularPosts = postRepository.findPopularPosts();
+
     List<PopularPostResponseDto> popularPostResponseDtos = new ArrayList<>();
-
     for (Post popularPost : popularPosts) {
-
       PopularPostResponseDto popularPostResponseDto = PopularPostResponseDto.getPopularPostResponseDto(popularPost);
-
       //기술 게시판인 경우
       if (popularPost.getBoard().getId() == 3 && !popularPost.getPostTags().isEmpty()) {
         popularPostResponseDto.setHashTag(popularPost.getPostTags().stream()
             .map(postTag -> postTag.getTag().getName())
             .collect(Collectors.toList()));
       }
-
       popularPostResponseDtos.add(popularPostResponseDto);
     }
-
     homeDto.setHomeDto(profile,popularPostResponseDtos);
-
     return homeDto;
   }
 }

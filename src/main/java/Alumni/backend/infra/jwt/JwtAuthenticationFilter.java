@@ -57,6 +57,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 throw new RuntimeException(e);
             }
             return null;
+        } else if (result.equals("blank")) { // fcm token 없음
+            try {
+                setBodyResponse(response, 400, "Bad Request");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
         }
 
         // UsernamePassword 토큰 생성

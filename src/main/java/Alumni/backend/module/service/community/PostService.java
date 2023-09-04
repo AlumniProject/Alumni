@@ -14,6 +14,7 @@ import Alumni.backend.module.dto.community.PostSearch;
 import Alumni.backend.module.repository.community.comment.CommentRepository;
 import Alumni.backend.module.repository.community.*;
 import Alumni.backend.module.repository.community.post.PostRepository;
+import Alumni.backend.module.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final RedisService redisService;
 
     public void postCreate(Member member, PostCreateRequestDto postCreateRequestDto) {
         Board board = boardRepository.findById(postCreateRequestDto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
@@ -142,7 +144,7 @@ public class PostService {
                 if (!post.getMember().getUniversity().getId().equals(user.getUniversity().getId())) {
                     continue;
                 }
-                postResponseDtos.add(PostResponseDto.getPostResponseDto(post));
+                postResponseDtos.add(getPostResponseDto(post));
             }
         } else if (postSearch.getId() == 3) {
             tagRankList = tagRank();
@@ -161,12 +163,12 @@ public class PostService {
                         }
                     }
                     if (size == 0) {
-                        PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
+                        PostResponseDto postResponseDto = getPostResponseDto(post);
                         postResponseDto.setHashTag(postTagList);
                         postResponseDtos.add(postResponseDto);
                     }
                 } else { // 검색 해시태그 없는 경우
-                    PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
+                    PostResponseDto postResponseDto = getPostResponseDto(post);
                     if (!post.getPostTags().isEmpty()) {
                         postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                                 .map(postTag -> postTag.getTag().getName())
@@ -180,10 +182,16 @@ public class PostService {
                 throw new IllegalArgumentException("Bad Request");
             }
             for (Post post : posts) {
-                postResponseDtos.add(PostResponseDto.getPostResponseDto(post));
+                postResponseDtos.add(getPostResponseDto(post));
             }
         }
         return new PostSearchResponse<>(postResponseDtos, tagRankList, "게시글 검색 결과 전송 완료");
+    }
+
+    private PostResponseDto getPostResponseDto(Post post) {
+        return PostResponseDto.getPostResponseDto(post,
+                redisService.getValueCount("post_id:" + post.getId() + "_likes"),
+                redisService.getValueCount("post_id:" + post.getId() + "_comments"));
     }
 
     @Transactional(readOnly = true)
@@ -198,7 +206,7 @@ public class PostService {
                 continue;
             }
 
-            PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
+            PostResponseDto postResponseDto = getPostResponseDto(post);
 
             // hashTag 확인
             if (post.getBoard().getId() == 3 && !post.getPostTags().isEmpty()) {
@@ -224,7 +232,7 @@ public class PostService {
         if (post == null) {
             throw new NoExistsException("존재하지 않는 게시글입니다");
         }
-        PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post);
+        PostResponseDto postResponseDto = getPostResponseDto(post);
         // hashTag 확인
         if (!post.getPostTags().isEmpty()) {
             postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
@@ -235,10 +243,12 @@ public class PostService {
         List<CommentDto> commentDtos = new ArrayList<>();
         commentRepository.findByPostIdFetchJoinMemberAndImage(post.getId()).forEach(comment -> {
             if (comment.getParent() == null) { // 대댓글 아닌 경우만
-                CommentDto commentDto = CommentDto.getCommentDto(comment);
+                CommentDto commentDto = CommentDto.getCommentDto(comment,
+                        redisService.getValueCount("comment_id:" + comment.getId() + "_likes"));
                 // recommentList 확인
                 List<RecommentDto> recommentDtos = comment.getChildren().stream()
-                        .map(RecommentDto::getRecommentDto).collect(Collectors.toList());
+                        .map(rc -> RecommentDto.getRecommentDto(rc, redisService.getValueCount("comment_id:" + rc.getId() + "_likes")))
+                        .collect(Collectors.toList());
                 commentDto.setRecommentList(recommentDtos);
                 commentDtos.add(commentDto);
             }

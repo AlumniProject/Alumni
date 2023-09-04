@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
@@ -126,8 +127,8 @@ public class MemberController {
     })
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 메서드 입니다.")
     @DeleteMapping("/edit/delete")
-    public ResponseEntity<? extends BasicResponse> deleteMember(@Schema(hidden = true) @CurrentUser Member member) {
-        memberService.deleteMember(member);
+    public ResponseEntity<? extends BasicResponse> deleteMember(@Schema(hidden = true) @CurrentUser Member member, HttpServletRequest request) {
+        memberService.deleteMember(member, request);
         return ResponseEntity.ok().body(new SingleResponse("회원 탈퇴 완료"));
     }
 }
