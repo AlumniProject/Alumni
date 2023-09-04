@@ -41,17 +41,6 @@ public class TeamService {
     private final RedisService redisService;
     private final ApplicationEventPublisher eventPublisher;
 
-    public void saveDummyContest() {
-        Contest contest = Contest.builder()
-                .link("www.test.com")
-                .field("IT")
-                .title("testTitle")
-                .content("testContent")
-                .poster("poster.jpg")
-                .build();
-        contestRepository.save(contest);
-    }
-
     public void createTeam(Member member, Long contestId, TeamRequestDto teamRequestDto) {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new NoExistsException("NO_EXIST_CONTEST"));
@@ -205,7 +194,8 @@ public class TeamService {
                     return TeamApplyDto.getTeamApplyDto(teammate, fieldNames);
                 }).collect(Collectors.toList());
 
-        return new TeamListResponse(teamApplyDtos, team, "SUCCESS");
+        return new TeamListResponse(teamApplyDtos, team,
+                redisService.getValueCount("team_id:" + teamId + "_current"), "SUCCESS");
     }
 
     public void deleteTeammateProcess(Member member) {

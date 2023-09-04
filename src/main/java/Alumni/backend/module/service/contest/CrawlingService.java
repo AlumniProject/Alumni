@@ -83,8 +83,6 @@ public class CrawlingService {
                         .title(elementTitle.getText())
                         .content(elementContent.getText())
                         .poster(poster)
-                        .likeNum(0)
-                        .teamNum(0)
                         .build();
 
                 contestList.add(contest);
