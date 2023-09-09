@@ -1,23 +1,24 @@
 package Alumni.backend.module.service.registration;
 
+import Alumni.backend.infra.exception.DuplicateNicknameException;
+import Alumni.backend.infra.exception.NoExistsException;
+import Alumni.backend.infra.jwt.JwtProperties;
 import Alumni.backend.infra.jwt.JwtService;
 import Alumni.backend.infra.principal.PrincipalDetails;
-import Alumni.backend.module.domain.*;
-import Alumni.backend.module.domain.community.CommentLike;
+import Alumni.backend.module.domain.Image;
 import Alumni.backend.module.domain.community.Post;
-import Alumni.backend.module.domain.community.PostLike;
+import Alumni.backend.module.domain.contest.Team;
 import Alumni.backend.module.domain.registration.*;
 import Alumni.backend.module.dto.registration.SignUpRequestDto;
-import Alumni.backend.infra.exception.NoExistsException;
-import Alumni.backend.infra.exception.DuplicateNicknameException;
-import Alumni.backend.module.repository.*;
+import Alumni.backend.module.repository.ImageRepository;
 import Alumni.backend.module.repository.community.comment.CommentRepository;
-import Alumni.backend.module.repository.community.CommentLikeRepository;
-import Alumni.backend.module.repository.community.PostLikeRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
+import Alumni.backend.module.repository.contest.TeamRepository;
 import Alumni.backend.module.repository.registration.*;
 import Alumni.backend.module.service.FileService;
+import Alumni.backend.module.service.community.LikeService;
 import Alumni.backend.module.service.community.PostService;
+import Alumni.backend.module.service.contest.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
@@ -43,11 +45,12 @@ public class MemberService {
     private final ImageRepository imageRepository;
     private final FileService fileService;
     private final JwtService jwtService;
-    private final PostLikeRepository postLikeRepository;
-    private final CommentLikeRepository commentLikeRepository;
-    private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
+    private final LikeService likeService;
     private final PostService postService;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final TeamService teamService;
+    private final TeamRepository teamRepository;
     private final EntityManager em;
 
     public void login(Member member, HttpServletResponse response) {
@@ -140,30 +143,31 @@ public class MemberService {
     }
 
     // 회원 탈퇴
-    public void deleteMember(Member user) {
+    public void deleteMember(Member user, HttpServletRequest request) {
+        // access 토큰 + refresh 토큰 검증
+        jwtService.checkAccessAndRefreshHeaderValid(request);
+
         Member member = memberRepository.findById(user.getId())
                 .orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+
         // 프로필 이미지 삭제
-        if (member.getProfileImage() != null) {
-            imageRepository.deleteById(member.getProfileImage().getId());
+        Image profileImage = member.getProfileImage();
+        if (profileImage != null) {
+            fileService.deleteFile(profileImage.getStorageImageName());
+            imageRepository.deleteById(profileImage.getId());
         }
 
         // postLike, commentLike 삭제
-        List<PostLike> postLikes = member.getPostLikes();
-        List<CommentLike> commentLikes = member.getCommentLikes();
-        if (!postLikes.isEmpty()) {
-            postLikeRepository.deleteAll(member.getPostLikes());
-        }
-        if (!commentLikes.isEmpty()) {
-            commentLikeRepository.deleteAll(member.getCommentLikes());
-        }
+        likeService.deleteLikesProcess(member);
         // 회원이 작성한 댓글 삭제
         commentRepository.deleteAllByMemberId(member.getId());
         // 회원이 설정한 관심분야 삭제
         interestedRepository.deleteAllByMemberId(member.getId());
-
+        // 회원이 지원한 팀 목록 삭제
+        teamService.deleteTeammateProcess(member);
         // 회원이 작성한 게시글 + 기술게시글이면 해시태그 삭제 + 게시글에 달린 댓글과 좋아요 삭제
         List<Post> posts = postRepository.findAllByMemberId(member.getId());
+        List<Team> teams = teamRepository.findByMemberId(member.getId());
 
         em.flush();
         em.clear();
@@ -171,9 +175,24 @@ public class MemberService {
         for (Post post : posts) {
             postService.postDelete(member, post.getId());
         }
+        for (Team team : teams) {
+            teamService.teamDelete(member, team.getId());
+        }
+
+        // TODO : 팔로워 팔로우 삭제
+        // TODO : 쪽지 기록 삭제
+
         VerifiedEmail verifiedEmail = verifiedEmailRepository.findByEmail(member.getEmail())
                 .orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
         verifiedEmail.verifiedFalse();
+
+        // access 토큰 redis 저장
+        String accessToken = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
+        jwtService.saveAccessToken(accessToken);
+        // refresh 토큰 redis 삭제
+        String refreshToken = request.getHeader(JwtProperties.HEADER_REFRESH).replace(JwtProperties.TOKEN_PREFIX, "");
+        jwtService.removeRefreshToken(refreshToken);
+
         memberRepository.delete(member);
     }
 }

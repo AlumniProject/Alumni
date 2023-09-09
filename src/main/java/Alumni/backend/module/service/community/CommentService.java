@@ -47,7 +47,7 @@ public class CommentService {
         Comment saveComment = commentRepository.save(comment);
         postRepository.updateCommentCount(post.getCommentNum() + 1, postId);//게시글에 달린 댓글 수 증가
         // Async 알림 전송
-        eventPublisher.publishEvent(new CommentCreateEvent(post.getMember()));
+        eventPublisher.publishEvent(new CommentCreateEvent(post.getMember(), post));
         return saveComment.getId();
     }
 
@@ -92,7 +92,7 @@ public class CommentService {
         commentRepository.save(recomment);
         postRepository.updateCommentCount(post.getCommentNum() + 1, parent.getPost().getId());//게시글에 달린 댓글 수 증가
         // Async 알림 전송
-        eventPublisher.publishEvent(new RecommentCreateEvent(parent.getMember()));
+        eventPublisher.publishEvent(new RecommentCreateEvent(parent.getMember(), post));
     }
 
     public void deleteRecomment(Member member, Long commentId) {

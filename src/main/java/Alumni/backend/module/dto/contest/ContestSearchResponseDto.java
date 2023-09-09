@@ -20,12 +20,18 @@ public class ContestSearchResponseDto {
     private String title;
     @NotEmpty
     private String content;
+    @NotEmpty
+    private String period;
+    @NotEmpty
     private String field;
     @NotEmpty
     private String poster;
     @NotEmpty
     private Integer likes;
+    @NotEmpty
+    private Boolean isLike;
 
+    @NotNull
     private Integer teams;
 
     public static ContestSearchResponseDto contestSearchResponseDto(Contest contest) {
@@ -33,10 +39,16 @@ public class ContestSearchResponseDto {
                 .contestId(contest.getId())
                 .title(contest.getTitle())
                 .content(contest.getContent())
+                .period(contest.getPeriod())
                 .field(contest.getField())
                 .poster(contest.getPoster())
                 .likes(contest.getLikeNum())
+                .isLike(false)
                 .teams(contest.getTeamNum())
                 .build();
+    }
+
+    public void setIsLikeTrue(){
+        this.isLike = true;
     }
 }

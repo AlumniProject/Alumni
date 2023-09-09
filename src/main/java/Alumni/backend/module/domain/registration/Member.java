@@ -27,7 +27,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 30)
     private String email;
 
-    @Column(nullable = false, length = 10, unique = true)
+    @Column(nullable = false, length = 15, unique = true)
     private String nickname;
 
     @Column(nullable = false, length = 4)
@@ -49,8 +49,6 @@ public class Member extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id", nullable = false)
     private University university;
-
-    private String refreshToken;
 
     @Column(nullable = false)
     private String fcmToken;
@@ -97,15 +95,19 @@ public class Member extends BaseTimeEntity {
         this.profileImage = profileImage;
     }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
 
     public void clearInterestFields() {
         this.interestFields.clear();
+    }
+
+    public void editNickname(String nickname){
+        this.nickname = nickname;
+    }
+
+    public void editIntroduction(String introduction){
+        this.introduction = introduction;
     }
 }

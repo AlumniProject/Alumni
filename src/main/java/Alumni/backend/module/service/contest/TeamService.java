@@ -68,7 +68,7 @@ public class TeamService {
         // 신청한 모든 사람들에게 수정 알림
         List<Member> members = teammateRepository.findByTeamIdFetchJoinMember(teamId).stream()
                 .map(Teammate::getMember).collect(Collectors.toList());
-        eventPublisher.publishEvent(new TeamModifyEvent(members));
+        eventPublisher.publishEvent(new TeamModifyEvent(members, team));
     }
 
     public void teamDelete(Member member, Long teamId) {
@@ -89,7 +89,7 @@ public class TeamService {
         // teamNum - 1
         team.getContest().updateTeamNum(team.getContest().getTeamNum() - 1);
         // 신청한 모든 사람들에게 삭제 알림
-        eventPublisher.publishEvent(new TeamDeleteEvent(members));
+        eventPublisher.publishEvent(new TeamDeleteEvent(members, team));
     }
 
     @Transactional(readOnly = true)
@@ -128,7 +128,7 @@ public class TeamService {
         }
         teammateRepository.save(Teammate.createTeammate(team, member));
         // 작성자에게 알림
-        eventPublisher.publishEvent(new TeamApplyEvent(team.getMember()));
+        eventPublisher.publishEvent(new TeamApplyEvent(team.getMember(), team));
     }
 
     public void cancelTeam(Member member, Long teamId) {
@@ -159,7 +159,7 @@ public class TeamService {
         teammateRepository.findByTeamIdAndMemberIdIn(teamId, memberIds).forEach(Teammate::approveTeammate);
         team.updateCurrent(team.getCurrent() + size);
         // 승인된 팀원들에게 알림
-        eventPublisher.publishEvent(new TeamLeaderApproveEvent(memberRepository.findByIdIn(memberIds)));
+        eventPublisher.publishEvent(new TeamLeaderApproveEvent(memberRepository.findByIdIn(memberIds), team));
     }
 
     public void teamLeaderCancelMate(Member member, Long teamId, TeamLeaderCancelDto cancelDto) {
@@ -185,7 +185,7 @@ public class TeamService {
         // 승인된 팀원들에게 마감 알림
         List<Member> members = teammateRepository.findByTeamIdFetchJoinMemberWithApprove(teamId).stream()
                 .map(Teammate::getMember).collect(Collectors.toList());
-        eventPublisher.publishEvent(new TeamCloseEvent(members));
+        eventPublisher.publishEvent(new TeamCloseEvent(members, team));
     }
 
     @Transactional(readOnly = true)
@@ -204,5 +204,12 @@ public class TeamService {
                 }).collect(Collectors.toList());
 
         return new TeamListResponse(teamApplyDtos, team, "SUCCESS");
+    }
+
+    public void deleteTeammateProcess(Member member) {
+        List<Teammate> teammates = teammateRepository.findByMemberId(member.getId());
+        if (!teammates.isEmpty()) {
+            teammateRepository.deleteAll(teammates);
+        }
     }
 }

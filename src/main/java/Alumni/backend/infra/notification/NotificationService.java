@@ -48,12 +48,14 @@ public class NotificationService {
     }
 
     // 여러개 메시지 알림
-    public void sendByTokenList(List<String> tokenList, String title, String body) {
+    public void sendByTokenList(List<String> tokenList, String title, String body, String type, Long id) {
         if (tokenList.isEmpty())
             return;
         List<Message> messages = tokenList.stream()
                 .map(token -> Message.builder()
                         .putData("time", LocalDateTime.now().toString())
+                        .putData("type", type)
+                        .putData("id", String.valueOf(id))
                         .setNotification(new Notification(title, body))
                         .setToken(token)
                         .build()).collect(Collectors.toList());
@@ -76,9 +78,11 @@ public class NotificationService {
     }
 
     // 단일 메시지 알림
-    public void sendByToken(String token, String title, String body) {
+    public void sendByToken(String token, String title, String body, String type, Long id) {
         Message message = Message.builder()
                 .putData("time", LocalDateTime.now().toString())
+                .putData("type", type)
+                .putData("id", String.valueOf(id))
                 .setNotification(new Notification(title, body))
                 .setToken(token)
                 .build();

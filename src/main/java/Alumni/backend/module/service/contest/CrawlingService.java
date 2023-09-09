@@ -68,6 +68,11 @@ public class CrawlingService {
             WebElement fieldInfo = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".cd-info-list li")));
             String[] field = fieldInfo.getText().split("\n");
 
+            WebElement periodInfo = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dday-area")));
+            String period = periodInfo.getText().replaceAll("D-\\d+", "").trim();//디데이 부분 제거하기
+            String[] cleanPeriod = period.split("\n");
+            log.info(cleanPeriod[1]);
+
             //제목
             WebElement elementTitle = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".tit-area .tit")));
 //            String title = elementTitle.getText();
@@ -78,10 +83,11 @@ public class CrawlingService {
 //            log.info(content);
 
             Contest contest = Contest.builder()
-                    .link(concertUrl)
                     .field(field[1])
                     .title(elementTitle.getText())
                     .content(elementContent.getText())
+                    .period(cleanPeriod[1])
+                    .link(concertUrl)
                     .poster(poster)
                     .likeNum(0)
                     .teamNum(0)
