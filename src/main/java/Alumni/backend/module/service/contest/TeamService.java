@@ -204,4 +204,11 @@ public class TeamService {
             teammateRepository.deleteAll(teammates);
         }
     }
+
+    public void deleteTeammateProcess(Member member) {
+        List<Teammate> teammates = teammateRepository.findByMemberId(member.getId());
+        if (!teammates.isEmpty()) {
+            teammateRepository.deleteAll(teammates);
+        }
+    }
 }

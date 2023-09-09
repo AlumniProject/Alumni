@@ -16,6 +16,10 @@ public class ContestSearchResponseDto {
     private String content;
     @NotEmpty
     private String period;
+    @NotEmpty
+    private String field;
+    @NotEmpty
+    private String period;
     private String field;
     private String poster;
     private Integer likes;
@@ -24,7 +28,7 @@ public class ContestSearchResponseDto {
     @NotNull
     private Integer teams;
 
-    public static ContestSearchResponseDto contestSearchResponseDto(Contest contest, Integer likeNum, Integer teamNum) {
+    public static ContestSearchResponseDto contestSearchResponseDto(Contest contest) {
         return ContestSearchResponseDto.builder()
                 .contestId(contest.getId())
                 .title(contest.getTitle())
@@ -32,9 +36,9 @@ public class ContestSearchResponseDto {
                 .period(contest.getPeriod())
                 .field(contest.getField())
                 .poster(contest.getPoster())
+                .likes(contest.getLikeNum())
                 .isLike(false)
-                .likes(likeNum)
-                .teams(teamNum)
+                .teams(contest.getTeamNum())
                 .build();
     }
 

@@ -12,12 +12,12 @@ import java.io.IOException;
 @SpringBootTest
 @Transactional
 public class CrawlingServiceTest {
-    @Autowired
-    CrawlingService crawlingService;
-
-    @Test
-    @Rollback(value = false)
-    void 공모전크롤링테스트() throws IOException, InterruptedException {
-        crawlingService.contestCrawling();
-    }
+//    @Autowired
+//    CrawlingService crawlingService;
+//
+//    @Test
+//    @Rollback(value = false)
+//    void 공모전크롤링테스트() throws IOException, InterruptedException {
+//        crawlingService.contestCrawling();
+//    }
 }

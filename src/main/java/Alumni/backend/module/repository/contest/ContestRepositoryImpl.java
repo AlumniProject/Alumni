@@ -22,6 +22,14 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public List<Contest> searchRecentContest() {
+        return jpaQueryFactory
+                .selectFrom(contest)
+                .limit(5)
+                .fetch();
+    }
+
     private BooleanExpression getTitleContentContains(String titleOrContent) {
         if (titleOrContent != null) {
             return getTitleContains(titleOrContent).or(getContentContains(titleOrContent));

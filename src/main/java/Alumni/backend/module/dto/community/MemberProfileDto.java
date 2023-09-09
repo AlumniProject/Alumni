@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +16,8 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @Schema(description = "사용자 프로필")
 public class MemberProfileDto {
+    @NotNull
+    private Long memberId;
     @NotEmpty
     private String university;
     @NotEmpty
@@ -25,6 +28,7 @@ public class MemberProfileDto {
     public static MemberProfileDto memberProfileDto(Member member){
         if(member.getProfileImage() != null){
             return MemberProfileDto.builder()
+                    .memberId(member.getId())
                     .university(member.getUniversity().getName())
                     .major(member.getMajor())
                     .profileImage(member.getProfileImage().getImagePath())
@@ -32,6 +36,7 @@ public class MemberProfileDto {
         }
         else{
             return MemberProfileDto.builder()
+                    .memberId(member.getId())
                     .university(member.getUniversity().getName())
                     .major(member.getMajor())
                     .build();

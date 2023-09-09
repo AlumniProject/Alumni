@@ -46,6 +46,7 @@ public class ContestDetailResponseDto {
                 .link(contest.getLink())
                 .poster(contest.getPoster())
                 .likes(contest.getLikeNum())
+                .isLike(false)
                 .build();
     }
 
