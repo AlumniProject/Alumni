@@ -1,5 +1,6 @@
 package Alumni.backend.module.service;
 
+import Alumni.backend.module.domain.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService {

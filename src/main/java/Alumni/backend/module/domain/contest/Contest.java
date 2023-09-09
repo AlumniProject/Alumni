@@ -35,14 +35,4 @@ public class Contest {
 
     @Column(nullable = false)
     private String poster;
-
-    @Column(nullable = false)
-    private Integer likeNum;
-
-    @Column(nullable = false)
-    private Integer teamNum;
-
-    public void updateTeamNum(Integer teamNum) {
-        this.teamNum = teamNum;
-    }
 }

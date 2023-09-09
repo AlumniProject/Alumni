@@ -13,6 +13,7 @@ import java.util.List;
 import Alumni.backend.module.repository.community.comment.CommentRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.contest.TeamRepository;
+import Alumni.backend.module.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,6 +31,7 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final TeamRepository teamRepository;
+    private final RedisService redisService;
 
     /**
      * 게시글 댓글 관련 메소드
@@ -45,7 +47,7 @@ public class CommentService {
         Comment comment = Comment.createComment(member, content);
         comment.setPost(post);
         Comment saveComment = commentRepository.save(comment);
-        postRepository.updateCommentCount(post.getCommentNum() + 1, postId);//게시글에 달린 댓글 수 증가
+        redisService.incrValue("post_id:" + postId + "_comments");
         // Async 알림 전송
         eventPublisher.publishEvent(new CommentCreateEvent(post.getMember(), post));
         return saveComment.getId();
@@ -72,9 +74,10 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
-
         //게시글에 달린 댓글 수 감소, 자식 댓글 수 만큼도 감소해주기
-        postRepository.updateCommentCount(post.getCommentNum() - count, post.getId());
+        String key = "post_id:" + post.getId() + "_comments";
+        Integer valueCount = redisService.getValueCount(key);
+        redisService.decrValueByDelta(key, valueCount - count);
     }
 
     public void createRecomment(Member member, Long commentId, String content) {
@@ -90,7 +93,7 @@ public class CommentService {
         recomment.setPost(post);
         recomment.setParent(parent);
         commentRepository.save(recomment);
-        postRepository.updateCommentCount(post.getCommentNum() + 1, parent.getPost().getId());//게시글에 달린 댓글 수 증가
+        redisService.incrValue("post_id:" + post.getId() + "_comments");
         // Async 알림 전송
         eventPublisher.publishEvent(new RecommentCreateEvent(parent.getMember(), post));
     }
@@ -103,7 +106,7 @@ public class CommentService {
             throw new IllegalArgumentException("Bad Request");
 
         Post post = recomment.getPost();
-        postRepository.updateCommentCount(post.getCommentNum() - 1, post.getId());
+        redisService.decrValue("post_id:" + post.getId() + "_comments");
 
         List<CommentLike> recommentLikeList = commentLikeRepository.findByCommentId(recomment.getId());
         commentLikeRepository.deleteAll(recommentLikeList);

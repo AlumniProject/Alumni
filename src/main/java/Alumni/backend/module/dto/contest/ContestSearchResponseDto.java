@@ -6,31 +6,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ContestSearchResponseDto {
-    @NotNull
     private Long contestId;
-    @NotEmpty
     private String title;
-    @NotEmpty
     private String content;
     @NotEmpty
     private String period;
     @NotEmpty
     private String field;
     @NotEmpty
+    private String period;
+    private String field;
     private String poster;
-    @NotEmpty
     private Integer likes;
     @NotEmpty
     private Boolean isLike;
-
     @NotNull
     private Integer teams;
 

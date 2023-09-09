@@ -81,4 +81,17 @@ public class ProfileController {
 
         return ResponseEntity.ok().body(new SingleResponse("한줄소개 수정 완료"));
     }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "프로필 게시물 조회 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "프로필 게시물 조회", description = "프로필에서 그 사람이 작성한 게시물들을 볼 수 있는 메서드 입니다.")
+    @Parameter(name = "member_id", description = "조회하고 싶은 member_id", required = true, example = "1", in = ParameterIn.PATH)
+    @GetMapping("/post/{member_id}")
+    public ResponseEntity< ? extends BasicResponse> profilePosts(@CurrentUser Member member, @PathVariable("member_id") Long memberId){
+        return ResponseEntity.ok().body(new SingleResponse("프로필 게시물 조회 완료"));
+    }
 }

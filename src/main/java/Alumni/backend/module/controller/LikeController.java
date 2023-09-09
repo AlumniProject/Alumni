@@ -76,4 +76,20 @@ public class LikeController {
     return ResponseEntity.ok().body(new SingleResponse(message));
   }
 
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "공모전 좋아요 완료" + "<br>공모전 좋아요 취소 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+          @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                  + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                  content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+  })
+  @Operation(summary = "공모전 좋아요", description = "공모전 좋아요/취소 메서드 입니다.")
+  @Parameter(name = "contest_id", description = "좋아요 할 공모전 id", required = true, example = "1", in = ParameterIn.PATH)
+  @PostMapping("/post/like/{post_id}")
+  public ResponseEntity<? extends BasicResponse> contestLike(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("contest_id") Long contestId) {
+
+    String message = likeService.contestLike(member, contestId);
+
+    return ResponseEntity.ok().body(new SingleResponse(message));
+  }
+
 }

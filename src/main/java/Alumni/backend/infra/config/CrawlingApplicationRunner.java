@@ -7,15 +7,15 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-//@Component
-//@RequiredArgsConstructor
-//public class CrawlingApplicationRunner implements ApplicationRunner {
-//
-//    private final CrawlingService crawlingService;
-//
-//    @Override
-//    public void run(ApplicationArguments args) throws Exception {
-//        crawlingService.contestCrawling();
-//        System.out.println("크롤링 완료");
-//    }
-//}
+/*@Component
+@RequiredArgsConstructor
+public class CrawlingApplicationRunner implements ApplicationRunner {
+
+    private final CrawlingService crawlingService;
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        crawlingService.contestCrawling();
+        System.out.println("크롤링 완료");
+    }
+}*/

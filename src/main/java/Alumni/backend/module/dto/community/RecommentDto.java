@@ -30,10 +30,10 @@ public class RecommentDto {
     @Schema(description = "작성자 정보")
     private MemberResponseDto writer;
 
-    public static RecommentDto getRecommentDto(Comment comment) {
+    public static RecommentDto getRecommentDto(Comment comment, Integer likeNum) {
         return RecommentDto.builder()
                 .id(comment.getId())
-                .likes(comment.getLikeNum())
+                .likes(likeNum)
                 .content(comment.getContent())
                 .createtime(comment.getUpdateTime())
                 .writer(MemberResponseDto.getMemberResponseDto(comment.getMember()))

@@ -24,6 +24,7 @@ public class ContestDetailResponseDto {
     private String content;
     @NotEmpty
     private String period;
+    @NotEmpty
     private String field;
     @NotEmpty
     private String link;
