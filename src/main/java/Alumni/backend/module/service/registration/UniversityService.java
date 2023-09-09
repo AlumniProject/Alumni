@@ -82,25 +82,29 @@ public class UniversityService {
             throw new IllegalArgumentException("Bad Request");
         }
 
-        //이메일 검증
-        if (!universityRepository.existsByUnivEmail1(univEmail)) {
-            if (!universityRepository.existsByUnivEmail2(univEmail)) {
-                throw new NoExistsException("학교 이메일 형식이 아닙니다.");
-            }
-        }
-
+        // 테스트 이메일의 경우 - 바로 통과
         // 유요한 학교이메일 형식이면 인증번호 생성하여 메일 전송
-        VerifiedEmail verifiedEmail;
-        if (verifiedEmailRepository.existsByEmail(email)) {
-            verifiedEmail = verifiedEmailRepository.findByEmail(email).get();
-            verifiedEmail.verifiedFalse();
-            verifiedEmail.generateEmailToken();
-        } else {
-            verifiedEmail = VerifiedEmail.createVerifiedEmail(email);
-            verifiedEmailRepository.save(verifiedEmail); //이메일, 인증번호 verifiedEmail 테이블에 저장
-        }
+        if (!univEmail.equals("test.ac.kr")) {
+            //이메일 검증
+            if (!universityRepository.existsByUnivEmail1(univEmail)) {
+                if (!universityRepository.existsByUnivEmail2(univEmail)) {
+                    throw new NoExistsException("학교 이메일 형식이 아닙니다.");
+                }
+            }
 
-        emailService.sendMail(verifiedEmail.getEmail(), verifiedEmail.getEmailCode());
+            // 테스트 이메일의 경우 - 바로 통과
+            // 유요한 학교이메일 형식이면 인증번호 생성하여 메일 전송
+            VerifiedEmail verifiedEmail;
+            if (verifiedEmailRepository.existsByEmail(email)) {
+                verifiedEmail = verifiedEmailRepository.findByEmail(email).get();
+                verifiedEmail.verifiedFalse();
+                verifiedEmail.generateEmailToken();
+            } else {
+                verifiedEmail = VerifiedEmail.createVerifiedEmail(email);
+                verifiedEmailRepository.save(verifiedEmail); //이메일, 인증번호 verifiedEmail 테이블에 저장
+            }
+            emailService.sendMail(verifiedEmail.getEmail(), verifiedEmail.getEmailCode());
+        }
 
         return "인증번호 발급 완료";
     }

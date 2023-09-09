@@ -162,6 +162,8 @@ public class TeamService {
         // teammate의 approve false + team의 current 한명 삭제
         Teammate teammate = teammateRepository.findByMemberIdAndTeamId(cancelDto.getMemberId(), team.getId())
                 .orElseThrow(() -> new NoExistsException("NO_EXIST_TEAMMATE"));
+        if (!teammate.getApprove()) // 이미 취소했는 경우 예외처리
+            throw new IllegalArgumentException("Bad Request");
         teammate.cancelTeammate();
         redisService.decrValue("team_id:" + teamId + "_current");
     }

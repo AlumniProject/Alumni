@@ -17,6 +17,10 @@ public class TeamListResponse extends BasicResponse {
     private int code;
     @Schema(description = "응답 메시지", example = "SUCCESS")
     private String message;
+    @Schema(description = "팀장 ID", example = "1")
+    private Long teamLeaderId;
+    @Schema(description = "모집 마감 여부", example = "false")
+    private Boolean isClosed;
     @Schema(description = "총 인원수", example = "5")
     private int total;
     @Schema(description = "현재 팀원수", example = "3")
@@ -29,6 +33,8 @@ public class TeamListResponse extends BasicResponse {
     public TeamListResponse(List<TeamApplyDto> teamApplyDtos, Team team, Integer current, String message) {
         this.code = 200;
         this.message = message;
+        this.teamLeaderId = team.getMember().getId();
+        this.isClosed = team.getClosed();
         this.total = team.getHeadcount();
         this.current = current;
         this.count = teamApplyDtos.size();

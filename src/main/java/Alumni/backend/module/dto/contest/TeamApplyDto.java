@@ -2,10 +2,12 @@ package Alumni.backend.module.dto.contest;
 
 import Alumni.backend.module.domain.contest.Teammate;
 import Alumni.backend.module.domain.registration.Member;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -27,6 +29,9 @@ public class TeamApplyDto {
     private String nickname;
     @Schema(description = "이미지 url", example = "http://image.~.jpg")
     private String imagePath;
+    @Schema(description = "신청 날짜", example = "2023-07-06 07:45:31.997349", type = "String")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createTime;
 
     public static TeamApplyDto getTeamApplyDto(Teammate teammate, List<String> fieldNames) {
         Member member = teammate.getMember();
@@ -38,6 +43,7 @@ public class TeamApplyDto {
                 .approve(teammate.getApprove())
                 .nickname(member.getNickname())
                 .imagePath(member.getProfileImage() == null ? null : member.getProfileImage().getImagePath())
+                .createTime(teammate.getCreateTime())
                 .build();
     }
 }
