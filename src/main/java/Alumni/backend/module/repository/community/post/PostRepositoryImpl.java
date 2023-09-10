@@ -54,7 +54,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         return jpaQueryFactory
                 .select(postLike.post)
                 .from(postLike)
-                .leftJoin(postLike.post, post).fetchJoin()
+                .leftJoin(postLike.post, post)
                 .groupBy(postLike.post)
                 .orderBy(postLike.post.count().desc())
                 .fetch();

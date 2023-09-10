@@ -31,12 +31,12 @@ public class ContestDetailResponseDto {
     @NotEmpty
     private String poster;
     @NotEmpty
-    private Integer likes;
+    private Long likes;
     @NotEmpty
     private Boolean isLike;
     private List<TeamListDto> teamList;
 
-    public static ContestDetailResponseDto contestDetailResponseDto(Contest contest) {
+    public static ContestDetailResponseDto contestDetailResponseDto(Contest contest, Long likes) {
         return ContestDetailResponseDto.builder()
                 .contestId(contest.getId())
                 .title(contest.getTitle())
@@ -45,7 +45,7 @@ public class ContestDetailResponseDto {
                 .field(contest.getField())
                 .link(contest.getLink())
                 .poster(contest.getPoster())
-                .likes(contest.getLikeNum())
+                .likes(likes)
                 .isLike(false)
                 .build();
     }

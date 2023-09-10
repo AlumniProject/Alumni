@@ -24,14 +24,14 @@ public class TeamListDto {
     private Integer current;
     private MemberResponseDto writer;
 
-    public static TeamListDto teamListDto(Team team, Integer current){
+    public static TeamListDto teamListDto(Team team){
         return TeamListDto.builder()
                 .id(team.getId())
                 .title(team.getTitle())
                 .createTime(team.getCreateTime())
                 .region(team.getRegion())
                 .total(team.getHeadcount())
-                .current(current)
+//                .current()
                 .writer(MemberResponseDto.getMemberResponseDto(team.getMember()))
                 .build();
     }

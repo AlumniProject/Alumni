@@ -29,8 +29,8 @@ public class HomeService {
 
   public List<PopularPostResponseDto> findPopularPosts(Member member) {
 
-    List<Long> list = postRepository.findByUniversityId(member.getUniversity().getId());
-    List<Post> popularPosts = postRepository.findPopularPosts(list);
+//    List<Long> list = postRepository.findByUniversityId(member.getUniversity().getId());
+    List<Post> popularPosts = postRepository.findPopularPosts();
     List<PopularPostResponseDto> popularPostResponseDtos = new ArrayList<>();
 
     for (Post popularPost : popularPosts) {

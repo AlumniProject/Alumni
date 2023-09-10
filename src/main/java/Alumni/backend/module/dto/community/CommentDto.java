@@ -19,7 +19,7 @@ public class CommentDto {
     private Long id;
 
     @Schema(description = "좋아요 수", example = "5", type = "int")
-    private Integer likes;
+    private long likes;
 
     @Schema(description = "내용", example = "content", type = "String")
     private String content;
@@ -34,10 +34,10 @@ public class CommentDto {
     @Schema(description = "대댓글 리스트")
     private List<RecommentDto> recommentList;
 
-    public static CommentDto getCommentDto(Comment comment, Integer likeNum) {
+    public static CommentDto getCommentDto(Comment comment, long likes) {
         return CommentDto.builder()
                 .id(comment.getId())
-                .likes(likeNum)
+                .likes(likes)
                 .content(comment.getContent())
                 .createtime(comment.getUpdateTime())
                 .writer(MemberResponseDto.getMemberResponseDto(comment.getMember()))
@@ -47,7 +47,6 @@ public class CommentDto {
     public static CommentDto getTeamCommentDto(Comment comment) {
         return CommentDto.builder()
                 .id(comment.getId())
-                .likes(null)
                 .content(comment.getContent())
                 .writer(MemberResponseDto.getMemberResponseDto(comment.getMember()))
                 .build();

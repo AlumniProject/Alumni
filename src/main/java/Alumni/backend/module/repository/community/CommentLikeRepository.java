@@ -8,10 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {
+public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> , CommentLikeRepositoryCustom {
   @Query("select c from CommentLike c where c.member.id = :memberId and c.comment.id = :commentId")
   Optional<CommentLike> findByMemberAndComment(@Param("memberId") Long memberId, @Param("commentId") Long commentId);
 
   @Query("select c from CommentLike c where c.comment.id = :id")
   List<CommentLike> findByCommentId(@Param("id") Long id);
+
 }

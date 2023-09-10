@@ -1,6 +1,7 @@
 package Alumni.backend.module.repository.contest;
 
 import Alumni.backend.module.domain.contest.Contest;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static Alumni.backend.module.domain.contest.QContest.contest;
+import static Alumni.backend.module.domain.contest.QContestLike.contestLike;
+import static com.querydsl.jpa.JPAExpressions.select;
 
 @RequiredArgsConstructor
 public class ContestRepositoryImpl implements ContestRepositoryCustom {
@@ -28,6 +31,14 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
                 .selectFrom(contest)
                 .limit(5)
                 .fetch();
+    }
+
+    @Override
+    public long findLikesByContestId(Long contestId) {
+        return jpaQueryFactory
+                .selectFrom(contestLike)
+                .where(contestLike.contest.id.eq(contestId))
+                .fetchCount();
     }
 
     private BooleanExpression getTitleContentContains(String titleOrContent) {

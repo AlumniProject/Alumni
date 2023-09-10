@@ -89,8 +89,6 @@ public class CrawlingService {
                     .period(cleanPeriod[1])
                     .link(concertUrl)
                     .poster(poster)
-                    .likeNum(0)
-                    .teamNum(0)
                     .build();
 
             contestList.add(contest);
