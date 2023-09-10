@@ -14,7 +14,7 @@ import Alumni.backend.module.dto.community.PostSearch;
 import Alumni.backend.module.repository.community.comment.CommentRepository;
 import Alumni.backend.module.repository.community.*;
 import Alumni.backend.module.repository.community.post.PostRepository;
-import Alumni.backend.module.service.RedisService;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static Alumni.backend.module.domain.community.QComment.comment;
+import static Alumni.backend.module.domain.community.QCommentLike.commentLike;
+import static Alumni.backend.module.domain.community.QPostLike.postLike;
+import static Alumni.backend.module.domain.contest.QContestLike.contestLike;
 
 @Service
 @Transactional
@@ -35,7 +40,6 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentLikeRepository commentLikeRepository;
-    private final RedisService redisService;
 
     public void postCreate(Member member, PostCreateRequestDto postCreateRequestDto) {
         Board board = boardRepository.findById(postCreateRequestDto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
@@ -135,6 +139,8 @@ public class PostService {
         List<Post> posts = postRepository.searchPost(postSearch);
         List<String> tagRankList = null;
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
+        List<Tuple> likeTuple = postLikeRepository.countPostLikesByPostId();
+        List<Tuple> commentTuple = commentRepository.countCommentsByPostId();
 
         if (postSearch.getId() == 2) {
             if (postSearch.getHashTag() != null) {
@@ -144,7 +150,9 @@ public class PostService {
                 if (!post.getMember().getUniversity().getId().equals(user.getUniversity().getId())) {
                     continue;
                 }
-                postResponseDtos.add(getPostResponseDto(post));
+                Long likes = getLikesByPostId(likeTuple,post.getId());
+                Long comments = getCommentsByPostId(commentTuple, post.getId());
+                postResponseDtos.add(getPostResponseDto(post, likes, comments));
             }
         } else if (postSearch.getId() == 3) {
             tagRankList = tagRank();
@@ -163,12 +171,18 @@ public class PostService {
                         }
                     }
                     if (size == 0) {
-                        PostResponseDto postResponseDto = getPostResponseDto(post);
+                        Long likes = getLikesByPostId(likeTuple,post.getId());
+                        Long comments = getCommentsByPostId(commentTuple, post.getId());
+
+                        PostResponseDto postResponseDto = getPostResponseDto(post, likes, comments);
                         postResponseDto.setHashTag(postTagList);
                         postResponseDtos.add(postResponseDto);
                     }
                 } else { // 검색 해시태그 없는 경우
-                    PostResponseDto postResponseDto = getPostResponseDto(post);
+                    Long likes = getLikesByPostId(likeTuple,post.getId());
+                    Long comments = getCommentsByPostId(commentTuple, post.getId());
+
+                    PostResponseDto postResponseDto = getPostResponseDto(post, likes, comments);
                     if (!post.getPostTags().isEmpty()) {
                         postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                                 .map(postTag -> postTag.getTag().getName())
@@ -182,16 +196,17 @@ public class PostService {
                 throw new IllegalArgumentException("Bad Request");
             }
             for (Post post : posts) {
-                postResponseDtos.add(getPostResponseDto(post));
+                Long likes = getLikesByPostId(likeTuple,post.getId());
+                Long comments = getCommentsByPostId(commentTuple, post.getId());
+
+                postResponseDtos.add(getPostResponseDto(post, likes, comments));
             }
         }
         return new PostSearchResponse<>(postResponseDtos, tagRankList, "게시글 검색 결과 전송 완료");
     }
 
-    private PostResponseDto getPostResponseDto(Post post) {
-        return PostResponseDto.getPostResponseDto(post,
-                redisService.getValueCount("post_id:" + post.getId() + "_likes"),
-                redisService.getValueCount("post_id:" + post.getId() + "_comments"));
+    private PostResponseDto getPostResponseDto(Post post, long likes, long comments) {
+        return PostResponseDto.getPostResponseDto(post, likes, comments);
     }
 
     @Transactional(readOnly = true)
@@ -199,6 +214,8 @@ public class PostService {
         // post + member + image fetch join
         List<Post> posts = postRepository.findAllPosts();
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
+        List<Tuple> likeTuple = postLikeRepository.countPostLikesByPostId();
+        List<Tuple> commentTuple = commentRepository.countCommentsByPostId();
 
         for (Post post : posts) {
             if (post.getBoard().getId() == 2
@@ -206,7 +223,10 @@ public class PostService {
                 continue;
             }
 
-            PostResponseDto postResponseDto = getPostResponseDto(post);
+            Long likes = getLikesByPostId(likeTuple,post.getId());
+            Long comments = getCommentsByPostId(commentTuple, post.getId());
+
+            PostResponseDto postResponseDto = getPostResponseDto(post, likes, comments);
 
             // hashTag 확인
             if (post.getBoard().getId() == 3 && !post.getPostTags().isEmpty()) {
@@ -229,10 +249,15 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponseDto getPostDetails(Long postId) {
         Post post = postRepository.findByIdFetchJoinMemberAndImage(postId);
+
         if (post == null) {
             throw new NoExistsException("존재하지 않는 게시글입니다");
         }
-        PostResponseDto postResponseDto = getPostResponseDto(post);
+
+        long likes = postLikeRepository.countByPostId(post.getId());
+        long comments = commentRepository.countByPostId(post.getId());
+
+        PostResponseDto postResponseDto = getPostResponseDto(post, likes, comments);
         // hashTag 확인
         if (!post.getPostTags().isEmpty()) {
             postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
@@ -241,13 +266,14 @@ public class PostService {
         }
         // 댓글 확인
         List<CommentDto> commentDtos = new ArrayList<>();
+        List<Tuple> likeTuple = commentLikeRepository.countCommentLikesByCommentId();
+
         commentRepository.findByPostIdFetchJoinMemberAndImage(post.getId()).forEach(comment -> {
             if (comment.getParent() == null) { // 대댓글 아닌 경우만
-                CommentDto commentDto = CommentDto.getCommentDto(comment,
-                        redisService.getValueCount("comment_id:" + comment.getId() + "_likes"));
+                CommentDto commentDto = CommentDto.getCommentDto(comment, getLikesByCommentId(likeTuple, comment.getId()));
                 // recommentList 확인
                 List<RecommentDto> recommentDtos = comment.getChildren().stream()
-                        .map(rc -> RecommentDto.getRecommentDto(rc, redisService.getValueCount("comment_id:" + rc.getId() + "_likes")))
+                        .map(rc -> RecommentDto.getRecommentDto(rc, getLikesByCommentId(likeTuple, rc.getId())))
                         .collect(Collectors.toList());
                 commentDto.setRecommentList(recommentDtos);
                 commentDtos.add(commentDto);
@@ -255,5 +281,41 @@ public class PostService {
         });
         postResponseDto.setCommentList(commentDtos);
         return postResponseDto;
+    }
+
+    private Long getLikesByCommentId(List<Tuple> likeTuple, Long commentId) {
+
+        //원하는 contestId에 해당하는 결과를 찾아 카운트 값을 반환
+        Long count = likeTuple.stream()
+                .filter(tuple -> tuple.get(commentLike.comment.id).equals(commentId))
+                .findFirst()
+                .map(tuple -> tuple.get(1, Long.class)) // 두 번째 열의 값을 Long으로 변환
+                .orElse(0L); // 결과가 없을 경우 0을 반환
+
+        return count;
+    }
+
+    private Long getLikesByPostId(List<Tuple> likeTuple, Long postId) {
+
+        //원하는 contestId에 해당하는 결과를 찾아 카운트 값을 반환
+        Long count = likeTuple.stream()
+                .filter(tuple -> tuple.get(postLike.post.id).equals(postId))
+                .findFirst()
+                .map(tuple -> tuple.get(1, Long.class)) // 두 번째 열의 값을 Long으로 변환
+                .orElse(0L); // 결과가 없을 경우 0을 반환
+
+        return count;
+    }
+
+    private Long getCommentsByPostId(List<Tuple> commentTuple, Long postId) {
+
+        //원하는 contestId에 해당하는 결과를 찾아 카운트 값을 반환
+        Long count = commentTuple.stream()
+                .filter(tuple -> tuple.get(comment.post.id).equals(postId))
+                .findFirst()
+                .map(tuple -> tuple.get(1, Long.class)) // 두 번째 열의 값을 Long으로 변환
+                .orElse(0L); // 결과가 없을 경우 0을 반환
+
+        return count;
     }
 }

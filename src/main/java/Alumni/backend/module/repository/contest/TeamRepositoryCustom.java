@@ -1,6 +1,7 @@
 package Alumni.backend.module.repository.contest;
 
 import Alumni.backend.module.domain.contest.Team;
+import com.querydsl.core.Tuple;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,4 +15,8 @@ public interface TeamRepositoryCustom {
     Optional<Team> findByIdFetchJoinContest(Long teamId);
 
     List<Team> findByContestIdFetchJoinMemberAndImage(Long contestId);
+
+    long findTeamsByContestId(Long contestId);
+
+    List<Tuple> countTeamsByContestId();
 }

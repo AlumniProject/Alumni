@@ -18,4 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
 
     @Transactional
     void deleteAllByMemberId(Long memberId);
+
+    long countByPostId(Long postId);
 }
