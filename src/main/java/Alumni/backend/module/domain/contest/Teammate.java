@@ -4,6 +4,7 @@ import Alumni.backend.module.domain.registration.Member;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,12 +23,16 @@ public class Teammate {
     private Member member;
 
     @Column(nullable = false)
+    private LocalDateTime createTime;
+
+    @Column(nullable = false)
     private Boolean approve;
 
     public static Teammate createTeammate(Team team, Member member) {
         Teammate teammate = new Teammate();
         teammate.team = team;
         teammate.member = member;
+        teammate.createTime = LocalDateTime.now();
         teammate.approve = false;
         return teammate;
     }

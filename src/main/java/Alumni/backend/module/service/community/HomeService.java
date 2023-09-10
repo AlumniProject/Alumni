@@ -64,9 +64,6 @@ public class HomeService {
 
   public MemberProfileDto findMemberProfile(Member member) {
     Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
-
-    MemberProfileDto memberProfileDto = MemberProfileDto.memberProfileDto(findMember);
-
-    return memberProfileDto;
+    return MemberProfileDto.memberProfileDto(findMember);
   }
 }

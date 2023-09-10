@@ -17,7 +17,6 @@ import Alumni.backend.module.repository.contest.ContestRepository;
 import Alumni.backend.module.repository.contest.TeamRepository;
 import Alumni.backend.module.repository.contest.TeammateRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
-import Alumni.backend.module.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -38,14 +37,12 @@ public class TeamService {
     private final CommentRepository commentRepository;
     private final TeammateRepository teammateRepository;
     private final MemberRepository memberRepository;
-    private final RedisService redisService;
     private final ApplicationEventPublisher eventPublisher;
 
     public void createTeam(Member member, Long contestId, TeamRequestDto teamRequestDto) {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new NoExistsException("NO_EXIST_CONTEST"));
         teamRepository.save(Team.createTeam(teamRequestDto, member, contest));
-        redisService.incrValue("contest_id:" + contestId + "_teams");
     }
 
     public void modifyTeam(Member member, Long teamId, TeamRequestDto teamRequestDto) {
@@ -75,8 +72,6 @@ public class TeamService {
         teammateRepository.deleteAll(teammates);
         // team 삭제
         teamRepository.delete(team);
-        // teamNum - 1
-        redisService.decrValue("contest_id:" + team.getContest().getId() + "_teams");
         // 신청한 모든 사람들에게 삭제 알림
         eventPublisher.publishEvent(new TeamDeleteEvent(members, team));
     }
@@ -89,7 +84,7 @@ public class TeamService {
         }
         // 댓글 제외하고 팀 모집글 response 작성
         TeamResponseDto teamResponseDto = TeamResponseDto.getTeamResponseDto(team,
-                redisService.getValueCount("team_id:" + teamId + "_current"));
+                teammateRepository.countByTeamIdAndApproveIsTrue(teamId));
         // 댓글 확인
         List<CommentDto> commentDtos = new ArrayList<>();
         commentRepository.findByTeamIdFetchJoinMemberAndImage(team.getId()).forEach(comment -> {
@@ -125,9 +120,6 @@ public class TeamService {
         // 팀원이 승인된 팀원인지 여부 확인
         Teammate teammate = teammateRepository.findByMemberIdAndTeamIdFetchJoinTeam(member.getId(), teamId)
                 .orElseThrow(() -> new NoExistsException("NO_EXIST_TEAMMATE"));
-        if (teammate.getApprove()) { // 승인된 팀원의 경우
-            redisService.decrValue("team_id:" + teamId + "_current");
-        }
         teammateRepository.delete(teammate);
     }
 
@@ -142,13 +134,14 @@ public class TeamService {
         int size = memberIds.size();
 
         // total 넘어가는지 확인
-        if (size > team.getHeadcount() - redisService.getValueCount("team_id:" + teamId + "_current"))
+        Integer currentNum = teammateRepository.countByTeamIdAndApproveIsTrue(teamId);
+        if (currentNum == null)
+            currentNum = 0;
+        if (size > team.getHeadcount() - currentNum)
             throw new IllegalArgumentException("Bad Request");
 
         // 승인으로 변경
         teammateRepository.findByTeamIdAndMemberIdIn(teamId, memberIds).forEach(Teammate::approveTeammate);
-        //team.updateCurrent(team.getCurrent() + size);
-        redisService.incrValueByDelta("team_id:" + teamId + "_current", size);
         // 승인된 팀원들에게 알림
         eventPublisher.publishEvent(new TeamLeaderApproveEvent(memberRepository.findByIdIn(memberIds), team));
     }
@@ -162,8 +155,9 @@ public class TeamService {
         // teammate의 approve false + team의 current 한명 삭제
         Teammate teammate = teammateRepository.findByMemberIdAndTeamId(cancelDto.getMemberId(), team.getId())
                 .orElseThrow(() -> new NoExistsException("NO_EXIST_TEAMMATE"));
+        if (!teammate.getApprove()) // 이미 취소했는 경우 예외처리
+            throw new IllegalArgumentException("Bad Request");
         teammate.cancelTeammate();
-        redisService.decrValue("team_id:" + teamId + "_current");
     }
 
     public void closedTeam(Member member, Long teamId) {
@@ -195,7 +189,7 @@ public class TeamService {
                 }).collect(Collectors.toList());
 
         return new TeamListResponse(teamApplyDtos, team,
-                redisService.getValueCount("team_id:" + teamId + "_current"), "SUCCESS");
+                teammateRepository.countByTeamIdAndApproveIsTrue(teamId), "SUCCESS");
     }
 
     public void deleteTeammateProcess(Member member) {

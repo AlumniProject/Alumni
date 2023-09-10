@@ -1,9 +1,7 @@
 package Alumni.backend.module.repository.community;
 
-import com.querydsl.core.Tuple;
-
-import java.util.List;
+import java.util.HashMap;
 
 public interface CommentLikeRepositoryCustom {
-    List<Tuple> countCommentLikesByCommentId();
+    HashMap<Long, Long> countCommentLikesByCommentId();
 }

@@ -15,4 +15,6 @@ public interface TeammateRepository extends JpaRepository<Teammate, Long>, Teamm
     List<Teammate> findByTeamIdAndMemberIdIn(Long teamId, List<Long> memberIds);
 
     List<Teammate> findByMemberId(Long memberId);
+
+    Integer countByTeamIdAndApproveIsTrue(Long teamId);
 }

@@ -47,15 +47,15 @@ public class PostResponseDto {
     @Schema(description = "댓글 리스트")
     private List<CommentDto> commentList;
 
-    public static PostResponseDto getPostResponseDto(Post post, long likes, long comments) {
+    public static PostResponseDto getPostResponseDto(Post post, Long likes, Long comments) {
         return PostResponseDto.builder()
                 .boardId(post.getBoard().getId())
                 .postId(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .createTime(post.getCreateTime())
-                .likes(likes)
-                .comments(comments)
+                .likes(likes == null ? 0 : likes)
+                .comments(comments == null ? 0 : comments)
                 .writer(MemberResponseDto.getMemberResponseDto(post.getMember()))
                 .build();
     }

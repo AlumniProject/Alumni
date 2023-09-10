@@ -5,12 +5,13 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static Alumni.backend.module.domain.QImage.image;
 import static Alumni.backend.module.domain.community.QComment.comment;
-import static Alumni.backend.module.domain.community.QPostLike.postLike;
 import static Alumni.backend.module.domain.registration.QMember.member;
+import static Alumni.backend.module.repository.contest.TeamRepositoryImpl.getLongLongHashMap;
 
 @RequiredArgsConstructor
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
@@ -47,11 +48,13 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     }
 
     @Override
-    public List<Tuple> countCommentsByPostId() {
-        return jpaQueryFactory
+    public HashMap<Long, Long> countCommentsByPostId() {
+        List<Tuple> tuples = jpaQueryFactory
                 .select(comment.post.id, comment.count())
                 .from(comment)
                 .groupBy(comment.post.id)
                 .fetch();
+
+        return getLongLongHashMap(tuples);
     }
 }

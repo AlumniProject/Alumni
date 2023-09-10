@@ -10,16 +10,13 @@ import Alumni.backend.module.dto.contest.TeamListDto;
 import Alumni.backend.module.repository.contest.ContestLikeRepository;
 import Alumni.backend.module.repository.contest.ContestRepository;
 import Alumni.backend.module.repository.contest.TeamRepository;
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static Alumni.backend.module.domain.contest.QContestLike.contestLike;
-import static Alumni.backend.module.domain.contest.QTeam.team;
 
 @Service
 @RequiredArgsConstructor
@@ -32,13 +29,13 @@ public class ContestService {
         List<ContestSearchResponseDto> contestResponseDtos = new ArrayList<>();
 
         List<Contest> contests = contestRepository.searchContest(content);
-        List<Tuple> likeTuple = contestLikeRepository.countContestLikesByContestId();
-        List<Tuple> teamTuple = teamRepository.countTeamsByContestId();
+        HashMap<Long, Long> contestMap = contestLikeRepository.countContestLikesByContestId();
+        HashMap<Long, Long> teamMap = teamRepository.countTeamsByContestId();
 
         for (Contest contest : contests) {
 
-            Long likes = getLikesByContestId(likeTuple, contest.getId());
-            Long teams = getTeamsByContestId(teamTuple, contest.getId());
+            Long likes = contestMap.get(contest.getId());
+            Long teams = teamMap.get(contest.getId());
 
             ContestSearchResponseDto contestSearchResponseDto = ContestSearchResponseDto.contestSearchResponseDto(contest, likes, teams);
 
@@ -52,7 +49,7 @@ public class ContestService {
         return contestResponseDtos;
     }
 
-    private Long getLikesByContestId(List<Tuple> likeTuple, Long contestId) {
+    /*private Long getLikesByContestId(List<Tuple> likeTuple, Long contestId) {
 
         //원하는 contestId에 해당하는 결과를 찾아 카운트 값을 반환
         Long count = likeTuple.stream()
@@ -74,7 +71,7 @@ public class ContestService {
                 .orElse(0L); // 결과가 없을 경우 0을 반환
 
         return count;
-    }
+    }*/
 
     public ContestDetailResponseDto viewContestDetail(Member member, Long contestId) {
         Contest contest = contestRepository.findById(contestId).orElseThrow(() -> new NoExistsException("존재하지 않는 공모전"));
