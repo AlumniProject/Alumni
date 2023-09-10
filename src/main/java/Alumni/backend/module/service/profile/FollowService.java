@@ -1,9 +1,9 @@
-package Alumni.backend.module.service.Profile;
+package Alumni.backend.module.service.profile;
 
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.Profile.Follow;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.repository.Profile.FollowRepository;
+import Alumni.backend.module.repository.profile.FollowRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

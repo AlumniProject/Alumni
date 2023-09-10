@@ -1,4 +1,4 @@
-package Alumni.backend.module.repository.Profile;
+package Alumni.backend.module.repository.profile;
 
 import Alumni.backend.module.domain.Profile.Follow;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -20,4 +20,12 @@ public class ContestLike {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    public static ContestLike createContestLike(Member member, Contest contest){
+        ContestLike contestLike = new ContestLike();
+
+        contestLike.contest = contest;
+        contestLike.member = member;
+
+        return contestLike;
+    }
 }

@@ -36,10 +36,10 @@ public class PostResponseDto {
     private List<String> hashTag;
 
     @Schema(description = "좋아요 수", example = "101", type = "int")
-    private Integer likes;
+    private long likes;
 
     @Schema(description = "댓글 수", example = "5", type = "int")
-    private Integer comments;
+    private long comments;
 
     @Schema(description = "작성자 정보")
     private MemberResponseDto writer;
@@ -47,15 +47,15 @@ public class PostResponseDto {
     @Schema(description = "댓글 리스트")
     private List<CommentDto> commentList;
 
-    public static PostResponseDto getPostResponseDto(Post post, Integer likeNum, Integer commentNum) {
+    public static PostResponseDto getPostResponseDto(Post post, long likes, long comments) {
         return PostResponseDto.builder()
                 .boardId(post.getBoard().getId())
                 .postId(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .createTime(post.getCreateTime())
-                .likes(likeNum)
-                .comments(commentNum)
+                .likes(likes)
+                .comments(comments)
                 .writer(MemberResponseDto.getMemberResponseDto(post.getMember()))
                 .build();
     }
