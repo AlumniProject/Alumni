@@ -5,28 +5,18 @@ import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.community.*;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.dto.community.CommentDto;
-import Alumni.backend.module.dto.community.PostResponseDto;
-import Alumni.backend.module.dto.community.RecommentDto;
-import Alumni.backend.module.dto.community.PostCreateRequestDto;
-import Alumni.backend.module.dto.community.PostModifyRequestDto;
-import Alumni.backend.module.dto.community.PostSearch;
-import Alumni.backend.module.repository.community.comment.CommentRepository;
+import Alumni.backend.module.dto.community.*;
 import Alumni.backend.module.repository.community.*;
+import Alumni.backend.module.repository.community.comment.CommentRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static Alumni.backend.module.domain.community.QComment.comment;
-import static Alumni.backend.module.domain.community.QCommentLike.commentLike;
-import static Alumni.backend.module.domain.community.QPostLike.postLike;
-import static Alumni.backend.module.domain.contest.QContestLike.contestLike;
 
 @Service
 @Transactional
@@ -139,8 +129,8 @@ public class PostService {
         List<Post> posts = postRepository.searchPost(postSearch);
         List<String> tagRankList = null;
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
-        List<Tuple> likeTuple = postLikeRepository.countPostLikesByPostId();
-        List<Tuple> commentTuple = commentRepository.countCommentsByPostId();
+        HashMap<Long, Long> postMap = postLikeRepository.countPostLikesByPostId();
+        HashMap<Long, Long> commentMap = commentRepository.countCommentsByPostId();
 
         if (postSearch.getId() == 2) {
             if (postSearch.getHashTag() != null) {
@@ -150,9 +140,10 @@ public class PostService {
                 if (!post.getMember().getUniversity().getId().equals(user.getUniversity().getId())) {
                     continue;
                 }
-                Long likes = getLikesByPostId(likeTuple,post.getId());
-                Long comments = getCommentsByPostId(commentTuple, post.getId());
-                postResponseDtos.add(getPostResponseDto(post, likes, comments));
+                Long likes = postMap.get(post.getId());
+                Long comments = commentMap.get(post.getId());
+
+                PostResponseDto.getPostResponseDto(post, likes, comments);
             }
         } else if (postSearch.getId() == 3) {
             tagRankList = tagRank();
@@ -171,18 +162,18 @@ public class PostService {
                         }
                     }
                     if (size == 0) {
-                        Long likes = getLikesByPostId(likeTuple,post.getId());
-                        Long comments = getCommentsByPostId(commentTuple, post.getId());
+                        Long likes = postMap.get(post.getId());
+                        Long comments = commentMap.get(post.getId());
 
-                        PostResponseDto postResponseDto = getPostResponseDto(post, likes, comments);
+                        PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post, likes, comments);
                         postResponseDto.setHashTag(postTagList);
                         postResponseDtos.add(postResponseDto);
                     }
                 } else { // 검색 해시태그 없는 경우
-                    Long likes = getLikesByPostId(likeTuple,post.getId());
-                    Long comments = getCommentsByPostId(commentTuple, post.getId());
+                    Long likes = postMap.get(post.getId());
+                    Long comments = commentMap.get(post.getId());
 
-                    PostResponseDto postResponseDto = getPostResponseDto(post, likes, comments);
+                    PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post, likes, comments);
                     if (!post.getPostTags().isEmpty()) {
                         postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
                                 .map(postTag -> postTag.getTag().getName())
@@ -196,26 +187,26 @@ public class PostService {
                 throw new IllegalArgumentException("Bad Request");
             }
             for (Post post : posts) {
-                Long likes = getLikesByPostId(likeTuple,post.getId());
-                Long comments = getCommentsByPostId(commentTuple, post.getId());
+                Long likes = postMap.get(post.getId());
+                Long comments = commentMap.get(post.getId());
 
-                postResponseDtos.add(getPostResponseDto(post, likes, comments));
+                postResponseDtos.add(PostResponseDto.getPostResponseDto(post, likes, comments));
             }
         }
         return new PostSearchResponse<>(postResponseDtos, tagRankList, "게시글 검색 결과 전송 완료");
     }
 
-    private PostResponseDto getPostResponseDto(Post post, long likes, long comments) {
+    /*private PostResponseDto getPostResponseDto(Post post, long likes, long comments) {
         return PostResponseDto.getPostResponseDto(post, likes, comments);
-    }
+    }*/
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> findAllPosts(Member user) {
         // post + member + image fetch join
         List<Post> posts = postRepository.findAllPosts();
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
-        List<Tuple> likeTuple = postLikeRepository.countPostLikesByPostId();
-        List<Tuple> commentTuple = commentRepository.countCommentsByPostId();
+        HashMap<Long, Long> postMap = postLikeRepository.countPostLikesByPostId();
+        HashMap<Long, Long> commentMap = commentRepository.countCommentsByPostId();
 
         for (Post post : posts) {
             if (post.getBoard().getId() == 2
@@ -223,10 +214,10 @@ public class PostService {
                 continue;
             }
 
-            Long likes = getLikesByPostId(likeTuple,post.getId());
-            Long comments = getCommentsByPostId(commentTuple, post.getId());
+            Long likes = postMap.get(post.getId());
+            Long comments = commentMap.get(post.getId());
 
-            PostResponseDto postResponseDto = getPostResponseDto(post, likes, comments);
+            PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post, likes, comments);
 
             // hashTag 확인
             if (post.getBoard().getId() == 3 && !post.getPostTags().isEmpty()) {
@@ -257,7 +248,7 @@ public class PostService {
         long likes = postLikeRepository.countByPostId(post.getId());
         long comments = commentRepository.countByPostId(post.getId());
 
-        PostResponseDto postResponseDto = getPostResponseDto(post, likes, comments);
+        PostResponseDto postResponseDto = PostResponseDto.getPostResponseDto(post, likes, comments);
         // hashTag 확인
         if (!post.getPostTags().isEmpty()) {
             postResponseDto.setHashTag(post.getPostTags().stream() // hashTag 문자열 리스트로 변환
@@ -266,14 +257,14 @@ public class PostService {
         }
         // 댓글 확인
         List<CommentDto> commentDtos = new ArrayList<>();
-        List<Tuple> likeTuple = commentLikeRepository.countCommentLikesByCommentId();
+        HashMap<Long, Long> commentMap = commentLikeRepository.countCommentLikesByCommentId();
 
         commentRepository.findByPostIdFetchJoinMemberAndImage(post.getId()).forEach(comment -> {
             if (comment.getParent() == null) { // 대댓글 아닌 경우만
-                CommentDto commentDto = CommentDto.getCommentDto(comment, getLikesByCommentId(likeTuple, comment.getId()));
+                CommentDto commentDto = CommentDto.getCommentDto(comment, commentMap.get(comment.getId()));
                 // recommentList 확인
                 List<RecommentDto> recommentDtos = comment.getChildren().stream()
-                        .map(rc -> RecommentDto.getRecommentDto(rc, getLikesByCommentId(likeTuple, rc.getId())))
+                        .map(rc -> RecommentDto.getRecommentDto(rc, commentMap.get(rc.getId())))
                         .collect(Collectors.toList());
                 commentDto.setRecommentList(recommentDtos);
                 commentDtos.add(commentDto);
@@ -283,39 +274,33 @@ public class PostService {
         return postResponseDto;
     }
 
-    private Long getLikesByCommentId(List<Tuple> likeTuple, Long commentId) {
+    /*private Long getLikesByCommentId(List<Tuple> likeTuple, Long commentId) {
 
         //원하는 contestId에 해당하는 결과를 찾아 카운트 값을 반환
-        Long count = likeTuple.stream()
+        return likeTuple.stream()
                 .filter(tuple -> tuple.get(commentLike.comment.id).equals(commentId))
                 .findFirst()
                 .map(tuple -> tuple.get(1, Long.class)) // 두 번째 열의 값을 Long으로 변환
-                .orElse(0L); // 결과가 없을 경우 0을 반환
-
-        return count;
+                .orElse(0L);
     }
 
     private Long getLikesByPostId(List<Tuple> likeTuple, Long postId) {
 
         //원하는 contestId에 해당하는 결과를 찾아 카운트 값을 반환
-        Long count = likeTuple.stream()
+        return likeTuple.stream()
                 .filter(tuple -> tuple.get(postLike.post.id).equals(postId))
                 .findFirst()
                 .map(tuple -> tuple.get(1, Long.class)) // 두 번째 열의 값을 Long으로 변환
-                .orElse(0L); // 결과가 없을 경우 0을 반환
-
-        return count;
+                .orElse(0L);
     }
 
     private Long getCommentsByPostId(List<Tuple> commentTuple, Long postId) {
 
         //원하는 contestId에 해당하는 결과를 찾아 카운트 값을 반환
-        Long count = commentTuple.stream()
+        return commentTuple.stream()
                 .filter(tuple -> tuple.get(comment.post.id).equals(postId))
                 .findFirst()
                 .map(tuple -> tuple.get(1, Long.class)) // 두 번째 열의 값을 Long으로 변환
-                .orElse(0L); // 결과가 없을 경우 0을 반환
-
-        return count;
-    }
+                .orElse(0L);
+    }*/
 }

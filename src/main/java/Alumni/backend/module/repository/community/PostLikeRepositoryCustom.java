@@ -1,10 +1,8 @@
 package Alumni.backend.module.repository.community;
 
-import com.querydsl.core.Tuple;
-
-import java.util.List;
+import java.util.HashMap;
 
 public interface PostLikeRepositoryCustom {
 
-    List<Tuple> countPostLikesByPostId();
+    HashMap<Long, Long> countPostLikesByPostId();
 }

@@ -1,9 +1,7 @@
 package Alumni.backend.module.repository.contest;
 
-import com.querydsl.core.Tuple;
-
-import java.util.List;
+import java.util.HashMap;
 
 public interface ContestLikeRepositoryCustom {
-    List<Tuple> countContestLikesByContestId();
+    HashMap<Long, Long> countContestLikesByContestId();
 }

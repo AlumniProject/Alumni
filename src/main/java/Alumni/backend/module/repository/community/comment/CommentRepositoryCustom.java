@@ -1,8 +1,8 @@
 package Alumni.backend.module.repository.community.comment;
 
 import Alumni.backend.module.domain.community.Comment;
-import com.querydsl.core.Tuple;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface CommentRepositoryCustom {
@@ -13,5 +13,5 @@ public interface CommentRepositoryCustom {
 
     Comment findByIdAndMemberFetchJoin(Long commentId);
 
-    List<Tuple> countCommentsByPostId();
+    HashMap<Long, Long> countCommentsByPostId();
 }

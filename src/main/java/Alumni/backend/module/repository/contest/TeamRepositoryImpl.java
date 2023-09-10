@@ -5,12 +5,12 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import static Alumni.backend.module.domain.QImage.image;
 import static Alumni.backend.module.domain.contest.QContest.contest;
-import static Alumni.backend.module.domain.contest.QContestLike.contestLike;
 import static Alumni.backend.module.domain.contest.QTeam.team;
 import static Alumni.backend.module.domain.registration.QMember.member;
 
@@ -67,11 +67,19 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom {
 
 
     @Override
-    public List<Tuple> countTeamsByContestId() {
-        return jpaQueryFactory
+    public HashMap<Long, Long> countTeamsByContestId() {
+        List<Tuple> tuples = jpaQueryFactory
                 .select(team.contest.id, team.count())
                 .from(team)
                 .groupBy(team.contest.id)
                 .fetch();
+
+        return getLongLongHashMap(tuples);
+    }
+
+    public static HashMap<Long, Long> getLongLongHashMap(List<Tuple> tuples) {
+        HashMap<Long, Long> hashMap = new HashMap<>();
+        tuples.forEach(tuple -> hashMap.put(tuple.get(0, Long.class), tuple.get(1, Long.class)));
+        return hashMap;
     }
 }

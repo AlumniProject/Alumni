@@ -36,7 +36,7 @@ public class TeamListResponse extends BasicResponse {
         this.teamLeaderId = team.getMember().getId();
         this.isClosed = team.getClosed();
         this.total = team.getHeadcount();
-        this.current = current;
+        this.current = current == null ? 0 : current;
         this.count = teamApplyDtos.size();
         this.data = teamApplyDtos;
     }

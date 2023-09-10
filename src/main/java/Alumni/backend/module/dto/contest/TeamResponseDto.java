@@ -28,7 +28,7 @@ public class TeamResponseDto {
                 .title(team.getTitle())
                 .content(team.getContent())
                 .total(team.getHeadcount())
-                .current(current)
+                .current(current == null ? 0 : current)
                 .region(team.getRegion())
                 .closed(team.getClosed())
                 .writer(MemberResponseDto.getMemberResponseDto(team.getMember()))

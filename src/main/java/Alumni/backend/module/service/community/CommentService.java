@@ -5,20 +5,20 @@ import Alumni.backend.infra.event.community.RecommentCreateEvent;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.community.Comment;
 import Alumni.backend.module.domain.community.CommentLike;
+import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.domain.contest.Team;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.repository.community.CommentLikeRepository;
-import java.util.List;
 import Alumni.backend.module.repository.community.comment.CommentRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.contest.TeamRepository;
-import Alumni.backend.module.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service

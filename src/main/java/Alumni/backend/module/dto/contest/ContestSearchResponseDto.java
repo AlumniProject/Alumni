@@ -36,9 +36,9 @@ public class ContestSearchResponseDto {
                 .period(contest.getPeriod())
                 .field(contest.getField())
                 .poster(contest.getPoster())
-                .likes(likes)
+                .likes(likes == null ? 0 : likes)
                 .isLike(false)
-                .teams(teams)
+                .teams(teams == null ? 0 : teams)
                 .build();
     }
 
