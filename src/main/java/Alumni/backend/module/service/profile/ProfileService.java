@@ -4,7 +4,6 @@ import Alumni.backend.infra.exception.DuplicateNicknameException;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.dto.community.PostResponseDto;
 import Alumni.backend.module.dto.profile.MyPostResponseDto;
 import Alumni.backend.module.dto.profile.NicknameDto;
 import Alumni.backend.module.dto.profile.ProfilePostsResponseDto;
@@ -15,7 +14,6 @@ import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.profile.FollowRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
