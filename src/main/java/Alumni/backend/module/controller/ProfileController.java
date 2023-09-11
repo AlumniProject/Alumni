@@ -3,8 +3,7 @@ package Alumni.backend.module.controller;
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.dto.profile.IntroductionDto;
-import Alumni.backend.module.dto.profile.NicknameDto;
+import Alumni.backend.module.dto.profile.*;
 import Alumni.backend.module.service.profile.FollowService;
 import Alumni.backend.module.service.profile.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +50,7 @@ public class ProfileController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "닉네임 수정 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
-                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요" + "이미 존재하는 닉네임입니다.",
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "409", description = "이미 존재하는 닉네임입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
@@ -91,7 +90,58 @@ public class ProfileController {
     @Operation(summary = "프로필 게시물 조회", description = "프로필에서 그 사람이 작성한 게시물들을 볼 수 있는 메서드 입니다.")
     @Parameter(name = "member_id", description = "조회하고 싶은 member_id", required = true, example = "1", in = ParameterIn.PATH)
     @GetMapping("/post/{member_id}")
-    public ResponseEntity< ? extends BasicResponse> profilePosts(@CurrentUser Member member, @PathVariable("member_id") Long memberId){
-        return ResponseEntity.ok().body(new SingleResponse("프로필 게시물 조회 완료"));
+    public ResponseEntity< ? extends BasicResponse> profilePosts(@CurrentUser Member currentMember, @PathVariable("member_id") Long memberId){
+
+        ProfilePostsResponseDto profilePostsResponse = profileService.profilePosts(currentMember, memberId);
+
+        return ResponseEntity.ok().body(new ProfilePostsResponse<>(profilePostsResponse, "프로필 게시물 조회 완료"));
+    }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "페이스북 링크 추가 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "페이스북 링크 추가", description = "페이스북 링크 추가 메서드")
+    @Parameter(name = "member_id", description = "수정할 member id", required = true, example = "1", in = ParameterIn.PATH)
+    @PatchMapping("/edit/facebook/{member_id}")
+    public ResponseEntity<? extends  BasicResponse> editFacebook(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("member_id") Long memberId, @RequestBody @Valid LinkDto linkDto){
+
+        profileService.editLink(member, memberId, linkDto.getLink());
+
+        return ResponseEntity.ok().body(new SingleResponse("페이스북 링크 추가 완료"));
+    }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "인스타그램 링크 추가 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "인스타그램 링크 추가", description = "인스타그램 링크 추가 메서드")
+    @Parameter(name = "member_id", description = "수정할 member id", required = true, example = "1", in = ParameterIn.PATH)
+    @PatchMapping("/edit/instagram/{member_id}")
+    public ResponseEntity<? extends  BasicResponse> editInstagram(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("member_id") Long memberId, @RequestBody @Valid LinkDto linkDto){
+
+        profileService.editLink(member, memberId, linkDto.getLink());
+
+        return ResponseEntity.ok().body(new SingleResponse("인스타그램 링크 추가 완료"));
+    }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "깃허브 링크 추가 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "깃허브 링크 추가", description = "깃허브 링크 추가 메서드")
+    @Parameter(name = "member_id", description = "수정할 member id", required = true, example = "1", in = ParameterIn.PATH)
+    @PatchMapping("/edit/github/{member_id}")
+    public ResponseEntity<? extends  BasicResponse> editGithub(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("member_id") Long memberId, @RequestBody @Valid LinkDto linkDto){
+
+        profileService.editLink(member, memberId, linkDto.getLink());
+
+        return ResponseEntity.ok().body(new SingleResponse("깃허브 링크 추가 완료"));
     }
 }

@@ -69,7 +69,7 @@ public class CrawlingService {
             String[] field = fieldInfo.getText().split("\n");
 
             WebElement periodInfo = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dday-area")));
-            String period = periodInfo.getText().replaceAll("D-\\d+", "").trim();//디데이 부분 제거하기
+            String period = periodInfo.getText().replaceAll("D[+-]\\d+", "").trim();//디데이 부분 제거하기
             String[] cleanPeriod = period.split("\n");
             log.info(cleanPeriod[1]);
 

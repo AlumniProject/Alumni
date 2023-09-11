@@ -110,4 +110,13 @@ public class Member extends BaseTimeEntity {
     public void editIntroduction(String introduction){
         this.introduction = introduction;
     }
+    public void editInstagram(String instagram){
+        this.instagram = instagram;
+    }
+    public void editFacebook(String facebook){
+        this.facebook = facebook;
+    }
+    public void editGithub(String github){
+        this.github = github;
+    }
 }

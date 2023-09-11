@@ -31,6 +31,6 @@ public class Interested {
     }
 
     public void addMemberInterestedFields(Member member) {
-        ;member.getInterestFields().add(this);
+        member.getInterestFields().add(this);
     }
 }

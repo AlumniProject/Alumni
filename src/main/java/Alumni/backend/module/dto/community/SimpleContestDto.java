@@ -1,8 +1,6 @@
 package Alumni.backend.module.dto.community;
 
-import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.domain.contest.Contest;
-import Alumni.backend.module.dto.registration.MemberResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +24,7 @@ public class SimpleContestDto {
                 .contestId(contest.getId())
                 .title(contest.getTitle())
                 .period(contest.getPeriod())
-                .poster(contest.getTitle())
+                .poster(contest.getPoster())
                 .build();
     }
 }

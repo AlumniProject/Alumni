@@ -63,5 +63,4 @@ public class PopularPostResponseDto {
   public void setHashTag(List<String> hashTag) {
     this.hashTag = hashTag;
   }
-
 }
