@@ -9,6 +9,7 @@ import Alumni.backend.module.dto.community.PopularPostResponseDto;
 import Alumni.backend.module.dto.community.SimpleContestDto;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,9 @@ public class HomeService {
         popularPostResponseDto.setHashTag(popularPost.getPostTags().stream()
             .map(postTag -> postTag.getTag().getName())
             .collect(Collectors.toList()));
+      }
+      else{
+        popularPostResponseDto.setHashTag(Collections.emptyList());//빈배열 넘겨주기
       }
 
       popularPostResponseDtos.add(popularPostResponseDto);
