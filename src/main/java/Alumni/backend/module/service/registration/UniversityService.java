@@ -76,7 +76,7 @@ public class UniversityService {
          * 정규식으로 바꿔서 형식 구별하기
          */
         int index = email.indexOf("@");
-        String univEmail = email.substring(index);//@뒷부분
+        String univEmail = email.substring(index);
 
         if (univEmail.length() < 5) {
             throw new IllegalArgumentException("Bad Request");
@@ -84,7 +84,7 @@ public class UniversityService {
 
         // 테스트 이메일의 경우 - 바로 통과
         // 유요한 학교이메일 형식이면 인증번호 생성하여 메일 전송
-        if (!univEmail.equals("test.ac.kr")) {
+        if (!univEmail.equals("@test.ac.kr")) {
             //이메일 검증
             if (!universityRepository.existsByUnivEmail1(univEmail)) {
                 if (!universityRepository.existsByUnivEmail2(univEmail)) {

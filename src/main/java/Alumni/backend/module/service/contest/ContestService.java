@@ -7,9 +7,7 @@ import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.dto.contest.ContestDetailResponseDto;
 import Alumni.backend.module.dto.contest.ContestSearchResponseDto;
 import Alumni.backend.module.dto.contest.TeamListDto;
-import Alumni.backend.module.repository.contest.ContestLikeRepository;
-import Alumni.backend.module.repository.contest.ContestRepository;
-import Alumni.backend.module.repository.contest.TeamRepository;
+import Alumni.backend.module.repository.contest.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +22,7 @@ public class ContestService {
     private final ContestRepository contestRepository;
     private final TeamRepository teamRepository;
     private final ContestLikeRepository contestLikeRepository;
+    private final TeammateRepository teammateRepository;
 
     public List<ContestSearchResponseDto> contestSearch(Member member, String content) {
         List<ContestSearchResponseDto> contestResponseDtos = new ArrayList<>();
@@ -80,8 +79,10 @@ public class ContestService {
         ContestDetailResponseDto contestDetailResponseDto = ContestDetailResponseDto.contestDetailResponseDto(contest, likes);
 
         List<Team> teams = teamRepository.findByContestIdFetchJoinMemberAndImage(contest.getId());
+        HashMap<Long, Long> teammateMap = teammateRepository.groupByTeamIdAndApproveIsTrue();
 
-        List<TeamListDto> teamListDtos = teams.stream().map(TeamListDto::teamListDto).collect(Collectors.toList());
+        List<TeamListDto> teamListDtos = teams.stream()
+                .map(team -> TeamListDto.teamListDto(team, Math.toIntExact(teammateMap.get(team.getId())))).collect(Collectors.toList());
         contestDetailResponseDto.setTeamList(teamListDtos);
 
         //좋아요 여부

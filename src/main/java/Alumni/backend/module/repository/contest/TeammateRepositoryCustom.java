@@ -2,6 +2,7 @@ package Alumni.backend.module.repository.contest;
 
 import Alumni.backend.module.domain.contest.Teammate;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +15,6 @@ public interface TeammateRepositoryCustom {
     List<Teammate> findByTeamIdFetchJoinMember(Long teamId);
 
     List<Teammate> findByTeamIdFetchJoinMemberWithApprove(Long teamId);
+
+    HashMap<Long, Long> groupByTeamIdAndApproveIsTrue();
 }

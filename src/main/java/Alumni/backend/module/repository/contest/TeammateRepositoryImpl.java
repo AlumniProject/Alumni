@@ -1,9 +1,11 @@
 package Alumni.backend.module.repository.contest;
 
 import Alumni.backend.module.domain.contest.Teammate;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +14,7 @@ import static Alumni.backend.module.domain.contest.QTeam.team;
 import static Alumni.backend.module.domain.contest.QTeammate.teammate;
 import static Alumni.backend.module.domain.registration.QMember.member;
 import static Alumni.backend.module.domain.registration.QUniversity.university;
+import static Alumni.backend.module.repository.contest.TeamRepositoryImpl.getLongLongHashMap;
 
 @RequiredArgsConstructor
 public class TeammateRepositoryImpl implements TeammateRepositoryCustom {
@@ -58,5 +61,17 @@ public class TeammateRepositoryImpl implements TeammateRepositoryCustom {
                 .where(teammate.team.id.eq(teamId),
                         teammate.approve.eq(true))
                 .fetch();
+    }
+
+    @Override
+    public HashMap<Long, Long> groupByTeamIdAndApproveIsTrue() {
+        List<Tuple> tuples = jpaQueryFactory
+                .select(teammate.team.id, teammate.count())
+                .from(teammate)
+                .where(teammate.approve.eq(true))
+                .groupBy(teammate.team.id)
+                .fetch();
+
+        return getLongLongHashMap(tuples);
     }
 }
