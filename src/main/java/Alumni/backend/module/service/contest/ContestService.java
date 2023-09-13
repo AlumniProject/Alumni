@@ -82,7 +82,7 @@ public class ContestService {
         HashMap<Long, Long> teammateMap = teammateRepository.groupByTeamIdAndApproveIsTrue();
 
         List<TeamListDto> teamListDtos = teams.stream()
-                .map(team -> TeamListDto.teamListDto(team, Math.toIntExact(teammateMap.get(team.getId())))).collect(Collectors.toList());
+                .map(team -> TeamListDto.teamListDto(team, teammateMap.get(team.getId()))).collect(Collectors.toList());
         contestDetailResponseDto.setTeamList(teamListDtos);
 
         //좋아요 여부
