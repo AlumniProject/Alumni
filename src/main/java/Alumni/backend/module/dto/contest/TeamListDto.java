@@ -21,10 +21,10 @@ public class TeamListDto {
     private LocalDateTime createTime;
     private String region;
     private Integer total;
-    private Integer current;
+    private Long current;
     private MemberResponseDto writer;
 
-    public static TeamListDto teamListDto(Team team, Integer current){
+    public static TeamListDto teamListDto(Team team, Long current){
         return TeamListDto.builder()
                 .id(team.getId())
                 .title(team.getTitle())

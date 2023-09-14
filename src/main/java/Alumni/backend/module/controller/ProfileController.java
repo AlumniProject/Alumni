@@ -144,4 +144,19 @@ public class ProfileController {
 
         return ResponseEntity.ok().body(new SingleResponse("깃허브 링크 추가 완료"));
     }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "스킬 추가 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 스킬" + "<br>존재하지 않는 회원"+"<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "스킬 추가", description = "스킬 추가 메서드")
+    @Parameter(name = "member_id", description = "스킬을 추가 할 member id", required = true, example = "1", in = ParameterIn.PATH)
+    @PutMapping("/edit/skill/{member_id}")
+    public ResponseEntity<? extends BasicResponse> editSkill(@Schema(hidden = true) @CurrentUser Member currentMember, @RequestBody @Valid SkillRequestDto skillRequestDto, @PathVariable("member_id") Long memberId){
+        profileService.editSkill(currentMember, memberId, skillRequestDto);
+
+        return ResponseEntity.ok().body(new SingleResponse("스킬 추가 완료"));
+    }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import Alumni.backend.module.domain.BaseTimeEntity;
+import Alumni.backend.module.domain.Profile.MySkill;
 import Alumni.backend.module.domain.community.CommentLike;
 import Alumni.backend.module.domain.Image;
 import Alumni.backend.module.domain.community.PostLike;
@@ -73,6 +74,9 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member")
     private Set<Interested> interestFields = new HashSet<>();
 
+    @OneToMany(mappedBy = "member")
+    private Set<MySkill> mySkills = new HashSet<>();
+
     //생성 메서드
     public static Member createMember(String email, String nickname, String classOf,
                                       String major, University university, String fcmToken) {
@@ -101,6 +105,9 @@ public class Member extends BaseTimeEntity {
 
     public void clearInterestFields() {
         this.interestFields.clear();
+    }
+    public void clearMySkills() {
+        this.mySkills.clear();
     }
 
     public void editNickname(String nickname){
