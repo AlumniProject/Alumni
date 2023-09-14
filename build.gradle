@@ -60,6 +60,9 @@ dependencies {
 	implementation 'org.seleniumhq.selenium:selenium-java:4.6.0'
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	//chatGpt
+	implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.0'
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
 tasks.named('test') {
