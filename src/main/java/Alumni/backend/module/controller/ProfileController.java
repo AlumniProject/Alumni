@@ -94,7 +94,7 @@ public class ProfileController {
 
         ProfilePostsResponseDto profilePostsResponse = profileService.profilePosts(currentMember, memberId);
 
-        return ResponseEntity.ok().body(new ProfilePostsResponse<>(profilePostsResponse, "프로필 게시물 조회 완료"));
+        return ResponseEntity.ok().body(new ProfileResponse<>(profilePostsResponse, "프로필 게시물 조회 완료"));
     }
 
     @ApiResponses({
@@ -158,5 +158,21 @@ public class ProfileController {
         profileService.editSkill(currentMember, memberId, skillRequestDto);
 
         return ResponseEntity.ok().body(new SingleResponse("스킬 추가 완료"));
+    }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "프로필 조회 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 회원"+"<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "프로필 조회", description = "프로필 조회 완료")
+    @Parameter(name = "member_id", description = "프로필을 조회 할 member id", required = true, example = "1", in = ParameterIn.PATH)
+    @GetMapping("/home/{member_id}")
+    public ResponseEntity<?extends BasicResponse> profileHome(@Schema(hidden = true) @CurrentUser Member currentMember, @PathVariable("member_id") Long memberId){
+
+        ProfileHomeResponseDto profileHomeResponseDto = profileService.profileHome(currentMember, memberId);
+
+        return ResponseEntity.ok().body(new ProfileResponse<>(profileHomeResponseDto,"프로필 조회 완료"));
     }
 }

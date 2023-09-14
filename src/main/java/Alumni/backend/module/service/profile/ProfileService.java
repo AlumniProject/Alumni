@@ -20,10 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,7 +69,7 @@ public class ProfileService {
         Boolean isOwner = false;
         Boolean isFollow = false;
 
-        if(currentMember.getId().equals(memberId))//내 프로필
+        if(currentMember.getId().equals(member.getId()))//내 프로필
         {
             isFollow = true;
             isOwner = true;
@@ -150,5 +147,43 @@ public class ProfileService {
         }
 
         mySkillRepository.saveAll(mySkillList);
+    }
+
+    public ProfileHomeResponseDto profileHome(Member currentMember, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+
+        Boolean isOwner = false;
+        Boolean isFollow = false;
+
+        if(currentMember.getId().equals(member.getId()))//내 프로필
+        {
+            isFollow = true;
+            isOwner = true;
+        }else{//다른 사람 프로필
+            if(followRepository.findByFollowerIdAndFollowingId(currentMember.getId(), memberId).isPresent())//팔로우 하고 있는지
+                isFollow = true;
+        }
+
+        ProfileResponseDto profileResponseDto = ProfileResponseDto.getProfileResponseDto(member, isOwner, isFollow);
+
+        int follower = followRepository.countByFollowerId(memberId);
+        int following = followRepository.countByFollowingId(memberId);
+
+        Set<Interested> interestFields = member.getInterestFields();
+        Set<MySkill> mySkills = member.getMySkills();
+
+        List<String> interestedFieldList = interestFields.stream()
+                .map(interested -> interested.getInterestField().getFieldName())
+                .collect(Collectors.toList());
+
+        List<String> skillList = mySkills.stream()
+                .map(mySkill -> mySkill.getSkill().getSkillName())
+                .collect(Collectors.toList());
+
+
+        ProfileHomeResponseDto profileHomeResponse = ProfileHomeResponseDto.getProfileHomeResponse(profileResponseDto, follower, following,
+                interestedFieldList, skillList, member.getInstagram(), member.getGithub(), member.getFacebook());
+
+        return profileHomeResponse;
     }
 }
