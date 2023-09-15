@@ -34,10 +34,10 @@ public class CommentDto {
     @Schema(description = "대댓글 리스트")
     private List<RecommentDto> recommentList;
 
-    public static CommentDto getCommentDto(Comment comment, long likes) {
+    public static CommentDto getCommentDto(Comment comment, Long likes) {
         return CommentDto.builder()
                 .id(comment.getId())
-                .likes(likes)
+                .likes(likes == null ? 0 : likes)
                 .content(comment.getContent())
                 .createtime(comment.getUpdateTime())
                 .writer(MemberResponseDto.getMemberResponseDto(comment.getMember()))

@@ -18,7 +18,7 @@ public class RecommentDto {
     private Long id;
 
     @Schema(description = "좋아요 수", example = "5", type = "int")
-    private long likes;
+    private Long likes;
 
     @Schema(description = "내용", example = "content", type = "String")
     private String content;
@@ -30,10 +30,10 @@ public class RecommentDto {
     @Schema(description = "작성자 정보")
     private MemberResponseDto writer;
 
-    public static RecommentDto getRecommentDto(Comment comment, long likes) {
+    public static RecommentDto getRecommentDto(Comment comment, Long likes) {
         return RecommentDto.builder()
                 .id(comment.getId())
-                .likes(likes)
+                .likes(likes == null ? 0 : likes)
                 .content(comment.getContent())
                 .createtime(comment.getUpdateTime())
                 .writer(MemberResponseDto.getMemberResponseDto(comment.getMember()))
