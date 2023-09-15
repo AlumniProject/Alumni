@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Builder
-@Schema(description = "프로필 DTD")
+@Schema(description = "프로필 게시물 DTD")
 public class ProfilePostsResponseDto {
     @Schema(description = "사용자 프로필 정보")
     private ProfileResponseDto profileResponseDto;
