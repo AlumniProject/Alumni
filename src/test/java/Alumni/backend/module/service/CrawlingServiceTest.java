@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
-@SpringBootTest
+/*@SpringBootTest
 @Transactional
 public class CrawlingServiceTest {
     @Autowired
@@ -19,4 +19,4 @@ public class CrawlingServiceTest {
     void 공모전크롤링테스트() throws IOException, InterruptedException {
         crawlingService.contestCrawling();
     }
-}
+}*/

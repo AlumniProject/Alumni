@@ -81,6 +81,17 @@ public class TestData {
         member1.uploadProfile(image1);
     }
 
+    public Post SetUpOnlyOnePost() {
+        University univ1 = universityRepository.findById(1L).get();
+        Member member1 = Member.createMember("1", "1", "1", "1", univ1, "1");
+        memberRepository.save(member1);
+
+        Board freeBoard = boardRepository.findByName("자유");
+        Post post1 = Post.createPost(member1, freeBoard, "t1", "안녕하세요를 영어로");
+        postRepository.save(post1);
+        return post1;
+    }
+
     public Member findMemberByEmail(String email) {
         if (!memberRepository.existsMemberByEmail(email)) {
             University univ1 = universityRepository.findById(1L).get();
