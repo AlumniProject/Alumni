@@ -2,6 +2,7 @@ package Alumni.backend.module.service;
 
 import Alumni.backend.TestData;
 import Alumni.backend.module.domain.community.Post;
+import Alumni.backend.module.dto.community.CommentDto;
 import Alumni.backend.module.dto.gpt.ChatGptCommentResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,9 +28,9 @@ class ChatGptServiceTest {
         Post post = testData.SetUpOnlyOnePost();
 
         //when
-        ChatGptCommentResponse chatGptComment = chatGptService.getChatGptComment(post.getId());
+        CommentDto chatGptComment = chatGptService.getChatGptComment(post.getId());
 
         //then
-        assertNotNull(chatGptComment.getAnswer());
+        assertNotNull(chatGptComment.getContent());
     }
 }

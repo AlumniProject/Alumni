@@ -25,4 +25,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByNicknameIn(List<String> nicknameList);
 
     List<Member> findByIdIn(List<Long> memberIds);
+
+    Optional<Member> findByNickname(String chatgpt);
 }

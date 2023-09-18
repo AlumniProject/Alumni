@@ -3,8 +3,8 @@ package Alumni.backend.module.controller;
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
 import Alumni.backend.module.domain.registration.Member;
+import Alumni.backend.module.dto.community.CommentDto;
 import Alumni.backend.module.dto.community.CommentRequestDto;
-import Alumni.backend.module.dto.gpt.ChatGptCommentResponse;
 import Alumni.backend.module.service.ChatGptService;
 import Alumni.backend.module.service.community.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -93,9 +93,18 @@ public class CommentController {
         return ResponseEntity.ok().body(new SingleResponse("대댓글 삭제 완료"));
     }
 
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "챗지피티 답변", description = "챗지피티 답변을 받는 메서드 입니다.")
+    @Parameter(name = "post_id", description = "답변을 얻고 싶은 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @PostMapping("/chatGpt/{post_id}")
     public ResponseEntity<? extends BasicResponse> getChatGptAnswer(@PathVariable("post_id") Long postId) throws ParseException { // TODO: parseException 예외처리
-        ChatGptCommentResponse chatGptComment = chatGptService.getChatGptComment(postId);
+        CommentDto chatGptComment = chatGptService.getChatGptComment(postId);
+
         return ResponseEntity.ok().body(new GeneralResponse<>(chatGptComment, "SUCCESS"));
     }
 }
