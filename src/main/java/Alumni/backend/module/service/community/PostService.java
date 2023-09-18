@@ -1,5 +1,6 @@
 package Alumni.backend.module.service.community;
 
+import Alumni.backend.infra.event.community.GptCommentCreateEvent;
 import Alumni.backend.infra.exception.FormalValidationException;
 import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.infra.response.PostSearchResponse;
@@ -10,6 +11,7 @@ import Alumni.backend.module.repository.community.*;
 import Alumni.backend.module.repository.community.comment.CommentRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void postCreate(Member member, PostCreateRequestDto postCreateRequestDto) {
         Board board = boardRepository.findById(postCreateRequestDto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("Bad Request"));
@@ -46,6 +49,11 @@ public class PostService {
             List<PostTag> postTagList = savePostTag(hashTag, post);
 
             postTagRepository.saveAll(postTagList);
+
+            if (postCreateRequestDto.getIsEnabledGPT()) {
+                // gpt 답변 생성
+                eventPublisher.publishEvent(new GptCommentCreateEvent(post, member));
+            }
         }
     }
 

@@ -93,7 +93,7 @@ public class CommentController {
         return ResponseEntity.ok().body(new SingleResponse("대댓글 삭제 완료"));
     }
 
-    @ApiResponses({
+    /*@ApiResponses({
             @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
                     + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
@@ -106,5 +106,5 @@ public class CommentController {
         CommentDto chatGptComment = chatGptService.getChatGptComment(postId);
 
         return ResponseEntity.ok().body(new GeneralResponse<>(chatGptComment, "SUCCESS"));
-    }
+    }*/
 }
