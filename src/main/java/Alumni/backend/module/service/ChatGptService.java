@@ -1,18 +1,14 @@
 package Alumni.backend.module.service;
 
 import Alumni.backend.infra.config.ChatGptConfig;
-import Alumni.backend.infra.exception.NoExistsException;
 import Alumni.backend.module.domain.Image;
 import Alumni.backend.module.domain.community.Comment;
 import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.domain.registration.University;
-import Alumni.backend.module.dto.community.CommentDto;
-import Alumni.backend.module.dto.community.RecommentDto;
 import Alumni.backend.module.dto.gpt.ChatGptRequestDto;
 import Alumni.backend.module.repository.ImageRepository;
 import Alumni.backend.module.repository.community.comment.CommentRepository;
-import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.UniversityRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @DependsOn("universityService") // myService1 빈을 초기화 후에 초기화
@@ -41,7 +38,6 @@ public class ChatGptService {
 
     @Value("${chat-gpt.api-key}")
     private String apiKey;
-    private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final UniversityRepository universityRepository;
@@ -49,7 +45,7 @@ public class ChatGptService {
     private final ImageRepository imageRepository;
     @PostConstruct
     public void chatGptSignUp() throws IOException {
-        if (!memberRepository.findByNickname("chatgpt").isPresent()) {//지피티 없으면 회원가입
+        if (memberRepository.findByNickname("chatgpt").isEmpty()) {//지피티 없으면 회원가입
             University university = universityRepository.findById(14L).get();//그냥 서울대학교로 함
 
             Member member = Member.createMember("chatgpt@test.ac.kr", "chatgpt",
@@ -62,8 +58,15 @@ public class ChatGptService {
         }
     }
 
-    public CommentDto getChatGptComment(Long postId) throws ParseException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NoExistsException("존재하지 않는 게시글"));
+    public void saveChatGptComment(String answer, Post post) {
+        Member gptMember = memberRepository.findByNickname("chatgpt").get();//닉네임으로 찾기
+        Comment comment = Comment.createComment(gptMember, answer);
+        comment.setPost(post);
+        commentRepository.save(comment);
+    }
+
+    @Transactional(readOnly = true)
+    public String getChatGptComment(Post post) throws ParseException {
         StringBuffer sb = new StringBuffer();
         try {
             requestInfo(sb, post.getContent());
@@ -78,9 +81,8 @@ public class ChatGptService {
         JSONArray choices = (JSONArray) obj.get("choices");
         JSONObject jsonObject = (JSONObject) choices.get(0);
         JSONObject message = (JSONObject) jsonObject.get("message");
-        String answer = (String) message.get("content");
 
-        Member member = memberRepository.findByNickname("chatgpt").get();//닉네임으로 찾기
+        /*Member member = memberRepository.findByNickname("chatgpt").get();//닉네임으로 찾기
         //댓글로 저장
         Comment comment = Comment.createComment(member, answer);
         comment.setPost(post);
@@ -88,9 +90,9 @@ public class ChatGptService {
 
         CommentDto commentDto = CommentDto.getCommentDto(saveComment, 0L);
         List<RecommentDto> recommentDtos =new ArrayList<>();
-        commentDto.setRecommentList(recommentDtos);
+        commentDto.setRecommentList(recommentDtos);*/
 
-        return commentDto;
+        return (String) message.get("content");
     }
 
     private void requestInfo(StringBuffer sb, String content) throws IOException {
