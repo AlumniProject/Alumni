@@ -94,7 +94,6 @@ public class Member extends BaseTimeEntity {
 
         return member;
     }
-
     public void uploadProfile(Image profileImage) {
         this.profileImage = profileImage;
     }
