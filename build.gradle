@@ -60,8 +60,10 @@ dependencies {
 	implementation 'org.seleniumhq.selenium:selenium-java:4.6.0'
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	//chatGpt
-	implementation 'com.theokanning.openai-gpt3-java:service:0.12.0'
+
+	implementation group: 'org.json', name: 'json', version: '20230227'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
+	implementation 'com.googlecode.json-simple:json-simple:1.1'
 }
 
 tasks.named('test') {

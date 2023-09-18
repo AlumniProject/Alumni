@@ -4,6 +4,8 @@ import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.dto.community.CommentRequestDto;
+import Alumni.backend.module.dto.gpt.ChatGptCommentResponse;
+import Alumni.backend.module.service.ChatGptService;
 import Alumni.backend.module.service.community.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +31,7 @@ import javax.validation.Valid;
 public class CommentController {
 
     private final CommentService commentService;
+    private final ChatGptService chatGptService;
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 작성 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
@@ -87,5 +91,11 @@ public class CommentController {
         commentService.deleteRecomment(member, commentId);
 
         return ResponseEntity.ok().body(new SingleResponse("대댓글 삭제 완료"));
+    }
+
+    @PostMapping("/chatGpt/{post_id}")
+    public ResponseEntity<? extends BasicResponse> getChatGptAnswer(@PathVariable("post_id") Long postId) throws ParseException { // TODO: parseException 예외처리
+        ChatGptCommentResponse chatGptComment = chatGptService.getChatGptComment(postId);
+        return ResponseEntity.ok().body(new GeneralResponse<>(chatGptComment, "SUCCESS"));
     }
 }
