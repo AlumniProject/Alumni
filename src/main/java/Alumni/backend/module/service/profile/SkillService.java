@@ -23,8 +23,11 @@ public class SkillService {
     @PostConstruct
     public void initInterestFieldData() throws IOException {
         if (skillRepository.count() == 0) { // 저장된 관심분야가 없으면 실행
-            List<String> list = Arrays.asList("JAVA", "MySQL", "Spring Boot", "AWS", "JPA",
-                    "Spring Security", "Python", "Flutter", "QueryDSL");
+            List<String> list = Arrays.asList("HTML", "CSS", "JavaScript", "React.js", "Angular", "Vue.js", "Node.js", "Python", "Ruby", "Java", "PHP",
+                    ".NET", "Django", "Flask", "Express.js", "Spring Boot", "MySQL", "PostgreSQL", "MongoDB", "Oracle", "SQL Server", "AWS", "Azure",
+                    "GCP", "Docker", "Kubernetes", "Heroku", "Flask", "Git", "GitHub", "GitLab", "Bitbucket", "JavaScript", "Python", "C#", "Swift",
+                    "Kotlin", "Bootstrap", "Material_UI", "Jest", "Selenium", "JUnit", "pytest", "OAuth", "JWT", "Visual Studio Code",
+                    "Intellij IDEA", "Eclipse", "JSON", "Restful API", "EC2", "RDS", "S3", "JPA", "Spring Data JPA", "Spring", "Spring Security", "Query DSL");
             List<Skill>skills = list.stream()
                     .map(s -> Skill.builder()
                             .skillName(s)
