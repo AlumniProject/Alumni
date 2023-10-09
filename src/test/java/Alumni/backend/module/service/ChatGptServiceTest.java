@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-/*
+
 @SpringBootTest
 @Transactional
 class ChatGptServiceTest {
@@ -29,9 +29,9 @@ class ChatGptServiceTest {
         Post post = testData.SetUpOnlyOnePost();
 
         //when
-        CommentDto chatGptComment = chatGptService.getChatGptComment(post.getId());
+        String chatGptComment = chatGptService.getChatGptComment(post);
 
         //then
-        assertNotNull(chatGptComment.getContent());
+        assertNotNull(chatGptComment);
     }
-}*/
+}

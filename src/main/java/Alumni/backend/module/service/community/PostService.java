@@ -49,11 +49,6 @@ public class PostService {
             List<PostTag> postTagList = savePostTag(hashTag, post);
 
             postTagRepository.saveAll(postTagList);
-
-            if (postCreateRequestDto.getIsEnabledGPT()) {
-                // gpt 답변 생성
-                eventPublisher.publishEvent(new GptCommentCreateEvent(post, member));
-            }
         }
     }
 
