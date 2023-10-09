@@ -94,7 +94,7 @@ public class ProfileController {
 
         ProfilePostsResponseDto profilePostsResponse = profileService.profilePosts(currentMember, memberId);
 
-        return ResponseEntity.ok().body(new ProfileResponse<>(profilePostsResponse, "프로필 게시물 조회 완료"));
+        return ResponseEntity.ok().body(new DataResponse<>(profilePostsResponse, "프로필 게시물 조회 완료"));
     }
 
     @ApiResponses({
@@ -173,6 +173,6 @@ public class ProfileController {
 
         ProfileHomeResponseDto profileHomeResponseDto = profileService.profileHome(currentMember, memberId);
 
-        return ResponseEntity.ok().body(new ProfileResponse<>(profileHomeResponseDto,"프로필 조회 완료"));
+        return ResponseEntity.ok().body(new DataResponse<>(profileHomeResponseDto,"프로필 조회 완료"));
     }
 }

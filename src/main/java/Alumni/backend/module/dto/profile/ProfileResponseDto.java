@@ -16,11 +16,9 @@ public class ProfileResponseDto {
     private String classOf;
     private String nickname;
     private String introduction;
-    private Boolean isOwner;
-    private Boolean isFollow;
 
     @Builder
-    public static ProfileResponseDto getProfileResponseDto(Member member, Boolean isOwner, Boolean isFollow) {
+    public static ProfileResponseDto getProfileResponseDto(Member member) {
         return ProfileResponseDto.builder()
                 .memberId(member.getId())
                 .university(member.getUniversity().getName())
@@ -29,8 +27,6 @@ public class ProfileResponseDto {
                 .classOf(member.getClassOf())
                 .nickname(member.getNickname())
                 .introduction(member.getIntroduction() == null ? "" : member.getIntroduction())
-                .isOwner(isOwner)
-                .isFollow(isFollow)
                 .build();
     }
 }

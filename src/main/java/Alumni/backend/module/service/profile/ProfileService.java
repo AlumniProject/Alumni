@@ -59,49 +59,6 @@ public class ProfileService {
         findMember.editIntroduction(introduction);
     }
 
-    public ProfilePostsResponseDto profilePosts(Member currentMember, Long memberId) {
-
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
-
-        HashMap<Long, Long> postMap = postLikeRepository.countPostLikesByPostId();
-        HashMap<Long, Long> commentMap = commentRepository.countCommentsByPostId();
-
-        Boolean isOwner = false;
-        Boolean isFollow = false;
-
-        if(currentMember.getId().equals(member.getId()))//내 프로필
-        {
-            isFollow = true;
-            isOwner = true;
-        }else{//다른 사람 프로필
-            if(followRepository.findByFollowerIdAndFollowingId(currentMember.getId(), memberId).isPresent())//팔로우 하고 있는지
-                isFollow = true;
-        }
-
-        ProfileResponseDto profileResponseDto = ProfileResponseDto.getProfileResponseDto(member, isOwner, isFollow);
-
-        int follower = followRepository.countByFollowerId(memberId);
-        int following = followRepository.countByFollowingId(memberId);
-
-        List<MyPostResponseDto> posts = new ArrayList<>();
-        List<Post> myPost = postRepository.findAllByMemberId(memberId);
-
-        for (Post post : myPost) {
-            Long likes = postMap.get(post.getId());
-            Long comments = commentMap.get(post.getId());
-
-            MyPostResponseDto myPosts = MyPostResponseDto.getMyPosts(post, likes, comments);
-
-            myPosts.setHashTag(post.getPostTags().stream()
-                    .map(postTag -> postTag.getTag().getName())
-                    .collect(Collectors.toList()));
-
-            posts.add(myPosts);
-        }
-
-        return ProfilePostsResponseDto.getProfilePostsResponseDto(profileResponseDto, follower, following, posts);
-    }
-
     @Transactional
     public void editLink(Member member, Long memberId, String link) {
 
@@ -149,6 +106,49 @@ public class ProfileService {
         mySkillRepository.saveAll(mySkillList);
     }
 
+    public ProfilePostsResponseDto profilePosts(Member currentMember, Long memberId) {
+
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+
+        Boolean isOwner = false;
+        Boolean isFollow = false;
+
+        if(currentMember.getId().equals(member.getId()))//내 프로필
+        {
+            isFollow = true;
+            isOwner = true;
+        }else{//다른 사람 프로필
+            if(followRepository.findByFollowerIdAndFollowingId(currentMember.getId(), memberId).isPresent())//팔로우 하고 있는지
+                isFollow = true;
+        }
+
+        HashMap<Long, Long> postMap = postLikeRepository.countPostLikesByPostId();
+        HashMap<Long, Long> commentMap = commentRepository.countCommentsByPostId();
+
+        ProfileResponseDto profileResponseDto = ProfileResponseDto.getProfileResponseDto(member);
+
+        int follower = followRepository.countByFollowerId(memberId);
+        int following = followRepository.countByFollowingId(memberId);
+
+        List<MyPostResponseDto> posts = new ArrayList<>();
+        List<Post> myPost = postRepository.findAllByMemberId(memberId);
+
+        for (Post post : myPost) {
+            Long likes = postMap.get(post.getId());
+            Long comments = commentMap.get(post.getId());
+
+            MyPostResponseDto myPosts = MyPostResponseDto.getMyPosts(post, likes, comments);
+
+            myPosts.setHashTag(post.getPostTags().stream()
+                    .map(postTag -> postTag.getTag().getName())
+                    .collect(Collectors.toList()));
+
+            posts.add(myPosts);
+        }
+
+        return ProfilePostsResponseDto.getProfilePostsResponseDto(profileResponseDto, isOwner, isFollow, follower, following, posts);
+    }
+
     public ProfileHomeResponseDto profileHome(Member currentMember, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
 
@@ -164,7 +164,7 @@ public class ProfileService {
                 isFollow = true;
         }
 
-        ProfileResponseDto profileResponseDto = ProfileResponseDto.getProfileResponseDto(member, isOwner, isFollow);
+        ProfileResponseDto profileResponseDto = ProfileResponseDto.getProfileResponseDto(member);
 
         int follower = followRepository.countByFollowerId(memberId);
         int following = followRepository.countByFollowingId(memberId);
@@ -181,7 +181,7 @@ public class ProfileService {
                 .collect(Collectors.toList());
 
 
-        ProfileHomeResponseDto profileHomeResponse = ProfileHomeResponseDto.getProfileHomeResponse(profileResponseDto, follower, following,
+        ProfileHomeResponseDto profileHomeResponse = ProfileHomeResponseDto.getProfileHomeResponse(profileResponseDto, isOwner, isFollow, follower, following,
                 interestedFieldList, skillList, member.getInstagram(), member.getGithub(), member.getFacebook());
 
         return profileHomeResponse;
