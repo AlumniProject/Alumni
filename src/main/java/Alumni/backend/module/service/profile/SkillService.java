@@ -2,6 +2,8 @@ package Alumni.backend.module.service.profile;
 
 import Alumni.backend.module.domain.Profile.Skill;
 import Alumni.backend.module.domain.registration.InterestField;
+import Alumni.backend.module.dto.community.TagDto;
+import Alumni.backend.module.dto.profile.SkillDto;
 import Alumni.backend.module.repository.profile.SkillRepository;
 import Alumni.backend.module.repository.registration.InterestFieldRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +34,9 @@ public class SkillService {
                     .collect(Collectors.toList());
             skillRepository.saveAll(skills);
         }
+    }
+
+    public List<SkillDto> findAllSkills() {
+        return skillRepository.findAll().stream().map(SkillDto::new).collect(Collectors.toList());
     }
 }

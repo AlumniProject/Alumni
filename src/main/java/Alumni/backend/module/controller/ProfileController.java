@@ -73,7 +73,7 @@ public class ProfileController {
     @Operation(summary = "한줄소개 수정", description = "한줄소개를 수정하는 메서드")
     @Parameter(name = "member_id", description = "수정할 member id", required = true, example = "1", in = ParameterIn.PATH)
     @PatchMapping("/edit/introduction/{member_id}")
-    public ResponseEntity<? extends BasicResponse> editIntroduction(@CurrentUser Member member, @PathVariable("member_id") Long memberId,
+    public ResponseEntity<? extends BasicResponse> editIntroduction(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("member_id") Long memberId,
                                                                     @RequestBody @Valid IntroductionDto introductionDto){
 
         profileService.editIntroduction(member, memberId, introductionDto.getIntroduction());
@@ -90,7 +90,7 @@ public class ProfileController {
     @Operation(summary = "프로필 게시물 조회", description = "프로필에서 그 사람이 작성한 게시물들을 볼 수 있는 메서드 입니다.")
     @Parameter(name = "member_id", description = "조회하고 싶은 member_id", required = true, example = "1", in = ParameterIn.PATH)
     @GetMapping("/post/{member_id}")
-    public ResponseEntity< ? extends BasicResponse> profilePosts(@CurrentUser Member currentMember, @PathVariable("member_id") Long memberId){
+    public ResponseEntity< ? extends BasicResponse> profilePosts(@Schema(hidden = true)  @CurrentUser Member currentMember, @PathVariable("member_id") Long memberId){
 
         ProfilePostsResponseDto profilePostsResponse = profileService.profilePosts(currentMember, memberId);
 
