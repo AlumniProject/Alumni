@@ -25,5 +25,5 @@ public class PostCreateRequestDto {
     @Schema(description = "기술 게시판인 경우 해시태그", example = "[\"python\", \"Java\"]")
     private List<String> hashTag;
 
-    private Boolean isEnabledGPT;
+//    private Boolean isEnabledGPT;
 }

@@ -1,11 +1,15 @@
 package Alumni.backend.module.service;
 
 import Alumni.backend.TestData;
+import Alumni.backend.infra.response.PostSearchResponse;
 import Alumni.backend.module.domain.community.Post;
 import Alumni.backend.module.domain.community.PostTag;
+import Alumni.backend.module.domain.community.Tag;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.dto.community.PostCreateRequestDto;
 import Alumni.backend.module.dto.community.PostModifyRequestDto;
+import Alumni.backend.module.dto.community.PostResponseDto;
+import Alumni.backend.module.dto.community.PostSearch;
 import Alumni.backend.module.repository.community.TagRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
@@ -36,7 +40,7 @@ class PostServiceTest {
     @Autowired
     PostRepository postRepository;
 
-    /*@Test
+    @Test
     public void 인기태그_조회_테스트() throws Exception {
         List<Tag> tags = tagRepository.findAll();
         for (int i = 0; i < tags.size(); i++) {
@@ -45,10 +49,10 @@ class PostServiceTest {
 
         List<Tag> tagList = tagRepository.findTop5ByOrderByCountDesc();
         Assertions.assertEquals(5, tagList.size());
-        Assertions.assertEquals("Kotlin", tagList.get(0).getName());
-    }*/
+        Assertions.assertEquals("Vue.js", tagList.get(0).getName());
+    }
 
-    /*@Test
+    @Test
     //@Rollback(value = false)
     public void 전체_게시글_조회_테스트() throws Exception {
         testData.SetUp();
@@ -58,7 +62,7 @@ class PostServiceTest {
 
         //then
         Assertions.assertEquals(5, postResponseDtos.size());
-    }*/
+    }
 
 //    @Test
 //    public void 게시글_검색_테스트() throws Exception {
