@@ -1,6 +1,5 @@
 package Alumni.backend.module.dto.profile;
 
-import Alumni.backend.module.dto.community.PostResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +12,10 @@ import java.util.List;
 public class ProfilePostsResponseDto {
     @Schema(description = "사용자 프로필 정보")
     private ProfileResponseDto profileResponseDto;
+    @Schema(description = "내 프로필인지")
+    private boolean ownerStatus;
+    @Schema(description = "내 프로필이 아닌경우 팔로우 하고 있는지 여부")
+    private boolean followStatus;
     @Schema(description = "팔로워 수")
     private int follower;
     @Schema(description = "팔로잉 수")
@@ -24,9 +27,11 @@ public class ProfilePostsResponseDto {
 
     @Builder
     public static ProfilePostsResponseDto getProfilePostsResponseDto(
-            ProfileResponseDto profileResponseDto, int follower, int following, List<MyPostResponseDto> posts){
+            ProfileResponseDto profileResponseDto, boolean isOwner, boolean isFollow, int follower, int following, List<MyPostResponseDto> posts){
         return ProfilePostsResponseDto.builder()
                 .profileResponseDto(profileResponseDto)
+                .ownerStatus(isOwner)
+                .followStatus(isFollow)
                 .follower(follower)
                 .following(following)
                 .postCount(posts.size())

@@ -12,6 +12,10 @@ import java.util.List;
 public class ProfileHomeResponseDto {
     @Schema(description = "사용자 프로필 정보")
     private ProfileResponseDto profile;
+    @Schema(description = "내 프로필인지")
+    private boolean ownerStatus;
+    @Schema(description = "내 프로필이 아닌경우 팔로우 하고 있는지 여부")
+    private boolean followStatus;
     @Schema(description = "팔로워 수")
     private int follower;
     @Schema(description = "팔로잉 수")
@@ -28,11 +32,13 @@ public class ProfileHomeResponseDto {
     private String facebook;
 
     @Builder
-    public static ProfileHomeResponseDto getProfileHomeResponse(ProfileResponseDto profile, int follower, int following,
+    public static ProfileHomeResponseDto getProfileHomeResponse(ProfileResponseDto profile, Boolean isOwner, Boolean isFollow, int follower, int following,
                                                                 List<String> interestedFieldList, List<String> skillList,
                                                                 String instagram, String github, String facebook){
         return ProfileHomeResponseDto.builder()
                 .profile(profile)
+                .ownerStatus(isOwner)
+                .followStatus(isFollow)
                 .follower(follower)
                 .following(following)
                 .interestedFieldList(interestedFieldList)
