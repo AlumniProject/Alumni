@@ -43,20 +43,20 @@ public class ChatGptService {
     private final UniversityRepository universityRepository;
     private final FileService fileService;
     private final ImageRepository imageRepository;
-    @PostConstruct
-    public void chatGptSignUp() throws IOException {
-        if (memberRepository.findByNickname("chatgpt").isEmpty()) {//지피티 없으면 회원가입
-            University university = universityRepository.findById(14L).get();//그냥 서울대학교로 함
-
-            Member member = Member.createMember("chatgpt@test.ac.kr", "chatgpt",
-                    "22", "OpenAI", university, "token");
-
-            String storageImageName = "chatgpt.png";
-            imageRepository.save(new Image("chatgpt.png", storageImageName, fileService.getFileUrl(storageImageName)));
-
-            memberRepository.save(member);
-        }
-    }
+//    @PostConstruct
+//    public void chatGptSignUp() throws IOException {
+//        if (memberRepository.findByNickname("chatgpt").isEmpty()) {//지피티 없으면 회원가입
+//            University university = universityRepository.findById(14L).get();//그냥 서울대학교로 함
+//
+//            Member member = Member.createMember("chatgpt@test.ac.kr", "chatgpt",
+//                    "22", "OpenAI", university, "token");
+//
+//            String storageImageName = "chatgpt.png";
+//            imageRepository.save(new Image("chatgpt.png", storageImageName, fileService.getFileUrl(storageImageName)));
+//
+//            memberRepository.save(member);
+//        }
+//    }
 
     public void saveChatGptComment(String answer, Post post) {
         Member gptMember = memberRepository.findByNickname("chatgpt").get();//닉네임으로 찾기

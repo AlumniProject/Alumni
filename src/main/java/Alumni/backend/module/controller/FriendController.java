@@ -29,7 +29,7 @@ public class FriendController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "친구 찾기 완료 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 회원" + "<br>관심분야 없음" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 회원" + "<br> 관심분야 없음" + "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
                     + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })

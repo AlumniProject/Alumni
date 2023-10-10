@@ -39,17 +39,17 @@ public class FriendService {
             List<String> interestedFieldList = interestedMap.get(m);
 
             double sameFieldNum = interestedFieldList.stream()
-                    .filter(currentInterestedList::contains).count(); //같은 필드 몇개인지 찾기1
+                    .filter(currentInterestedList::contains).count(); //같은 필드 몇개인지 찾기
 
             //퍼센트 계산
             double percent = (sameFieldNum/fieldNum) * 100.0;
 
-            if(percent >= 65.0){
+            if(percent >= 70.0){
                 boolean followStatus = false;
 
                 ProfileResponseDto profileResponseDto = ProfileResponseDto.getProfileResponseDto(m);
 
-                if(followingList.contains(m.getId()))
+                if(followingList.contains(m.getId()))//팔로우 여부
                     followStatus = true;
 
                 FriendDto friendDto = FriendDto.getFriendDto(profileResponseDto, followStatus, interestedFieldList);
