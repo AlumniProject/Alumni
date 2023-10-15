@@ -63,15 +63,17 @@ public class TeamEventListener {
     private void multiMessageEvent(List<Member> members, String body, Long teamId) {
         if (!members.isEmpty()) {
             List<String> tokenList = members.stream()
+                    .filter(Member::getUserAlarmOn) // userAlarmOn이 false이면 건너뜀
                     .map(Member::getFcmToken)
-                    .filter(fcmToken -> !fcmToken.isBlank()).collect(Collectors.toList()); // 로그이웃한 사용자 제외
+                    .filter(fcmToken -> !fcmToken.isBlank()) // 로그이웃한 사용자 제외
+                    .collect(Collectors.toList());
             notificationService.sendByTokenList(tokenList, "동문개발자 커뮤니티(Alumni)", body, "1", teamId);
         }
     }
 
     private void singleMessageEvent(Member member, String body, Long teamId) {
         String fcmToken = member.getFcmToken();
-        if (!fcmToken.isBlank()) { // 로그아웃하면 fcmToken black 됨
+        if (!fcmToken.isBlank() && member.getUserAlarmOn()) { // 로그아웃하면 fcmToken black 됨 + 알람이 on인 경우만 실행
             notificationService.sendByToken(fcmToken, "동문개발자 커뮤니티(Alumni)", body, "1", teamId);
         }
     }

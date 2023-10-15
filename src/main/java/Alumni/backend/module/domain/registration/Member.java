@@ -58,7 +58,10 @@ public class Member extends BaseTimeEntity {
     private String introduction;
 
     @Column(nullable = false)
-    private Boolean alarmOn;
+    private Boolean normalAlarmOn;
+
+    @Column(nullable = false)
+    private Boolean userAlarmOn;
 
     private String instagram;
     private String facebook;
@@ -90,29 +93,30 @@ public class Member extends BaseTimeEntity {
         member.major = major;
         member.university = university;
         member.fcmToken = fcmToken;
-        member.alarmOn = true;
+        member.normalAlarmOn = true;
+        member.userAlarmOn = true;
 
         return member;
+    }
+
+    public void setUserAlarmOn() {
+        this.userAlarmOn = !this.userAlarmOn;
     }
     public void uploadProfile(Image profileImage) {
         this.profileImage = profileImage;
     }
-
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
-
     public void clearInterestFields() {
         this.interestFields.clear();
     }
     public void clearMySkills() {
         this.mySkills.clear();
     }
-
     public void editNickname(String nickname){
         this.nickname = nickname;
     }
-
     public void editIntroduction(String introduction){
         this.introduction = introduction;
     }

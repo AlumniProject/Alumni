@@ -186,4 +186,9 @@ public class ProfileService {
 
         return profileHomeResponse;
     }
+
+    @Transactional
+    public void alarmOnOff(Member member) {
+        member.setUserAlarmOn();
+    }
 }

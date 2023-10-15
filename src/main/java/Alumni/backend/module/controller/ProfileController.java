@@ -169,10 +169,23 @@ public class ProfileController {
     @Operation(summary = "프로필 조회", description = "프로필 조회 완료")
     @Parameter(name = "member_id", description = "프로필을 조회 할 member id", required = true, example = "1", in = ParameterIn.PATH)
     @GetMapping("/home/{member_id}")
-    public ResponseEntity<?extends BasicResponse> profileHome(@Schema(hidden = true) @CurrentUser Member currentMember, @PathVariable("member_id") Long memberId){
+    public ResponseEntity<? extends BasicResponse> profileHome(@Schema(hidden = true) @CurrentUser Member currentMember, @PathVariable("member_id") Long memberId){
 
         ProfileHomeResponseDto profileHomeResponseDto = profileService.profileHome(currentMember, memberId);
 
         return ResponseEntity.ok().body(new DataResponse<>(profileHomeResponseDto,"프로필 조회 완료"));
+    }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "알림 on/off", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "알림 on/off 설정", description = "알림 on/off 완료")
+    @PostMapping("/alarm")
+    public ResponseEntity<? extends BasicResponse> alarmOnOff(@Schema(hidden = true) @CurrentUser Member member) {
+        profileService.alarmOnOff(member);
+        return ResponseEntity.ok().body(new SingleResponse("SUCCESS"));
     }
 }
