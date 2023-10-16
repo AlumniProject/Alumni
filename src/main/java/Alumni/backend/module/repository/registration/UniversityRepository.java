@@ -3,9 +3,11 @@ package Alumni.backend.module.repository.registration;
 import Alumni.backend.module.domain.registration.University;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
+@Repository
 public interface UniversityRepository extends JpaRepository<University, Long> {
     Boolean existsByUnivEmail1(String email);
 
