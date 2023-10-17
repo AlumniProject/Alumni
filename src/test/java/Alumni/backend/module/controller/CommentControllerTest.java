@@ -7,6 +7,7 @@ import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.UniversityRepository;
 import Alumni.backend.module.service.community.CommentService;
 import Alumni.backend.module.service.community.PostService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -81,4 +82,23 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.message").value("VALID_ERROR"));
     }
+
+    @DisplayName("새로운 대댓글을 생성한다.")
+    @Test
+    @WithUserDetails(value = "test@test1.ac.kr", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void recommentCreate() throws Exception {
+        //given
+        CommentRequestDto commentRequest = CommentRequestDto.builder()
+                .content("대댓글내용").build();
+        //when //then
+        mockMvc.perform(MockMvcRequestBuilders.post("/comment/recomment/{comment_id}", 1)
+                        .content(objectMapper.writeValueAsString((commentRequest)))
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("대댓글 작성 완료"));
+
+    }
+
 }

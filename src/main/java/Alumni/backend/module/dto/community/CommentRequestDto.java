@@ -13,7 +13,7 @@ import javax.validation.constraints.NotEmpty;
 public class CommentRequestDto {
 
     @Schema(description = "댓글 내용", example = "댓글입니당~~")
-    @NotEmpty(message = "댓글 내용은 필수입니다.")
+    @NotEmpty(message = "내용은 필수입니다.")
     private String content;
 
     @Builder
