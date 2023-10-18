@@ -7,7 +7,6 @@ import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.UniversityRepository;
 import Alumni.backend.module.service.community.CommentService;
 import Alumni.backend.module.service.community.PostService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -99,6 +98,30 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.code").value("200"))
                 .andExpect(jsonPath("$.message").value("대댓글 작성 완료"));
 
+    }
+
+    @DisplayName("댓글을 삭제한다.")
+    @Test
+    @WithUserDetails(value = "test@test1.ac.kr", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void deleteComment() throws Exception {
+        //when //then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/comment/{comment_id}", 1))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("댓글 삭제 완료"));
+    }
+
+    @DisplayName("대댓글을 삭제한다.")
+    @Test
+    @WithUserDetails(value = "test@test1.ac.kr", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void deleteRecomment() throws Exception {
+        //when //then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/comment/recomment/{comment_id}", 1))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("대댓글 삭제 완료"));
     }
 
 }
