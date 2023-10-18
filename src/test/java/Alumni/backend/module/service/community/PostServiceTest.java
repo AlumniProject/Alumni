@@ -5,7 +5,6 @@ import Alumni.backend.infra.exception.FormalValidationException;
 import Alumni.backend.module.domain.community.*;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.domain.registration.University;
-import Alumni.backend.module.dto.community.CommentRequestDto;
 import Alumni.backend.module.dto.community.PostCreateRequestDto;
 import Alumni.backend.module.dto.community.PostModifyRequestDto;
 import Alumni.backend.module.dto.community.PostResponseDto;
@@ -93,9 +92,7 @@ class PostServiceTest {
     @Test
     void createPost(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember = memberRepository.save(member);
+        Member saveMember = createMember("test1@yu.ac.kr", "닉네임1");
 
         PostCreateRequestDto postCreateRequestDto = createPostCreateRequestDto(1L, "제목입니다", "내용입니다", List.of());
 
@@ -113,9 +110,7 @@ class PostServiceTest {
     @Test
     void createPostManyHashTags(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember = memberRepository.save(member1);
+        Member saveMember = createMember("test1@yu.ac.kr", "닉네임1");
 
         PostCreateRequestDto postCreateRequestDto = createPostCreateRequestDto(3L, "제목입니다", "내용입니다", Arrays.asList("python", "Java", "AI", "Javascript", "Node.js", "Vue.js"));
 
@@ -130,14 +125,9 @@ class PostServiceTest {
     @Test
     void modifyPost1(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember = memberRepository.save(member);
+        Member saveMember = createMember("test1@yu.ac.kr", "닉네임1");
 
-        Board board = boardRepository.findById(3L).get();
-
-        Post post = Post.createPost(saveMember, board, "title", "content");
-        Post savePost = postRepository.save(post);
+        Post savePost = createPost(1L, saveMember);
 
         PostModifyRequestDto postModifyRequestDto =  createPostModifyRequestDto("수정된 제목", "수정된 내용", List.of());
 
@@ -145,7 +135,7 @@ class PostServiceTest {
         postService.postModify(saveMember, savePost.getId(), postModifyRequestDto);
 
         //then
-        Post modifyPost = postRepository.findById(post.getId()).get();
+        Post modifyPost = postRepository.findById(savePost.getId()).get();
         assertThat(modifyPost)
                 .extracting("title", "content")
                 .contains("수정된 제목", "수정된 내용");
@@ -155,14 +145,9 @@ class PostServiceTest {
     @Test
     void modifyPost2(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember = memberRepository.save(member);
+        Member saveMember = createMember("test1@yu.ac.kr", "닉네임1");
 
-        Board board = boardRepository.findById(3L).get();//기술 게시판
-
-        Post post = Post.createPost(saveMember, board, "title", "content");
-        Post savePost = postRepository.save(post);
+        Post savePost = createPost(3L, saveMember);
 
         Tag tag1 = tagRepository.findByName("python").get();
         Tag tag2 = tagRepository.findByName("Java").get();
@@ -191,14 +176,9 @@ class PostServiceTest {
     @Test
     void postDelete1(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember = memberRepository.save(member);
+        Member saveMember = createMember("test1@yu.ac.kr", "닉네임1");
 
-        Board board = boardRepository.findById(3L).get();//기술 게시판
-
-        Post post = Post.createPost(saveMember, board, "title", "content");
-        Post savePost = postRepository.save(post);
+        Post savePost = createPost(3L, saveMember);
 
         //when
         postService.postDelete(saveMember,savePost.getId());
@@ -212,19 +192,11 @@ class PostServiceTest {
     @Test
     void postDelete(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember1 = memberRepository.save(member1);
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member saveMember2 = memberRepository.save(member2);
-        Member member3 = Member.createMember("soeun3@yu.ac.kr", "닉네임3", "20", "정보통신공학과", university, "1");
-        Member saveMember3 = memberRepository.save(member3);
+        Member saveMember1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member saveMember2 = createMember("test2@yu.ac.kr", "닉네임2");
+        Member saveMember3 = createMember("test3@yu.ac.kr", "닉네임3");
 
-
-        Board board = boardRepository.findById(3L).get();//기술 게시판
-
-        Post post = Post.createPost(saveMember1, board, "title", "content");
-        Post savePost = postRepository.save(post);
+        Post savePost = createPost(3L, saveMember1);
 
         PostLike postLike1 = PostLike.createPostLike(savePost, saveMember2);
         PostLike postLike2 = PostLike.createPostLike(savePost, saveMember3);
@@ -243,17 +215,10 @@ class PostServiceTest {
     @Test
     void postDelete3(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember1 = memberRepository.save(member1);
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member saveMember2 = memberRepository.save(member2);
+        Member saveMember1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member saveMember2 = createMember("test2@yu.ac.kr", "닉네임2");
 
-
-        Board board = boardRepository.findById(1L).get();//기술 게시판
-
-        Post post = Post.createPost(saveMember1, board, "title", "content");
-        Post savePost = postRepository.save(post);
+        Post savePost = createPost(1L, saveMember1);
 
         Comment comment = Comment.createComment(saveMember2, "댓글1");
         comment.setPost(savePost);
@@ -270,21 +235,12 @@ class PostServiceTest {
     @Test
     void postDelete4(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember1 = memberRepository.save(member1);
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member saveMember2 = memberRepository.save(member2);
+        Member saveMember1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member saveMember2 = createMember("test2@yu.ac.kr", "닉네임2");
 
+        Post savePost = createPost(1L, saveMember1);
 
-        Board board = boardRepository.findById(1L).get();//기술 게시판
-
-        Post post = Post.createPost(saveMember1, board, "title", "content");
-        Post savePost = postRepository.save(post);
-
-        Comment comment = Comment.createComment(saveMember2, "댓글1");
-        comment.setPost(savePost);
-        Comment saveComment = commentRepository.save(comment);
+        Comment saveComment = createComment(saveMember2, "댓글입니다.", savePost);
 
         CommentLike commentLike = CommentLike.createCommentLike(saveComment, saveMember1);
         commentLikeRepository.save(commentLike);
@@ -356,6 +312,31 @@ class PostServiceTest {
         postModifyRequestDto.setHashTag(hasTags);
 
         return postModifyRequestDto;
+    }
+
+    private Post createPost(long boardId, Member saveMember) {
+        Board board = boardRepository.findById(boardId).get();
+
+        Post post = Post.createPost(saveMember, board, "title", "content");
+        Post savePost = postRepository.save(post);
+
+        return savePost;
+    }
+
+    private Comment createComment(Member saveMember1, String content, Post savePost) {
+        Comment comment = Comment.createComment(saveMember1, content);
+        comment.setPost(savePost);
+        Comment saveComment = commentRepository.save(comment);
+
+        return saveComment;
+    }
+
+    private Member createMember(String email, String nickname) {
+        University university = universityRepository.findById(1L).get();
+        Member member = Member.createMember(email, nickname, "20", "정보통신공학과", university, "1");
+        Member saveMember = memberRepository.save(member);
+
+        return saveMember;
     }
 
 }
