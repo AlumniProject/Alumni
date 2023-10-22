@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -38,19 +39,12 @@ class CommentLikeRepositoryTest {
     @Test
     void findByCommentId(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember1 = memberRepository.save(member1);
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member saveMember2 = memberRepository.save(member2);
+        Member saveMember1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member saveMember2 = createMember("test2@yu.ac.kr", "닉네임2");
 
-        Board board = boardRepository.findById(3L).get();
+        Post savePost = createPost(3L, saveMember1);
 
-        Post post = Post.createPost(saveMember1, board, "title", "content");
-        Post savePost = postRepository.save(post);
-        Comment comment = Comment.createComment(saveMember1, "댓글1");
-        comment.setPost(savePost);
-        Comment saveComment = commentRepository.save(comment);
+        Comment saveComment = createComment(saveMember1, "댓글1", savePost);
 
         CommentLike commentLike1 = CommentLike.createCommentLike(saveComment, saveMember1);
         CommentLike commentLike2 = CommentLike.createCommentLike(saveComment, saveMember2);
@@ -66,5 +60,52 @@ class CommentLikeRepositoryTest {
                 .containsExactlyInAnyOrder(tuple(saveComment, saveMember1),
                         tuple(saveComment, saveMember2));
 
+    }
+
+    @DisplayName("회원 아이디와 댓글 아이디로 CommentLike 찾기")
+    @Test
+    void findByMemberAndComment(){
+        //given
+        Member saveMember = createMember("test1@yu.ac.kr", "닉네임1");
+
+        Post savePost = createPost(1L, saveMember);
+
+        Comment saveComment = createComment(saveMember, "댓글1", savePost);
+
+        CommentLike commentLike = CommentLike.createCommentLike(saveComment, saveMember);
+
+        commentLikeRepository.save(commentLike);
+
+        //when
+        Optional<CommentLike> findCommentLike = commentLikeRepository.findByMemberAndComment(saveMember.getId(), saveComment.getId());
+
+        //then
+        assertThat(findCommentLike).isNotEmpty();
+
+    }
+
+    private Post createPost(long boardId, Member saveMember) {
+        Board board = boardRepository.findById(boardId).get();
+
+        Post post = Post.createPost(saveMember, board, "title", "content");
+        Post savePost = postRepository.save(post);
+
+        return savePost;
+    }
+
+    private Comment createComment(Member saveMember1, String content, Post savePost) {
+        Comment comment = Comment.createComment(saveMember1, content);
+        comment.setPost(savePost);
+        Comment saveComment = commentRepository.save(comment);
+
+        return saveComment;
+    }
+
+    private Member createMember(String email, String nickname) {
+        University university = universityRepository.findById(1L).get();
+        Member member = Member.createMember(email, nickname, "20", "정보통신공학과", university, "1");
+        Member saveMember = memberRepository.save(member);
+
+        return saveMember;
     }
 }

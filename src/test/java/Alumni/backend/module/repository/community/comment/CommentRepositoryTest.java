@@ -42,25 +42,16 @@ class CommentRepositoryTest {
     @Test
     void findByPostId(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveMember1 = memberRepository.save(member1);
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member saveMember2 = memberRepository.save(member2);
-        Member member3 = Member.createMember("soeun3@yu.ac.kr", "닉네임3", "20", "정보통신공학과", university, "1");
-        Member saveMember3 = memberRepository.save(member2);
+        Member saveMember1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member saveMember2 = createMember("test2@yu.ac.kr", "닉네임2");
+        Member saveMember3 = createMember("test3@yu.ac.kr", "닉네임3");
 
 
-        Board board = boardRepository.findById(1L).get();//기술 게시판
+        Post savePost = createPost(1L, saveMember1);
 
-        Post post = Post.createPost(saveMember1, board, "title", "content");
-        Post savePost = postRepository.save(post);
+        Comment comment1 = createComment(saveMember2, "댓글1", savePost);
 
-        Comment comment1 = Comment.createComment(saveMember2, "댓글1");
-        comment1.setPost(savePost);
-
-        Comment comment2 = Comment.createComment(saveMember3, "댓글2");
-        comment2.setPost(savePost);
+        Comment comment2 = createComment(saveMember3, "댓글2", savePost);
 
         commentRepository.saveAll(List.of(comment1, comment2));
 
@@ -72,5 +63,30 @@ class CommentRepositoryTest {
                 .extracting("member", "content")
                 .containsExactlyInAnyOrder(tuple(saveMember2, "댓글1"),
                         tuple(saveMember3, "댓글2"));
+    }
+
+    private Post createPost(long boardId, Member saveMember) {
+        Board board = boardRepository.findById(boardId).get();
+
+        Post post = Post.createPost(saveMember, board, "title", "content");
+        Post savePost = postRepository.save(post);
+
+        return savePost;
+    }
+
+    private Comment createComment(Member saveMember1, String content, Post savePost) {
+        Comment comment = Comment.createComment(saveMember1, content);
+        comment.setPost(savePost);
+        Comment saveComment = commentRepository.save(comment);
+
+        return saveComment;
+    }
+
+    private Member createMember(String email, String nickname) {
+        University university = universityRepository.findById(1L).get();
+        Member member = Member.createMember(email, nickname, "20", "정보통신공학과", university, "1");
+        Member saveMember = memberRepository.save(member);
+
+        return saveMember;
     }
 }
