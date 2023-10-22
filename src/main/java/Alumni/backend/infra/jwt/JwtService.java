@@ -257,4 +257,9 @@ public class JwtService {
             throw new IllegalArgumentException("JWT_ACCESS_NOT_VALID");
         }
     }
+
+    public boolean verifyToken(String token){
+        throw new IllegalArgumentException("토큰 검증");
+    }
+
 }

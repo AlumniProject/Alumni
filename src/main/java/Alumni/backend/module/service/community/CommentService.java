@@ -59,7 +59,6 @@ public class CommentService {
         if (!comment.getMember().getId().equals(member.getId()))//수정하는 사람과 작성자가 같은지 확인
             throw new IllegalArgumentException("Bad Request");
 
-        Post post = comment.getPost();
         int count = comment.getChildren().size() + 1;
 
         List<CommentLike> parentLikeList = commentLikeRepository.findByCommentId(comment.getId());
@@ -98,8 +97,6 @@ public class CommentService {
 
         if (!recomment.getMember().getId().equals(member.getId()))//수정하는 사람과 작성자가 같은지 확인
             throw new IllegalArgumentException("Bad Request");
-
-        Post post = recomment.getPost();
 
         List<CommentLike> recommentLikeList = commentLikeRepository.findByCommentId(recomment.getId());
         commentLikeRepository.deleteAll(recommentLikeList);

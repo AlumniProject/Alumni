@@ -3,7 +3,6 @@ package Alumni.backend.module.controller;
 import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
 import Alumni.backend.module.domain.registration.Member;
-import Alumni.backend.module.dto.community.CommentDto;
 import Alumni.backend.module.dto.community.CommentRequestDto;
 import Alumni.backend.module.service.ChatGptService;
 import Alumni.backend.module.service.community.CommentService;
@@ -16,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +29,7 @@ import javax.validation.Valid;
 public class CommentController {
 
     private final CommentService commentService;
-    private final ChatGptService chatGptService;
+//    private final ChatGptService chatGptService;
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 작성 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),

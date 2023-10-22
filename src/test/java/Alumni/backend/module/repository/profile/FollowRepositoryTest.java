@@ -26,7 +26,7 @@ class FollowRepositoryTest {
     @Autowired private MemberRepository memberRepository;
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         followRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
     }
