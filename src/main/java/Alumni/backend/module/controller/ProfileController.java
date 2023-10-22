@@ -188,4 +188,16 @@ public class ProfileController {
         profileService.alarmOnOff(member);
         return ResponseEntity.ok().body(new SingleResponse("SUCCESS"));
     }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "알림 on/off 상태", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "알림 on/off 상태 조회", description = "알림 on/off 상태 조회")
+    @GetMapping("/alarm")
+    public ResponseEntity<? extends BasicResponse> alarmState(@Schema(hidden = true) @CurrentUser Member member) {
+        return ResponseEntity.ok().body(new DataResponse<>(profileService.alarmState(member), "SUCCESS"));
+    }
 }
