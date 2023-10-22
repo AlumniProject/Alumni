@@ -145,6 +145,20 @@ class LikeServiceTest {
         assertThat(message).isEqualTo("댓글 좋아요 취소 완료");
     }
 
+    @DisplayName("존재하지 않는 댓글에 좋아요를 하면 예외가 발생한다.")
+    @Test
+    void commentLikeWithoutComment(){
+        //given
+        Member member = createMember("test@yu.ac.kr", "테스트닉네임");
+
+        //when //then
+        Long commentId = 1L;
+        assertThatThrownBy(() -> likeService.commentLike(member, commentId))
+                .isInstanceOf(NoExistsException.class)
+                .hasMessage("존재하지 않는 댓글입니다.");
+
+    }
+
     private Post createPost(long boardId, Member saveMember) {
         Board board = boardRepository.findById(boardId).get();
 
