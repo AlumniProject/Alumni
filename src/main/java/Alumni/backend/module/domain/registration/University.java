@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class University {
@@ -28,4 +27,11 @@ public class University {
 
     @Column(name = "univ_email2")
     private String univEmail2;
+
+    @Builder
+    private University(String name, String univEmail1, String univEmail2) {
+        this.name = name;
+        this.univEmail1 = univEmail1;
+        this.univEmail2 = univEmail2;
+    }
 }

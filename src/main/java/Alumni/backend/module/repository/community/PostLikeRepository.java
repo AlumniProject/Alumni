@@ -8,7 +8,9 @@ import com.querydsl.core.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface PostLikeRepository extends JpaRepository<PostLike, Long> , PostLikeRepositoryCustom{
 
   @Query("select p from PostLike p where p.member.id = :memberId and p.post.id = :postId")

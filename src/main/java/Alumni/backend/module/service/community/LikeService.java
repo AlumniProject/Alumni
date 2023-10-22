@@ -61,7 +61,8 @@ public class LikeService {
 
         Member findMember = memberRepository.findById(member.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원입니다."));
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoExistsException("존재하지 않는 댓글입니다."));
-        Post post = postRepository.findById(comment.getPost().getId())
+
+        postRepository.findById(comment.getPost().getId())
                 .orElseThrow(() -> new NoExistsException("존재하지 않는 게시글입니다."));
 
         if (commentLikeRepository.findByMemberAndComment(findMember.getId(), comment.getId()).isPresent()) {
@@ -103,7 +104,6 @@ public class LikeService {
         CommentLike commentLike = CommentLike.createCommentLike(comment, findMember);
         commentLikeRepository.save(commentLike);
         commentLike.setMember(findMember);
-
     }
 
     private void minusLike(Member findMember, Comment comment) {
