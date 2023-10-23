@@ -12,14 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 class FollowRepositoryTest {
     @Autowired private FollowRepository followRepository;
     @Autowired private UniversityRepository universityRepository;
@@ -35,34 +36,28 @@ class FollowRepositoryTest {
     @Test
     void findByFollowerIdAndFollowingId(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member saveM1 = memberRepository.save(member1);
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member saveM2 = memberRepository.save(member2);
+        Member member1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member member2 = createMember("test2@yu.ac.kr", "닉네임2");
 
-        Follow follow = Follow.createFollow(saveM1, saveM2);
+        Follow follow = Follow.createFollow(member1, member2);
         followRepository.save(follow);
 
         //when
-        Follow findFollow = followRepository.findByFollowerIdAndFollowingId(saveM1.getId(), saveM2.getId()).get();
+        Follow findFollow = followRepository.findByFollowerIdAndFollowingId(member1.getId(), member2.getId()).get();
 
         //then
         assertThat(findFollow).isNotNull();
-        assertThat(findFollow.getFollower().getId()).isEqualTo(saveM1.getId());
-        assertThat(findFollow.getFollowing().getId()).isEqualTo(saveM2.getId());
+        assertThat(findFollow.getFollower().getId()).isEqualTo(member1.getId());
+        assertThat(findFollow.getFollowing().getId()).isEqualTo(member2.getId());
     }
 
     @DisplayName("팔로워 아이디로 팔로우 하고 있는 모든 아이디를 찾는다")
     @Test
     void findByFollowerId(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member member3 = Member.createMember("soeun3@yu.ac.kr", "닉네임3", "20", "정보통신공학과", university, "1");
-
-        memberRepository.saveAll(List.of(member1, member2, member3));
+        Member member1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member member2 = createMember("test2@yu.ac.kr", "닉네임2");
+        Member member3 = createMember("test3@yu.ac.kr", "닉네임3");
 
         Follow follow1 = Follow.createFollow(member1, member2);
         Follow follow2 = Follow.createFollow(member1, member3);
@@ -81,12 +76,9 @@ class FollowRepositoryTest {
     @Test
     void countByFollowerId(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member member3 = Member.createMember("soeun3@yu.ac.kr", "닉네임3", "20", "정보통신공학과", university, "1");
-
-        memberRepository.saveAll(List.of(member1, member2, member3));
+        Member member1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member member2 = createMember("test2@yu.ac.kr", "닉네임2");
+        Member member3 = createMember("test3@yu.ac.kr", "닉네임3");
 
         Follow follow1 = Follow.createFollow(member1, member2);
         Follow follow2 = Follow.createFollow(member1, member3);
@@ -105,12 +97,9 @@ class FollowRepositoryTest {
     @Test
     void countByFollowingI(){
         //given
-        University university = universityRepository.findById(1L).get();
-        Member member1 = Member.createMember("soeun1@yu.ac.kr", "닉네임1", "20", "정보통신공학과", university, "1");
-        Member member2 = Member.createMember("soeun2@yu.ac.kr", "닉네임2", "20", "정보통신공학과", university, "1");
-        Member member3 = Member.createMember("soeun3@yu.ac.kr", "닉네임3", "20", "정보통신공학과", university, "1");
-
-        memberRepository.saveAll(List.of(member1, member2, member3));
+        Member member1 = createMember("test1@yu.ac.kr", "닉네임1");
+        Member member2 = createMember("test2@yu.ac.kr", "닉네임2");
+        Member member3 = createMember("test3@yu.ac.kr", "닉네임3");
 
         Follow follow1 = Follow.createFollow(member1, member2);
         Follow follow2 = Follow.createFollow(member1, member3);
@@ -122,5 +111,13 @@ class FollowRepositoryTest {
 
         //then
         assertThat(count).isEqualTo(1);
+    }
+
+    private Member createMember(String email, String nickname) {
+        University university = universityRepository.findById(1L).get();
+        Member member = Member.createMember(email, nickname, "20", "정보통신공학과", university, "1");
+        Member saveMember = memberRepository.save(member);
+
+        return saveMember;
     }
 }

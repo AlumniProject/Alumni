@@ -29,7 +29,7 @@ public class CrawlingService {
         String url = "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20";//위비티 url
 
         //시스템 property 설정
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver-win32/chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver-win64/chromedriver.exe");
 
         ChromeOptions options = new ChromeOptions();
         options.setHeadless(true);
