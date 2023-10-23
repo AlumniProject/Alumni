@@ -45,14 +45,16 @@ public class CommentEventListener {
         // 댓글 저장
         chatGptService.saveChatGptComment(answer, post);
         // 알림 보내기
-        singleMessageEvent(gptCommentCreateEvent.getMember(),
-                "본인이 작성한 게시글에 GPT 답변이 달렸어요!"
-        , post.getId());
+        if (gptCommentCreateEvent.getMember().getUserAlarmOn()) {
+            singleMessageEvent(gptCommentCreateEvent.getMember(),
+                    "본인이 작성한 게시글에 GPT 답변이 달렸어요!"
+                    , post.getId());
+        }
     }
 
     private void singleMessageEvent(Member member, String body, Long postId) {
         String fcmToken = member.getFcmToken();
-        if (!fcmToken.isBlank()) { // 로그아웃하면 fcmToken blank 됨
+        if (!fcmToken.isBlank() && member.getUserAlarmOn()) { // 로그아웃하면 fcmToken blank 됨 + 알람이 on인 경우만 실행
             notificationService.sendByToken(fcmToken, "동문개발자 커뮤니티(Alumni)", body, "0", postId);
         }
     }

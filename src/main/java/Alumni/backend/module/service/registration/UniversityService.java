@@ -1,5 +1,6 @@
 package Alumni.backend.module.service.registration;
 
+import Alumni.backend.infra.exception.BadRequestException;
 import Alumni.backend.module.domain.registration.University;
 import Alumni.backend.module.domain.registration.VerifiedEmail;
 import Alumni.backend.infra.exception.NoExistsException;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 
+import Alumni.backend.module.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UniversityService {
 
-    private final UniversityRepository universityRepository;
     private final EmailService emailService;
+    private final RedisService redisService;
+    private final UniversityRepository universityRepository;
     private final VerifiedEmailRepository verifiedEmailRepository;
 
     @PostConstruct
@@ -86,10 +89,8 @@ public class UniversityService {
         // 유요한 학교이메일 형식이면 인증번호 생성하여 메일 전송
         if (!univEmail.equals("@test.ac.kr")) {
             //이메일 검증
-            if (!universityRepository.existsByUnivEmail1(univEmail)) {
-                if (!universityRepository.existsByUnivEmail2(univEmail)) {
-                    throw new NoExistsException("학교 이메일 형식이 아닙니다.");
-                }
+            if (!universityRepository.existsByEmail(univEmail)) {
+                throw new NoExistsException("학교 이메일 형식이 아닙니다.");
             }
 
             // 테스트 이메일의 경우 - 바로 통과
@@ -103,7 +104,12 @@ public class UniversityService {
                 verifiedEmail = VerifiedEmail.createVerifiedEmail(email);
                 verifiedEmailRepository.save(verifiedEmail); //이메일, 인증번호 verifiedEmail 테이블에 저장
             }
+            /*String value = redisService.getValue(email); // 이메일 전송시간 5분 넘어갔는지 확인
+            if (value != null) {
+                throw new BadRequestException("EMAIL_TIME_LIMIT");
+            }*/
             emailService.sendMail(verifiedEmail.getEmail(), verifiedEmail.getEmailCode());
+            //redisService.setValueWithSeconds(email, "verified", 300000L); // 5분 설정
         }
 
         return "인증번호 발급 완료";

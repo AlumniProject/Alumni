@@ -186,4 +186,15 @@ public class ProfileService {
 
         return profileHomeResponse;
     }
+
+    @Transactional
+    public void alarmOnOff(Member user) {
+        Member member = memberRepository.findById(user.getId()).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+        member.setUserAlarmOn();
+    }
+
+
+    public AlarmStateDto alarmState(Member member) {
+        return AlarmStateDto.getAlarmStateDto(member);
+    }
 }
