@@ -9,6 +9,7 @@ import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.UniversityRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 class PostLikeRepositoryTest {
     @Autowired private PostLikeRepository postLikeRepository;
     @Autowired private PostRepository postRepository;
     @Autowired private MemberRepository memberRepository;
     @Autowired private BoardRepository boardRepository;
     @Autowired private UniversityRepository universityRepository;
+
+    @AfterEach
+    void tearDown() {
+        postLikeRepository.deleteAllInBatch();
+        postRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @DisplayName("멤버와 게시글로 좋아요를 찾을 수 있다.")
     @Test
