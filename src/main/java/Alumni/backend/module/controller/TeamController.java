@@ -278,7 +278,9 @@ public class TeamController {
     public ResponseEntity<? extends BasicResponse> recommendTeammate(@RequestBody @Valid MateRequestDto mateRequestDto) {
         List<MateResponseDto> mateResponseDtos = skillService.recommendMate(mateRequestDto);
         return ResponseEntity.ok().body(new GeneralResponse<>(mateResponseDtos, "SUCCESS"));
+    }
 
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "팀원 요청 완료", content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "400", description = "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
                     + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
