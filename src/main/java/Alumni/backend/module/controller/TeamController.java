@@ -5,6 +5,11 @@ import Alumni.backend.infra.response.*;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.dto.community.CommentRequestDto;
 import Alumni.backend.module.dto.contest.*;
+import Alumni.backend.module.dto.contest.TeamApproveDto;
+import Alumni.backend.module.dto.contest.TeamInviteRequestDto;
+import Alumni.backend.module.dto.contest.TeamLeaderCancelDto;
+import Alumni.backend.module.dto.contest.TeamRequestDto;
+import Alumni.backend.module.dto.contest.TeamResponseDto;
 import Alumni.backend.module.service.community.CommentService;
 import Alumni.backend.module.service.contest.TeamService;
 import Alumni.backend.module.service.profile.SkillService;
@@ -273,5 +278,20 @@ public class TeamController {
     public ResponseEntity<? extends BasicResponse> recommendTeammate(@RequestBody @Valid MateRequestDto mateRequestDto) {
         List<MateResponseDto> mateResponseDtos = skillService.recommendMate(mateRequestDto);
         return ResponseEntity.ok().body(new GeneralResponse<>(mateResponseDtos, "SUCCESS"));
+
+            @ApiResponse(responseCode = "200", description = "팀원 요청 완료", content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "400", description = "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "팀원 요청", description = "추천 받은 사람한테 참여 요청을 보내는 메서드입니다.")
+    @Parameter(name = "member_id", description = "요청할 회원 아이디", example = "1", in = ParameterIn.PATH)
+    @PostMapping("/invite/{member_id}")
+    public ResponseEntity< ? extends BasicResponse> teamInvite(@Schema(hidden = true) @CurrentUser Member leader, @PathVariable("member_id") Long memberId,
+                                                                @Valid TeamInviteRequestDto teamInviteRequestDto){
+
+        String message = teamService.teamRequest(leader, memberId, teamInviteRequestDto);
+        return ResponseEntity.ok().body(new SingleResponse(message));
+
     }
 }

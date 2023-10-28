@@ -60,6 +60,14 @@ public class TeamEventListener {
                 team.getId());
     }
 
+    @EventListener
+    public void handleTeamInviteEvent(TeamInviteEvent teamInviteEvent){
+        Member member = teamInviteEvent.getMember();
+        singleMessageEvent(member,
+                teamInviteEvent.getLeaderNickname() + "님이" + teamInviteEvent.getTitle()
+        + "에 팀원으로 요청 하셨습니다.", teamInviteEvent.getTeam_id());
+    }
+
     private void multiMessageEvent(List<Member> members, String body, Long teamId) {
         if (!members.isEmpty()) {
             List<String> tokenList = members.stream()
@@ -77,4 +85,5 @@ public class TeamEventListener {
             notificationService.sendByToken(fcmToken, "동문개발자 커뮤니티(Alumni)", body, "1", teamId);
         }
     }
+
 }

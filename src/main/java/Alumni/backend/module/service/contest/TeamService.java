@@ -198,4 +198,18 @@ public class TeamService {
             teammateRepository.deleteAll(teammates);
         }
     }
+
+    public String teamRequest(Member leader, Long memberId, TeamInviteRequestDto teamInviteRequestDto) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new NoExistsException("존재하지 않는 회원"));
+
+        Team team = teamRepository.findById(teamInviteRequestDto.getTeamId())
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 팀"));
+
+        Contest contest = contestRepository.findById(teamInviteRequestDto.getContestId())
+                .orElseThrow(() -> new NoExistsException("존재하지 않는 공모전"));
+
+        eventPublisher.publishEvent(new TeamInviteEvent(member, team.getId(), leader.getNickname(), contest.getTitle()));
+
+        return "팀원 요청 완료";
+    }
 }
