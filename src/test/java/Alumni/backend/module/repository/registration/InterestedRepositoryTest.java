@@ -4,6 +4,7 @@ import Alumni.backend.module.domain.registration.InterestField;
 import Alumni.backend.module.domain.registration.Interested;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.domain.registration.University;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,12 @@ class InterestedRepositoryTest {
     @Autowired private MemberRepository memberRepository;
     @Autowired private InterestFieldRepository interestFieldRepository;
     @Autowired private UniversityRepository universityRepository;
+
+    @AfterEach
+    void tearDown() {
+        interestedRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @DisplayName("회원 아이디로 관심분야를 찾는다")
     @Test
