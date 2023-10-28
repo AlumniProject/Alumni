@@ -4,6 +4,7 @@ import Alumni.backend.infra.config.CurrentUser;
 import Alumni.backend.infra.response.*;
 import Alumni.backend.module.domain.registration.Member;
 import Alumni.backend.module.dto.community.CommentRequestDto;
+import Alumni.backend.module.dto.contest.*;
 import Alumni.backend.module.dto.contest.TeamApproveDto;
 import Alumni.backend.module.dto.contest.TeamInviteRequestDto;
 import Alumni.backend.module.dto.contest.TeamLeaderCancelDto;
@@ -11,6 +12,7 @@ import Alumni.backend.module.dto.contest.TeamRequestDto;
 import Alumni.backend.module.dto.contest.TeamResponseDto;
 import Alumni.backend.module.service.community.CommentService;
 import Alumni.backend.module.service.contest.TeamService;
+import Alumni.backend.module.service.profile.SkillService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -24,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+
 @ApiDocumentAuthResponse
 @ApiDocumentGlobalResponse
 @Tag(name = "Team", description = "팀 관련 api")
@@ -34,6 +38,7 @@ public class TeamController {
 
     private final TeamService teamService;
     private final CommentService commentService;
+    private final SkillService skillService;
 
 
 //    @PostMapping("/contestDummy")
@@ -263,6 +268,17 @@ public class TeamController {
     }
 
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "SUCCESS", content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "400", description = "HTTP_REQUEST_ERROR <br>UNEXPECTED_ERROR"
+                    + "<br>VALID_ERROR <br>HTTP_REQUEST_ERROR <br>Bad Request <br>다시 로그인해주세요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @Operation(summary = "팀원 추천", description = "팀 모집에 팀원 추천을 요청하는 API")
+    @PostMapping("/recommend")
+    public ResponseEntity<? extends BasicResponse> recommendTeammate(@RequestBody @Valid MateRequestDto mateRequestDto) {
+        List<MateResponseDto> mateResponseDtos = skillService.recommendMate(mateRequestDto);
+        return ResponseEntity.ok().body(new GeneralResponse<>(mateResponseDtos, "SUCCESS"));
+
             @ApiResponse(responseCode = "200", description = "팀원 요청 완료", content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "400", description = "<br>HTTP_REQUEST_ERROR" + "<br>UNEXPECTED_ERROR"
                     + "<br>VALID_ERROR" + "<br>HTTP_REQUEST_ERROR" + "<br>Bad Request" + "<br>다시 로그인해주세요",
@@ -276,5 +292,6 @@ public class TeamController {
 
         String message = teamService.teamRequest(leader, memberId, teamInviteRequestDto);
         return ResponseEntity.ok().body(new SingleResponse(message));
+
     }
 }
