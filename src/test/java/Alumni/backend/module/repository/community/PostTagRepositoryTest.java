@@ -11,6 +11,7 @@ import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.UniversityRepository;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.units.qual.A;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,13 @@ class PostTagRepositoryTest {
     @Autowired private UniversityRepository universityRepository;
     @Autowired private BoardRepository boardRepository;
     @Autowired private TagRepository tagRepository;
+
+    @AfterEach
+    void tearDown() {
+        postTagRepository.deleteAllInBatch();
+        postRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @DisplayName("게시글 아이디로 태그를 찾는다")
     @Test

@@ -9,8 +9,10 @@ import Alumni.backend.module.repository.community.BoardRepository;
 import Alumni.backend.module.repository.community.post.PostRepository;
 import Alumni.backend.module.repository.registration.MemberRepository;
 import Alumni.backend.module.repository.registration.UniversityRepository;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,8 +36,21 @@ class CommentRepositoryTest {
     @Autowired private BoardRepository boardRepository;
 
     @AfterEach
-    void tearDown() {
+    @Order(1)
+    void testDown1(){//대댓글 먼저 삭제 해줘야 함
+
+        List<Comment> commentList = commentRepository.findAll();
+
+        commentRepository.deleteAllInBatch(commentList.stream()
+                .filter(comment -> comment.getParent() != null)
+                .collect(Collectors.toList()));
+    }
+    @AfterEach
+    @Order(2)
+    void tearDown2() {
         commentRepository.deleteAllInBatch();
+        postRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 
     @DisplayName("게시글 아이디로 달린 댓글을 찾는다")
