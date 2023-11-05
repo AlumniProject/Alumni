@@ -8,6 +8,7 @@ import java.util.List;
 
 import static Alumni.backend.module.domain.Profile.QMySkill.mySkill;
 import static Alumni.backend.module.domain.Profile.QSkill.skill;
+import static Alumni.backend.module.domain.QImage.image;
 import static Alumni.backend.module.domain.registration.QMember.member;
 import static Alumni.backend.module.domain.registration.QUniversity.university;
 
@@ -35,6 +36,7 @@ public class MySkillRepositoryImpl implements MySkillRepositoryCustom {
                 .selectFrom(mySkill)
                 .leftJoin(mySkill.member, member).fetchJoin()
                 .leftJoin(member.university, university).fetchJoin()
+                .leftJoin(member.profileImage, image)
                 .leftJoin(mySkill.skill, skill).fetchJoin()
                 .where(mySkill.member.id.in(memberIds))
                 .fetch();
